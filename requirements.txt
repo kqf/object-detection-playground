@@ -1,0 +1,15 @@
+kaggle
+pytest
+tqdm
+skorch
+torch
+torchvision
+click
+pandas
+tifffile
+opencv-python
+albumentations
+pytest-cov
+rasterio
+tensorboardX
+gcsfs
