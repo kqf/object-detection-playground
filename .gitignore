@@ -1,0 +1,28 @@
+# Python
+*.pyc
+.python-version
+*sftp-config*
+.idea
+
+# Package
+.eggs
+*.egg-info
+.coverage
+.env
+
+# Data
+data/
+*.tiff
+*.json
+*.csv
+kernel-metadata.json
+dataset-metadata.json
+thresholds.png
+
+# Model
+*.pt
+*.pkl
+
+# Tensorboard logs
+events.out.*
+.tmp
