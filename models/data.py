@@ -34,7 +34,9 @@ class VinBigDataset(Dataset):
             if dicom.PhotometricInterpretation == "MONOCHROME1":
                 image = np.amax(image) - image
 
-        intercept = dicom.RescaleIntercept if "RescaleIntercept" in dicom else 0.0
+        intercept = 0.0
+        if "RescaleIntercept" in dicom:
+            intercept = dicom.RescaleIntercept
         slope = dicom.RescaleSlope if "RescaleSlope" in dicom else 1.0
 
         if slope != 1:
