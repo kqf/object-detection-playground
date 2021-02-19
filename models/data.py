@@ -5,9 +5,9 @@ import pydicom
 from torch.utils.data import Dataset
 
 
-DIR_INPUT = '/kaggle/input/vinbigdata-chest-xray-abnormalities-detection'
-DIR_TRAIN = f'{DIR_INPUT}/train'
-DIR_TEST = f'{DIR_INPUT}/test'
+# DIR_INPUT = '/kaggle/input/vinbigdata-chest-xray-abnormalities-detection'
+# DIR_TRAIN = f'{DIR_INPUT}/train'
+# DIR_TEST = f'{DIR_INPUT}/test'
 
 
 class VinBigDataset(Dataset):
