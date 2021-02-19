@@ -9,7 +9,8 @@ _std = [1, 1, 1]
 
 def transform(train=True, mean=None, std=None):
     normalize = alb.Compose([
-        alb.Normalize(mean=mean or _mean, std=std or _std),
+        alb.Normalize(mean=mean or _mean, std=std or _std,
+                      max_pixel_value=255),
         ToTensorV2(),
     ])
 
