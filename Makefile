@@ -1,4 +1,4 @@
-competition = hubmap-kidney-segmentation
+competition = vinbigdata-chest-xray-abnormalities-detection
 logdir = $(TENSORBOARD_DIR)/$(message)
 
 develop: data/train/preprocessed
