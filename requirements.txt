@@ -6,10 +6,8 @@ torch
 torchvision
 click
 pandas
-tifffile
-opencv-python
+pydicom
 albumentations
 pytest-cov
-rasterio
 tensorboardX
 gcsfs
