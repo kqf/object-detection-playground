@@ -1,7 +1,8 @@
 import torch
 import skorch
 
-import torchvision
+
+from models.layers import FasterRCNN
 
 
 def init(w):
@@ -21,10 +22,9 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
     )
 
     model = skorch.NeuralNet(
-        torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False),
+        FasterRCNN,
         module__pretrained=False,
-        criterion__padding=0,
-        batch_size=32,
+        batch_size=6,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
         iterator_train__shuffle=True,
