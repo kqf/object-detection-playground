@@ -1,9 +1,8 @@
 competition = vinbigdata-chest-xray-abnormalities-detection
 logdir = $(TENSORBOARD_DIR)/$(message)
 
-develop: data/train/preprocessed
+develop: data/train
 	python models/main.py --fin $^ --logdir=$(logdir)
-	gsutil -m cp thresholds.png $(logdir)
 
 
 all: weights/fold0.pt \
