@@ -19,16 +19,12 @@ weights/fold%.pt: data/train/fold%.json
 	gsutil -m cp thresholds.png $(logfold)
 	gsutil -m cp $(logfold)/train_end_params.pt $@
 
-data/train/fold%.json: data/train/preprocessed
+data/train/fold%.json: data/train
 	python models/split.py --fin $^ --fout $(@D)
 
 
 infer:
 	python models/infer.py
-
-
-data/train/preprocessed/: data/train
-	python models/preprocess.py --fin $^ --fout  $@
 
 
 data/:
