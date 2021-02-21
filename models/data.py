@@ -1,6 +1,7 @@
 import torch
-import numpy as np
 import pydicom
+import numpy as np
+import pandas as pd
 
 from torch.utils.data import Dataset
 
@@ -92,3 +93,13 @@ class VinBigDataset(Dataset):
 
     def __len__(self):
         return self.image_ids.shape[0]
+
+
+def read_data(path):
+    df = pd.read_csv(path)
+    df.fillna(0, inplace=True)
+    df.loc[df["class_id"] == 14, ['x_max', 'y_max']] = 1.0
+
+    df["class_id"] = df["class_id"] + 1
+    df.loc[df["class_id"] == 15, ["class_id"]] = 0
+    return df
