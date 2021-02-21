@@ -3,7 +3,7 @@ import click
 from pathlib import Path
 from click import Path as cpath
 
-from models.data import read_data, Dataset
+from models.data import read_data, DetectionDataset
 from models.augmentations import transform
 
 
@@ -14,8 +14,8 @@ def main(fin, logdir):
     fin = Path(fin)
     df = read_data(fin.with_suffix(".csv"))
     print(df.head())
-    train = Dataset(df, fin, transform())
-    for x in train():
+    train = DetectionDataset(df, fin, transform(train=False))
+    for x in train:
         print(x)
 
 

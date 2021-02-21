@@ -11,7 +11,7 @@ from torch.utils.data import Dataset
 # DIR_TEST = f'{DIR_INPUT}/test'
 
 
-class VinBigDataset(Dataset):
+class DetectionDataset(Dataset):
 
     def __init__(self, dataframe, image_dir, transforms=None):
         super().__init__()
