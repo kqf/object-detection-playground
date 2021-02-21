@@ -21,4 +21,5 @@ class FasterRCNN(torch.nn.Module):
             in_features, n_classes)
 
     def forward(self, x):
-        return self.backbone(x)
+        losses = self.backbone(x)
+        return sum(loss for loss in losses.values())
