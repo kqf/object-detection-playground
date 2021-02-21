@@ -27,6 +27,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         batch_size=6,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
+        criterion=torch.nn.Identity,
         iterator_train__shuffle=True,
         iterator_train__num_workers=4,
         iterator_valid__shuffle=False,
