@@ -34,9 +34,9 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         criterion=torch.nn.Identity,
         iterator_train__shuffle=True,
         iterator_train__collate_fn=collate_fn,
-        iterator_train__num_workers=1,
+        iterator_train__num_workers=6,
         iterator_valid__shuffle=False,
-        iterator_valid__num_workers=1,
+        iterator_valid__num_workers=6,
         iterator_valid__collate_fn=collate_fn,
         train_split=train_split,
         callbacks=[
