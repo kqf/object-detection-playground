@@ -16,7 +16,7 @@ def transform(train=True, mean=None, std=None):
         alb.Normalize(mean=_mean, std=_std,
                       max_pixel_value=255.0, p=1.0),
         ToTensorV2(p=1.0)
-    ])
+    ], bbox_params=bbox_params)
 
     if not train:
         return normalize
