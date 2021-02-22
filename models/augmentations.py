@@ -1,4 +1,3 @@
-import cv2
 import albumentations as alb
 from albumentations.pytorch import ToTensorV2
 
@@ -6,36 +5,26 @@ from albumentations.pytorch import ToTensorV2
 _mean = [0, 0, 0]
 _std = [1, 1, 1]
 
+bbox_params = {
+    'format': 'pascal_voc',
+    'label_fields': ['labels']
+}
+
 
 def transform(train=True, mean=None, std=None):
     normalize = alb.Compose([
-        alb.Normalize(mean=mean or _mean, std=std or _std,
-                      max_pixel_value=255),
-        ToTensorV2(),
+        alb.Normalize(mean=_mean, std=_std,
+                      max_pixel_value=255.0, p=1.0),
+        ToTensorV2(p=1.0)
     ])
 
     if not train:
         return normalize
 
     return alb.Compose([
-        alb.HorizontalFlip(),
-        alb.VerticalFlip(),
-        alb.RandomRotate90(),
-        alb.ShiftScaleRotate(
-            shift_limit=0.0625,
-            scale_limit=0.2,
-            rotate_limit=15,
-            p=0.9,
-            border_mode=cv2.BORDER_REFLECT),
-        alb.OneOf([
-            alb.OpticalDistortion(p=0.3),
-            alb.GridDistortion(p=.1),
-            alb.IAAPiecewiseAffine(p=0.3),
-        ], p=0.3),
-        alb.OneOf([
-            alb.HueSaturationValue(10, 15, 10),
-            alb.CLAHE(clip_limit=2),
-            alb.RandomBrightnessContrast(),
-        ], p=0.3),
+        alb.Flip(0.5),
+        alb.ShiftScaleRotate(scale_limit=0.1, rotate_limit=45, p=0.25),
+        alb.LongestMaxSize(max_size=800, p=1.0),
         normalize,
-    ])
+
+    ], bbox_params=bbox_params)
