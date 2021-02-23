@@ -20,6 +20,7 @@ class FasterRCNN(torch.nn.Module):
         self.backbone.roi_heads.box_predictor = FastRCNNPredictor(
             in_features, n_classes)
 
-    def forward(self, x, targets=None):
-        losses = self.backbone(x, targets=targets)
-        return sum(loss for loss in losses.values())
+    def forward(self, x):
+        # losses = self.backbone(x, targets=targets)
+        # return sum(loss for loss in losses.values())
+        return 0
