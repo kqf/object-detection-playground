@@ -15,7 +15,7 @@ def main(fin, logdir):
     fin = Path(fin)
     df = read_data(fin.with_suffix(".csv"))
     print(df.head())
-    train = DetectionDataset(df, fin, transform(train=False))
+    train = DetectionDataset(df, fin, transform(train=True))
 
     model = build_model()
     model.fit(train)
