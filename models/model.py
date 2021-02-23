@@ -35,7 +35,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         step_every='batch',
     )
 
-    model = skorch.NeuralNet(
+    model = DetectionNet(
         FasterRCNN,
         module__pretrained=False,
         batch_size=6,

@@ -21,6 +21,11 @@ class FasterRCNN(torch.nn.Module):
             in_features, n_classes)
 
     def forward(self, x, targets=None):
-        # losses = self.backbone(x, targets=targets)
-        # return sum(loss for loss in losses.values())
-        return 0
+        if not self.train:
+            return self.backbone(x)
+
+        if self.train and targets is None:
+            return x
+
+        losses = self.backbone(x, targets)
+        return sum(loss for loss in losses.values())
