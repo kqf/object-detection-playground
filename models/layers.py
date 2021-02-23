@@ -10,7 +10,6 @@ class FasterRCNN(torch.nn.Module):
         self.backbone = torchvision.models.detection.fasterrcnn_resnet50_fpn(
             pretrained=pretrained)
 
-        n_classes = 15
         in_features = (
             self.backbone
             .roi_heads
