@@ -16,13 +16,7 @@ def collate_fn(batch):
 
 
 class DetectionNet(skorch.NeuralNet):
-    def get_loss(self, y_pred, y_true, X=None, training=False):
-        y_true = skorch.utils.to_tensor(y_true, device=self.device)
-
-        if isinstance(self.criterion_, torch.nn.Module):
-            self.module_.train(training)
-
-        return self.module_(y_pred, y_true)
+    pass
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
