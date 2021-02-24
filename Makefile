@@ -2,7 +2,7 @@ competition = vinbigdata-chest-xray-abnormalities-detection
 logdir = $(TENSORBOARD_DIR)/$(message)
 
 develop: data/train
-	python models/main.py --fin $^ --logdir=$(logdir)
+	python detection/main.py --fin $^ --logdir=$(logdir)
 
 
 all: weights/fold0.pt \
@@ -14,16 +14,16 @@ all: weights/fold0.pt \
 weights/fold%.pt: foldname = $(basename $(@F))
 weights/fold%.pt: logfold = $(logdir)-$(foldname)
 weights/fold%.pt: data/train/fold%.json
-	python models/train.py --fin $< --logdir $(logfold)
+	python detection/train.py --fin $< --logdir $(logfold)
 	gsutil -m cp thresholds.png $(logfold)
 	gsutil -m cp $(logfold)/train_end_params.pt $@
 
 data/train/fold%.json: data/train
-	python models/split.py --fin $^ --fout $(@D)
+	python detection/split.py --fin $^ --fout $(@D)
 
 
 infer:
-	python models/infer.py
+	python detection/infer.py
 
 
 data/:
@@ -38,15 +38,15 @@ push-data:
 	cp dataset-metadata.json .tmp_submit/
 	cp requirements.txt .tmp_submit/
 	cp setup.py .tmp_submit
-	cp -R models .tmp_submit/models
+	cp -R detection .tmp_submit/detection
 	cp -R weights .tmp_submit/weights
-	rm .tmp_submit/models/kernel-metadata.json
+	rm .tmp_submit/detection/kernel-metadata.json
 	kaggle datasets version -p .tmp_submit -r zip -m "$(message)"
 	rm -rf .tmp_submit
 
 
 push-kernels:
-	kaggle kernels push -p models/
+	kaggle kernels push -p detection/
 
 
 .PHONY: infer develop push-data push-kernels

@@ -2,7 +2,7 @@ import torch
 import skorch
 
 
-from models.layers import FasterRCNN
+from detection.layers import FasterRCNN
 
 
 def init(w):
