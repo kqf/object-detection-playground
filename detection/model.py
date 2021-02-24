@@ -2,7 +2,7 @@ import torch
 import skorch
 
 
-from detection.layers import FasterRCNN
+from detection.layers import YOLO
 
 
 def init(w):
@@ -36,7 +36,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
     # )
 
     model = DetectionNet(
-        FasterRCNN,
+        YOLO,
         module__pretrained=False,
         batch_size=6,
         max_epochs=max_epochs,
