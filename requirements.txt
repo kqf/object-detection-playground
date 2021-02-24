@@ -11,3 +11,4 @@ albumentations
 pytest-cov
 tensorboardX
 gcsfs
+seaborn
