@@ -14,6 +14,8 @@ from detection.model import build_model
 def main(fin, logdir):
     fin = Path(fin)
     df = read_data(fin.with_suffix(".csv"))
+    # TODO: Fix me, overfit a single example
+    df = df.loc[[3] * 60]
     print(df.head())
     train = DetectionDataset(df, fin, transform(train=True))
 
