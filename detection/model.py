@@ -40,7 +40,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         callbacks=[
             skorch.callbacks.ProgressBar(),
             # skorch.callbacks.Checkpoint(dirname=logdir),
-            # skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
+            skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
             # scheduler,
             skorch.callbacks.Initializer("*", init),
         ],
