@@ -2,7 +2,7 @@ import torch
 import skorch
 
 
-from detection.layers import YOLO
+from detection.layers import YOLO, Loss
 
 
 def init(w):
@@ -31,7 +31,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         batch_size=6,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
-        criterion=torch.nn.Identity,
+        criterion=Loss,
         iterator_train__shuffle=True,
         iterator_train__num_workers=6,
         iterator_valid__shuffle=False,

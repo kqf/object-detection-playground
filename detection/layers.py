@@ -42,4 +42,5 @@ class YOLO(torch.nn.Module):
 
 class Loss(torch.nn.Module):
     def forward(self, y_pred, y_true):
-        return y_pred.sum(0)
+        small, medium, large = y_pred
+        return large.sum()
