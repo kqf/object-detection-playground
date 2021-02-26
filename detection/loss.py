@@ -55,13 +55,13 @@ class ComputeLoss:
 
     def build(self, model):
         device = next(model.parameters()).device  # get model device
-        h = model.hyp  # hyperparameters
+        self.hyp = model.hyp  # hyperparameters
 
         # Define criteria
         BCEcls = torch.nn.BCEWithLogitsLoss(
-            pos_weight=torch.tensor([h['cls_pw']], device=device))
+            pos_weight=torch.tensor([self.hyp['cls_pw']], device=device))
         BCEobj = torch.nn.BCEWithLogitsLoss(
-            pos_weight=torch.tensor([h['obj_pw']], device=device))
+            pos_weight=torch.tensor([self.hyp['obj_pw']], device=device))
 
         # Class label smoothing https://arxiv.org/pdf/1902.04103.pdf eqn 3
         self.cp, self.cn = smooth_bce(eps=0.0)
@@ -72,8 +72,7 @@ class ComputeLoss:
 
         # stride 16 index
         self.ssi = list(det.stride).index(16) if self.autobalance else 0
-        self.BCEcls, self.BCEobj, self.gr, self.hyp = \
-            BCEcls, BCEobj, model.gr, h
+        self.BCEcls, self.BCEobj, self.gr = BCEcls, BCEobj, model.gr
 
         for k in 'na', 'nc', 'nl', 'anchors':
             setattr(self, k, getattr(det, k))
