@@ -19,8 +19,8 @@ class DetectionNet(skorch.NeuralNet):
         if isinstance(self.criterion_, torch.nn.Module):
             self.module_.train(training)
 
-        criterion = self.criterion_(self.module_)
-        return criterion(y_pred, y_true)
+        self.criterion_.build(self.module_)
+        return self.criterion_(y_pred, y_true)
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
