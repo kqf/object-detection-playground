@@ -3,7 +3,7 @@
 import torch
 
 
-def smooth_BCE(eps=0.1):
+def smooth_bce(eps=0.1):
     """
     https://github.com/ultralytics/yolov3/issues/238#issuecomment-598028441
     """
@@ -62,7 +62,7 @@ class ComputeLoss:
             pos_weight=torch.tensor([h['obj_pw']], device=device))
 
         # Class label smoothing https://arxiv.org/pdf/1902.04103.pdf eqn 3
-        self.cp, self.cn = smooth_BCE(eps=0.0)
+        self.cp, self.cn = smooth_bce(eps=0.0)
 
         det = model.module.model[-1] if is_parallel(model) else model.model[-1]
         self.balance = {3: [4.0, 1.0, 0.4]}.get(
