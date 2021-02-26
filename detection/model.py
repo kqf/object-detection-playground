@@ -2,7 +2,8 @@ import torch
 import skorch
 
 
-from detection.layers import YOLO, Loss
+from detection.layers import YOLO
+from detection.loss import ComputeLoss
 
 
 def init(w):
@@ -12,7 +13,14 @@ def init(w):
 
 
 class DetectionNet(skorch.NeuralNet):
-    pass
+    def get_loss(self, y_pred, y_true, X=None, training=False):
+        y_true = skorch.utils.to_tensor(y_true, device=self.device)
+
+        if isinstance(self.criterion_, torch.nn.Module):
+            self.module_.train(training)
+
+        self.criterion_.build(self.module_)
+        return self.criterion_(y_pred, y_true)
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
@@ -31,7 +39,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         batch_size=6,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
-        criterion=Loss,
+        criterion=ComputeLoss,
         iterator_train__shuffle=True,
         iterator_train__num_workers=6,
         iterator_valid__shuffle=False,

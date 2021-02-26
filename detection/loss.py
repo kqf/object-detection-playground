@@ -50,8 +50,10 @@ def bbox_iou(box1, box2, x1y1x2y2=True, eps=1e-9):
 
 class ComputeLoss:
     # Compute losses
-    def __init__(self, model, autobalance=False):
-        super(ComputeLoss, self).__init__()
+    def __init__(self, autobalance=False):
+        self.autobalance = autobalance
+
+    def build(self, model):
         device = next(model.parameters()).device  # get model device
         h = model.hyp  # hyperparameters
 
@@ -67,10 +69,11 @@ class ComputeLoss:
         det = model.module.model[-1] if is_parallel(model) else model.model[-1]
         self.balance = {3: [4.0, 1.0, 0.4]}.get(
             det.nl, [4.0, 1.0, 0.25, 0.06, .02])  # P3-P7
-        self.ssi = list(det.stride).index(
-            16) if autobalance else 0  # stride 16 index
-        self.BCEcls, self.BCEobj, self.gr, self.hyp, self.autobalance = \
-            BCEcls, BCEobj, model.gr, h, autobalance
+
+        # stride 16 index
+        self.ssi = list(det.stride).index(16) if self.autobalance else 0
+        self.BCEcls, self.BCEobj, self.gr, self.hyp = \
+            BCEcls, BCEobj, model.gr, h
 
         for k in 'na', 'nc', 'nl', 'anchors':
             setattr(self, k, getattr(det, k))
