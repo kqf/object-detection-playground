@@ -53,12 +53,16 @@ class ComputeLoss:
     def __init__(
         self,
         hyp,
+        na=2,  # number of anchors
+        nc=2,  # number of classes
         nl=3,  # number of detection layers
         autobalance=False
     ):
         self.autobalance = autobalance
         self.hyp = hyp
         self.nl = nl
+        self.na = na
+        self.nc = nc
 
     def build(self, model):
         device = next(model.parameters()).device  # get model device
