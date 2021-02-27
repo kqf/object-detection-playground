@@ -56,6 +56,7 @@ class ComputeLoss:
         na=2,  # number of anchors
         nc=2,  # number of classes
         nl=3,  # number of detection layers
+        anchors=(2, 2.0, 10.0),  # anchors per output grid (0 to ignore)
         autobalance=False
     ):
         self.autobalance = autobalance
@@ -63,6 +64,7 @@ class ComputeLoss:
         self.nl = nl
         self.na = na
         self.nc = nc
+        self.anchors = anchors
 
     def build(self, model):
         device = next(model.parameters()).device  # get model device
@@ -83,9 +85,6 @@ class ComputeLoss:
         # stride 16 index
         self.ssi = list(det.stride).index(16) if self.autobalance else 0
         self.BCEcls, self.BCEobj, self.gr = BCEcls, BCEobj, model.gr
-
-        for k in 'na', 'nc', 'nl', 'anchors':
-            setattr(self, k, getattr(det, k))
 
     def __call__(self, p, targets):  # predictions, targets, model
         device = targets.device
