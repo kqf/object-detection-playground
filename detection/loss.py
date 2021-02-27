@@ -58,7 +58,9 @@ class ComputeLoss:
         nl=3,  # number of detection layers
         anchors=(2, 2.0, 10.0),  # anchors per output grid (0 to ignore)
         stride=[16],
-        autobalance=False
+        gr=1.0,  # iou loss ratio (obj_loss = 1.0 or iou)
+        autobalance=False,
+        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     ):
         self.autobalance = autobalance
         self.hyp = hyp
@@ -67,15 +69,15 @@ class ComputeLoss:
         self.nc = nc
         self.anchors = anchors
         self.stride = stride
+        self.gr = gr
+        self.device = device
 
     def build(self, model):
-        device = next(model.parameters()).device  # get model device
-
         # Define criteria
-        BCEcls = torch.nn.BCEWithLogitsLoss(
-            pos_weight=torch.tensor([self.hyp['cls_pw']], device=device))
-        BCEobj = torch.nn.BCEWithLogitsLoss(
-            pos_weight=torch.tensor([self.hyp['obj_pw']], device=device))
+        self.BCEcls = torch.nn.BCEWithLogitsLoss(
+            pos_weight=torch.tensor([self.hyp['cls_pw']], device=self.device))
+        self.BCEobj = torch.nn.BCEWithLogitsLoss(
+            pos_weight=torch.tensor([self.hyp['obj_pw']], device=self.device))
 
         # Class label smoothing https://arxiv.org/pdf/1902.04103.pdf eqn 3
         self.cp, self.cn = smooth_bce(eps=0.0)
@@ -85,19 +87,18 @@ class ComputeLoss:
 
         # stride 16 index
         self.ssi = list(self.stride).index(16) if self.autobalance else 0
-        self.BCEcls, self.BCEobj, self.gr = BCEcls, BCEobj, model.gr
 
     def __call__(self, p, targets):  # predictions, targets, model
-        device = targets.device
-        lcls, lbox, lobj = torch.zeros(1, device=device), torch.zeros(
-            1, device=device), torch.zeros(1, device=device)
+        lcls, lbox, lobj = torch.zeros(1, device=self.device), torch.zeros(
+            1, device=self.device), torch.zeros(1, device=self.device)
         tcls, tbox, indices, anchors = self.build_targets(
             p, targets)  # targets
 
         # Losses
         for i, pi in enumerate(p):  # layer index, layer predictions
             b, a, gj, gi = indices[i]  # image, anchor, gridy, gridx
-            tobj = torch.zeros_like(pi[..., 0], device=device)  # target obj
+            tobj = torch.zeros_like(
+                pi[..., 0], device=self.device)  # target obj
 
             n = b.shape[0]  # number of targets
             if n:
@@ -120,7 +121,7 @@ class ComputeLoss:
                 # Classification
                 if self.nc > 1:  # cls loss (only if multiple classes)
                     t = torch.full_like(
-                        ps[:, 5:], self.cn, device=device)  # targets
+                        ps[:, 5:], self.cn, device=self.device)  # targets
                     t[range(n), tcls[i]] = self.cp
                     lcls += self.BCEcls(ps[:, 5:], t)  # BCE
 
