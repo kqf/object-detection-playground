@@ -72,7 +72,7 @@ class ComputeLoss:
         self.gr = gr
         self.device = device
 
-    def build(self, model):
+    def build(self):
         # Define criteria
         self.BCEcls = torch.nn.BCEWithLogitsLoss(
             pos_weight=torch.tensor([self.hyp['cls_pw']], device=self.device))
