@@ -50,12 +50,12 @@ def bbox_iou(box1, box2, x1y1x2y2=True, eps=1e-9):
 
 class ComputeLoss:
     # Compute losses
-    def __init__(self, autobalance=False):
+    def __init__(self, hyp, autobalance=False):
         self.autobalance = autobalance
+        self.hyp = hyp
 
     def build(self, model):
         device = next(model.parameters()).device  # get model device
-        self.hyp = model.hyp  # hyperparameters
 
         # Define criteria
         BCEcls = torch.nn.BCEWithLogitsLoss(
