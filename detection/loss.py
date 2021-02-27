@@ -57,6 +57,7 @@ class ComputeLoss:
         nc=2,  # number of classes
         nl=3,  # number of detection layers
         anchors=(2, 2.0, 10.0),  # anchors per output grid (0 to ignore)
+        stride=[16],
         autobalance=False
     ):
         self.autobalance = autobalance
@@ -65,6 +66,7 @@ class ComputeLoss:
         self.na = na
         self.nc = nc
         self.anchors = anchors
+        self.stride = stride
 
     def build(self, model):
         device = next(model.parameters()).device  # get model device
@@ -78,12 +80,11 @@ class ComputeLoss:
         # Class label smoothing https://arxiv.org/pdf/1902.04103.pdf eqn 3
         self.cp, self.cn = smooth_bce(eps=0.0)
 
-        det = model.module.model[-1] if is_parallel(model) else model.model[-1]
         self.balance = {3: [4.0, 1.0, 0.4]}.get(
             self.nl, [4.0, 1.0, 0.25, 0.06, .02])  # P3-P7
 
         # stride 16 index
-        self.ssi = list(det.stride).index(16) if self.autobalance else 0
+        self.ssi = list(self.stride).index(16) if self.autobalance else 0
         self.BCEcls, self.BCEobj, self.gr = BCEcls, BCEobj, model.gr
 
     def __call__(self, p, targets):  # predictions, targets, model
