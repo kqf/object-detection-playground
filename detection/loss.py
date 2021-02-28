@@ -63,9 +63,9 @@ class ComputeLoss:
         self.device = device
         # Define criteria
 
-        hyp['box'] *= 3. / nl  # scale to layers
-        hyp['cls'] *= nc / 80. * 3. / nl  # scale to classes and layers
         # TODO:
+        # hyp['box'] *= 3. / nl  # scale to layers
+        # hyp['cls'] *= nc / 80. * 3. / nl  # scale to classes and layers
         # scale to image size and layers
         # hyp['obj'] *= (imgsz / 640) ** 2 * 3. / nl
 
