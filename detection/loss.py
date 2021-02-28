@@ -86,14 +86,15 @@ class ComputeLoss:
     def __call__(self, p, targets):  # predictions, targets, model
         lcls, lbox, lobj = torch.zeros(1, device=self.device), torch.zeros(
             1, device=self.device), torch.zeros(1, device=self.device)
+
         tcls, tbox, indices, anchors = self.build_targets(
             p, targets)  # targets
 
         # Losses
         for i, pi in enumerate(p):  # layer index, layer predictions
             b, a, gj, gi = indices[i]  # image, anchor, gridy, gridx
-            tobj = torch.zeros_like(
-                pi[..., 0], device=self.device)  # target obj
+            # target obj
+            tobj = torch.zeros_like(pi[..., 0], device=self.device)
 
             n = b.shape[0]  # number of targets
             if n:
