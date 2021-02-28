@@ -62,6 +62,13 @@ class ComputeLoss:
         self.gr = gr
         self.device = device
         # Define criteria
+
+        hyp['box'] *= 3. / nl  # scale to layers
+        hyp['cls'] *= nc / 80. * 3. / nl  # scale to classes and layers
+        # TODO:
+        # scale to image size and layers
+        # hyp['obj'] *= (imgsz / 640) ** 2 * 3. / nl
+
         self.BCEcls = torch.nn.BCEWithLogitsLoss(
             pos_weight=torch.tensor([self.hyp['cls_pw']], device=self.device))
         self.BCEobj = torch.nn.BCEWithLogitsLoss(
