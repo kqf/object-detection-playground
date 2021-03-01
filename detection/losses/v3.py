@@ -1,6 +1,6 @@
 import torch
 
-from utils import iou
+from detection.losses.utils import bbox_iou
 
 
 class CombinedLoss(torch.nn.Module):
@@ -31,7 +31,7 @@ class CombinedLoss(torch.nn.Module):
             torch.exp(predictions[..., 3:5]) * anchors
         ], dim=-1)
 
-        ious = iou(box_preds[obj], target[..., 1:5][obj]).detach()
+        ious = bbox_iou(box_preds[obj], target[..., 1:5][obj]).detach()
         detection = self.bce(
             (predictions[..., 0:1][obj]), (ious * target[..., 0:1][obj]))
 
