@@ -3,7 +3,7 @@ import skorch
 
 
 from detection.layers import YOLO
-from detection.loss import ComputeLoss
+from detection.losses.v5 import ComputeLoss
 
 
 def init(w):
