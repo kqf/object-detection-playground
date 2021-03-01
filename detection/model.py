@@ -3,7 +3,7 @@ import skorch
 
 
 from detection.layers import YOLO
-from detection.loss import ComputeLoss
+from detection.losses.v5 import CombinedLoss
 
 
 def init(w):
@@ -41,7 +41,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         batch_size=6,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
-        criterion=ComputeLoss,
+        criterion=CombinedLoss,
         criterion__hyp=hyp,
         iterator_train__shuffle=True,
         iterator_train__num_workers=6,
