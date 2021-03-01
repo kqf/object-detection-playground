@@ -38,7 +38,7 @@ def bbox_iou(box1, box2, x1y1x2y2=True, eps=1e-9):
     return iou
 
 
-class ComputeLoss:
+class CombinedLoss:
     # Compute losses
     def __init__(
         self,
