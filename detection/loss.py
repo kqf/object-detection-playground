@@ -43,7 +43,6 @@ class ComputeLoss:
     def __init__(
         self,
         hyp,
-        na=2,  # number of anchors
         nc=2,  # number of classes
         nl=3,  # number of detection layers
         anchors=(2, 2.0, 10.0),  # anchors per output grid (0 to ignore)
@@ -55,7 +54,6 @@ class ComputeLoss:
         self.autobalance = autobalance
         self.hyp = hyp
         self.nl = nl
-        self.na = na
         self.nc = nc
         self.anchors = anchors
         self.stride = stride
