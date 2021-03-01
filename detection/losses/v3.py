@@ -3,7 +3,7 @@ import torch
 from utils import iou
 
 
-class YoloLoss(torch.nn.Module):
+class CombinedLoss(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.mse = torch.nn.MSELoss()
@@ -11,10 +11,10 @@ class YoloLoss(torch.nn.Module):
         self.entropy = torch.nn.CrossEntropyLoss()
         self.sigmoid = torch.nn.Sigmoid()
 
-        self.lambda_class = 1
-        self.lambda_noobj = 1
-        self.lambda_obj = 1
-        self.lambda_box = 1
+        self.classification = 1
+        self.noobj = 1
+        self.obj = 1
+        self.box = 1
 
     def forward(self, predictions, target, anchors):
         # Check where obj and noobj (we ignore if target == -1)
