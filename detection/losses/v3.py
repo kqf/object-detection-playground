@@ -1,16 +1,15 @@
 import torch
-import torch.nn as nn
 
 from utils import iou
 
 
-class YoloLoss(nn.Module):
+class YoloLoss(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.mse = nn.MSELoss()
-        self.bce = nn.BCEWithLogitsLoss()
-        self.entropy = nn.CrossEntropyLoss()
-        self.sigmoid = nn.Sigmoid()
+        self.mse = torch.nn.MSELoss()
+        self.bce = torch.nn.BCEWithLogitsLoss()
+        self.entropy = torch.nn.CrossEntropyLoss()
+        self.sigmoid = torch.nn.Sigmoid()
 
         self.lambda_class = 1
         self.lambda_noobj = 1
