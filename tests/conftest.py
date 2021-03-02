@@ -16,9 +16,9 @@ def size():
 def fake_dataset(size=256, nfiles=5):
     with tempfile.TemporaryDirectory() as dirname:
         path = Path(dirname)
-        for i in range(nfiles):
-            img = blob2image(mask)
+        for image_id in range(nfiles):
+            img = blob2image(make_blob())
             ifile = f"{image_id}.png"
-            cv2.imwrite(str(tilepath), img)
+            cv2.imwrite(str(path / ifile), img)
 
         yield path
