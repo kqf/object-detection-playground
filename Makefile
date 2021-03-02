@@ -1,9 +1,11 @@
 competition = vinbigdata-chest-xray-abnormalities-detection
 logdir = $(TENSORBOARD_DIR)/$(message)
 
-develop: data/train
+develop: data/train/processed
 	python detection/main.py --fin $^ --logdir=$(logdir)
 
+data/train/processed: data/train
+	python detection/preprocess.py --fin $^ --fout $@
 
 all: weights/fold0.pt \
 	 weights/fold1.pt \
