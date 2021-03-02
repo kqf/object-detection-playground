@@ -32,9 +32,11 @@ def main(codes, fin, fout):
     df = pd.read_csv(codes)
     print(df.head())
 
+    fout = Path(fout)
+    fout.mkdir()
     for image_id in tqdm.tqdm(df["image_id"].values):
         scan = read_scan(path=(Path(fin) / image_id).with_suffix(".dicom"))
-        cv2.imwrite(str((Path(fout) / image_id).with_suffix(".png")), scan)
+        cv2.imwrite(str((fout / image_id).with_suffix(".png")), scan)
 
 
 if __name__ == "__main__":

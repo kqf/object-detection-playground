@@ -8,6 +8,9 @@ develop: data/train/processed
 data/train/processed: data/train
 	python detection/preprocess.py --fin $^ --fout $@
 
+	# Remove the raw files the directory 
+	rm $^/*.dicom
+
 all: weights/fold0.pt \
 	 weights/fold1.pt \
 	 weights/fold2.pt \
