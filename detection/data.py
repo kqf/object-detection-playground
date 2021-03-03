@@ -1,14 +1,9 @@
+import cv2
 import torch
-import pydicom
 import numpy as np
 import pandas as pd
 
 from torch.utils.data import Dataset
-
-
-# DIR_INPUT = '/kaggle/input/vinbigdata-chest-xray-abnormalities-detection'
-# DIR_TRAIN = f'{DIR_INPUT}/train'
-# DIR_TEST = f'{DIR_INPUT}/test'
 
 
 class DetectionDataset(Dataset):
@@ -22,35 +17,15 @@ class DetectionDataset(Dataset):
         self.transforms = transforms
 
     def __getitem__(self, index):
-
         image_id = self.image_ids[index]
         records = self.df[(self.df['image_id'] == image_id)]
         records = records.reset_index(drop=True)
 
-        dicom = pydicom.dcmread(f"{self.image_dir}/{image_id}.dicom")
-
-        image = dicom.pixel_array
-
-        if "PhotometricInterpretation" in dicom:
-            if dicom.PhotometricInterpretation == "MONOCHROME1":
-                image = np.amax(image) - image
-
-        intercept = 0.0
-        if "RescaleIntercept" in dicom:
-            intercept = dicom.RescaleIntercept
-        slope = dicom.RescaleSlope if "RescaleSlope" in dicom else 1.0
-
-        if slope != 1:
-            image = slope * image.astype(np.float64)
-            image = image.astype(np.int16)
-
-        image += np.int16(intercept)
+        file = f"{self.image_dir}/{image_id}.png"
+        image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
 
         image = np.stack([image, image, image])
         image = image.astype('float32')
-        image = image - image.min()
-        image = image / image.max()
-        image = image * 255.0
         image = image.transpose(1, 2, 0)
 
         if records.loc[0, "class_id"] == 0:
