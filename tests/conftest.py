@@ -41,8 +41,9 @@ def annotations():
 def fake_dataset(annotations, size=256):
     with tempfile.TemporaryDirectory() as dirname:
         path = Path(dirname)
-        for image_id in annotations["image_id"]:
-            img = blob2image(make_blob())
+        for row in annotations.to_dict(orient="records"):
+            image_id = row["image_id"]
+            img = blob2image(make_blob(**row))
             ifile = f"{image_id}.png"
             cv2.imwrite(str(path / ifile), img)
 

@@ -1,7 +1,12 @@
 import numpy as np
 
 
-def make_blob(h=2000, w=2000, x_min=500, y_min=500, x_max=1000, y_max=600):
+def make_blob(
+    h=2000, w=2000,
+    x_min=50, y_min=50,
+    x_max=90, y_max=90,
+    **kwargs
+):
     Y, X = np.ogrid[:h, :w]
 
     w = (x_max - x_min)
