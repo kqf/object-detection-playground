@@ -18,6 +18,7 @@ data/
 kernel-metadata.json
 dataset-metadata.json
 thresholds.png
+*.png
 
 # Model
 *.pt
