@@ -1,19 +1,20 @@
 import numpy as np
 
 
-def make_blob(h=256, w=256, lam=5, area=8, std_area=1):
-    nblobs = np.random.poisson(lam)
-    mask = np.zeros((h, w))
-
+def make_blob(h=2000, w=2000, x_min=500, y_min=500, x_max=1000, y_max=600):
     Y, X = np.ogrid[:h, :w]
 
-    cx = np.random.randint(0, h, nblobs).reshape(1, 1, nblobs)
-    cy = np.random.randint(0, w, nblobs).reshape(1, 1, nblobs)
-    radii = np.random.normal(area, std_area, nblobs)
+    w = (x_max - x_min)
+    h = (y_max - y_min)
 
-    dists = np.sqrt((X[..., None] - cx) ** 2 + (Y[..., None] - cy) ** 2)
+    cx = x_min + w / 2.
+    cy = y_min + h / 2.
 
-    mask = dists <= radii
+    xx = (X[..., None] - cx)
+    yy = (Y[..., None] - cy)
+    dists = np.sqrt((xx / w) ** 2 + (yy / h) ** 2)
+
+    mask = dists <= 1
     return mask.sum(axis=-1).astype(np.uint8)
 
 
