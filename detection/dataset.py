@@ -51,15 +51,13 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': target['boxes'],
                 'labels': labels
             }
-            sample = self.transforms(**sample)
-            image = sample['image']
-
-            target['boxes'] = torch.tensor(sample['bboxes'])
+            transformed = self.transforms(**sample)
+            image = transformed['image']
+            target['boxes'] = torch.tensor(transformed['bboxes'])
 
         if target["boxes"].shape[0] == 0:
             # Albumentation cuts the target (class 14, 1x1px in the corner)
-            target["boxes"] = torch.from_numpy(
-                np.array([[0.0, 0.0, 1.0, 1.0]]))
+            target["boxes"] = torch.tensor([0.0, 0.0, 1.0, 1.0])
             target["area"] = torch.tensor([1.0], dtype=torch.float32)
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
