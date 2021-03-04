@@ -3,6 +3,7 @@
 .python-version
 *sftp-config*
 .idea
+*deleteme*
 
 # Package
 .eggs
