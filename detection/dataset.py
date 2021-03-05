@@ -6,9 +6,9 @@ from torch.utils.data import Dataset
 
 
 DEFAULT_ANCHORS = [
-    [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
-    [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],
-    [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
+    torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+    torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
+    torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
 ]
 
 DEFAULT_SCALES = [13, 26, 52]
@@ -31,7 +31,7 @@ class DetectionDatasetV3(Dataset):
         self.image_dir = image_dir
         self.transforms = transforms
 
-        self.anchors = anchors or torch.tensor(DEFAULT_ANCHORS)
+        self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
         self.scales = scales or DEFAULT_SCALES
         self.iou_threshold = iou_threshold
 
@@ -107,6 +107,9 @@ def build_targets(bboxes, labels, anchors, scales, iou_threshold):
     num_anchors_per_scale = anchors.shape[0]
 
     for box, class_label in zip(bboxes, labels):
+        if np.isnan(box).any():
+            continue
+
         iou_anchors = iou(torch.tensor(box[2:4]), anchors)
         anchor_indices = iou_anchors.argsort(descending=True, dim=0)
         x, y, width, height = box
