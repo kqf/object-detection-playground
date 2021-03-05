@@ -51,19 +51,59 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': target['boxes'],
                 'labels': labels
             }
-            sample = self.transforms(**sample)
-            image = sample['image']
-
-            target['boxes'] = torch.tensor(sample['bboxes'])
+            transformed = self.transforms(**sample)
+            image = transformed['image']
+            target['boxes'] = torch.tensor(transformed['bboxes'])
 
         if target["boxes"].shape[0] == 0:
             # Albumentation cuts the target (class 14, 1x1px in the corner)
-            target["boxes"] = torch.from_numpy(
-                np.array([[0.0, 0.0, 1.0, 1.0]]))
+            target["boxes"] = torch.tensor([0.0, 0.0, 1.0, 1.0])
             target["area"] = torch.tensor([1.0], dtype=torch.float32)
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
-        return image, target
+        return image, build_targets()
 
     def __len__(self):
         return self.image_ids.shape[0]
+
+
+def iou(*args, **kawrgs):
+    return 1
+
+
+def build_targets(bboxes, anchors, scales, iou_threshold):
+    targets = [torch.zeros((len(anchors[i]), s, s, 6))
+               for i, s in enumerate(scales)]
+
+    num_anchors_per_scale = anchors.shape[0]
+
+    for box in bboxes:
+        iou_anchors = iou(torch.tensor(box[2:4]), anchors)
+        anchor_indices = iou_anchors.argsort(descending=True, dim=0)
+        x, y, width, height, class_label = box
+        has_anchor = [False, False, False]
+
+        for anchor_idx in anchor_indices:
+            scale_idx = anchor_idx // num_anchors_per_scale
+            anchor_on_scale = anchor_idx % num_anchors_per_scale
+            s = scales[scale_idx]
+            i, j = int(s * y), int(s * x)  # which cell
+            anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
+
+            if anchor_taken:
+                continue
+
+            if not has_anchor[scale_idx]:
+                targets[scale_idx][anchor_on_scale, i, j, 0] = 1
+                x_cell, y_cell = s * x - j, s * y - i  # both between [0,1]
+                cbox = torch.tensor([x_cell, y_cell, width * s, height * s])
+                targets[scale_idx][anchor_on_scale, i, j, 1:5] = cbox
+                targets[scale_idx][anchor_on_scale, i, j, 5] = int(class_label)
+                has_anchor[scale_idx] = True
+                continue
+
+            # Ignore the anchor boxes with high iou if collide with other
+            if iou_anchors[anchor_idx] > iou_threshold:
+                targets[scale_idx][anchor_on_scale, i, j, 0] = -1
+
+    return tuple(targets)
