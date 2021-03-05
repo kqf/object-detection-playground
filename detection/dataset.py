@@ -82,7 +82,9 @@ class DetectionDatasetV3(Dataset):
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
         targets = build_targets(
-            target["boxes"], self.anchors, self.scales, self.iou_threshold)
+            target["boxes"], target["labels"],
+            self.anchors, self.scales, self.iou_threshold)
+
         return image, targets
 
     def __len__(self):
@@ -98,21 +100,21 @@ def iou(a, b):
     return intersection / union
 
 
-def build_targets(bboxes, anchors, scales, iou_threshold):
+def build_targets(bboxes, labels, anchors, scales, iou_threshold):
     targets = [torch.zeros((len(anchors[i]), s, s, 6))
                for i, s in enumerate(scales)]
 
     num_anchors_per_scale = anchors.shape[0]
 
-    for box in bboxes:
+    for box, class_label in zip(bboxes, labels):
         iou_anchors = iou(torch.tensor(box[2:4]), anchors)
         anchor_indices = iou_anchors.argsort(descending=True, dim=0)
-        x, y, width, height, class_label = box
+        x, y, width, height = box
         has_anchor = [False, False, False]
 
         for anchor_idx in anchor_indices:
-            scale_idx = anchor_idx // num_anchors_per_scale
-            anchor_on_scale = anchor_idx % num_anchors_per_scale
+            scale_idx = int(anchor_idx // num_anchors_per_scale)
+            anchor_on_scale = int(anchor_idx % num_anchors_per_scale)
             s = scales[scale_idx]
             i, j = int(s * y), int(s * x)  # which cell
             anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
