@@ -5,15 +5,35 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
+DEFAULT_ANCHORS = [
+    [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
+    [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],
+    [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
+]
+
+DEFAULT_SCALES = [13, 26, 52]
+
 class DetectionDatasetV3(Dataset):
 
-    def __init__(self, dataframe, image_dir, transforms=None):
+    def __init__(
+        self,
+        dataframe,
+        image_dir,
+        anchors=None,
+        scales=None,
+        iou_threshold=0.5,
+        transforms=None,
+    ):
         super().__init__()
 
         self.image_ids = dataframe["image_id"].unique()
         self.df = dataframe
         self.image_dir = image_dir
         self.transforms = transforms
+
+        self.anchors = anchors or torch.tensor(DEFAULT_ANCHORS)
+        self.scales = scales or DEFAULT_SCALES
+        self.iou_threshold = iou_threshold
 
     def __getitem__(self, index):
         image_id = self.image_ids[index]
@@ -61,7 +81,9 @@ class DetectionDatasetV3(Dataset):
             target["area"] = torch.tensor([1.0], dtype=torch.float32)
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
-        return image, build_targets()
+        targets = build_targets(
+            target["boxes"], self.anchors, self.scales, self.iou_threshold)
+        return image, targets
 
     def __len__(self):
         return self.image_ids.shape[0]
