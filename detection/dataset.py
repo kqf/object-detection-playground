@@ -89,8 +89,13 @@ class DetectionDatasetV3(Dataset):
         return self.image_ids.shape[0]
 
 
-def iou(*args, **kawrgs):
-    return 1
+def iou(a, b):
+    ax, ay = a[..., 0], a[..., 1]
+    bx, by = b[..., 0], b[..., 1]
+
+    intersection = torch.min(ax, bx) * torch.min(ay, by)
+    union = ax * ay + bx * by - intersection
+    return intersection / union
 
 
 def build_targets(bboxes, anchors, scales, iou_threshold):
