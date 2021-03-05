@@ -6,9 +6,9 @@ from torch.utils.data import Dataset
 
 
 DEFAULT_ANCHORS = [
-    [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
-    [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],
-    [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
+    torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+    torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
+    torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
 ]
 
 DEFAULT_SCALES = [13, 26, 52]
@@ -31,7 +31,7 @@ class DetectionDatasetV3(Dataset):
         self.image_dir = image_dir
         self.transforms = transforms
 
-        self.anchors = anchors or torch.tensor(DEFAULT_ANCHORS)
+        self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
         self.scales = scales or DEFAULT_SCALES
         self.iou_threshold = iou_threshold
 
@@ -82,32 +82,42 @@ class DetectionDatasetV3(Dataset):
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
         targets = build_targets(
-            target["boxes"], self.anchors, self.scales, self.iou_threshold)
+            target["boxes"], target["labels"],
+            self.anchors, self.scales, self.iou_threshold)
+
         return image, targets
 
     def __len__(self):
         return self.image_ids.shape[0]
 
 
-def iou(*args, **kawrgs):
-    return 1
+def iou(a, b):
+    ax, ay = a[..., 0], a[..., 1]
+    bx, by = b[..., 0], b[..., 1]
+
+    intersection = torch.min(ax, bx) * torch.min(ay, by)
+    union = ax * ay + bx * by - intersection
+    return intersection / union
 
 
-def build_targets(bboxes, anchors, scales, iou_threshold):
+def build_targets(bboxes, labels, anchors, scales, iou_threshold):
     targets = [torch.zeros((len(anchors[i]), s, s, 6))
                for i, s in enumerate(scales)]
 
     num_anchors_per_scale = anchors.shape[0]
 
-    for box in bboxes:
+    for box, class_label in zip(bboxes, labels):
+        if np.isnan(box).any():
+            continue
+
         iou_anchors = iou(torch.tensor(box[2:4]), anchors)
         anchor_indices = iou_anchors.argsort(descending=True, dim=0)
-        x, y, width, height, class_label = box
+        x, y, width, height = box
         has_anchor = [False, False, False]
 
         for anchor_idx in anchor_indices:
-            scale_idx = anchor_idx // num_anchors_per_scale
-            anchor_on_scale = anchor_idx % num_anchors_per_scale
+            scale_idx = int(anchor_idx // num_anchors_per_scale)
+            anchor_on_scale = int(anchor_idx % num_anchors_per_scale)
             s = scales[scale_idx]
             i, j = int(s * y), int(s * x)  # which cell
             anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
