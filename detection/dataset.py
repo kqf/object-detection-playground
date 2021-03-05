@@ -82,7 +82,7 @@ class DetectionDatasetV3(Dataset):
             target["labels"] = torch.tensor([0], dtype=torch.int64)
 
         targets = build_targets(
-            targets["boxes"], self.anchors, self.scales, self.iou_threshold)
+            target["boxes"], self.anchors, self.scales, self.iou_threshold)
         return image, targets
 
     def __len__(self):
