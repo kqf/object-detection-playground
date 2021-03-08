@@ -13,6 +13,7 @@ DEFAULT_ANCHORS = [
 
 DEFAULT_SCALES = [13, 26, 52]
 
+
 class DetectionDatasetV3(Dataset):
 
     def __init__(
