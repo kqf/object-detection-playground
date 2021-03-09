@@ -15,6 +15,18 @@ config = [
 ]
 
 
+class ResidualBlock(torch.nn.Module):
+    def __init__(self, channels, num_repeats=1):
+        super().__init__()
+        self.layer = torch.nn.Sequential(
+            conv(channels, channels // 2, kernel_size=1),
+            conv(channels // 2, channels, kernel_size=3, padding=1),
+        )
+
+    def forward(self, x):
+        return x + self.layer(x)
+
+
 def conv(in_channels, out_channels, **kwargs):
     block = torch.nn.Sequential(
         torch.nn.Conv2d(in_channels, out_channels, bias=False, **kwargs),
@@ -24,24 +36,11 @@ def conv(in_channels, out_channels, **kwargs):
     return block
 
 
-class ResidualBlock(torch.nn.Module):
-    def __init__(self, channels, use_residual=True, num_repeats=1):
-        super().__init__()
-        self.layers = torch.nn.ModuleList()
-        for repeat in range(num_repeats):
-            self.layers += [
-                torch.nn.Sequential(
-                    conv(channels, channels // 2, kernel_size=1),
-                    conv(channels // 2, channels, kernel_size=3, padding=1),
-                )
-            ]
-        self.use_residual = use_residual
-        self.num_repeats = num_repeats
-
-    def forward(self, x):
-        for layer in self.layers:
-            x = x + layer(x) * self.use_residual
-        return x
+def residual(channels, num_repeats):
+    block = torch.nn.Sequential(*[
+        ResidualBlock(channels) for _ in range(num_repeats)
+    ])
+    return block
 
 
 def build_darknet(in_channels=3):
@@ -62,6 +61,6 @@ def build_darknet(in_channels=3):
             in_channels = out_channels
 
         if isinstance(module, list):
-            layers.append(ResidualBlock(in_channels, num_repeats=module[0],))
+            layers.append(residual(in_channels, num_repeats=module[0],))
 
     return torch.nn.Sequential(*layers)
