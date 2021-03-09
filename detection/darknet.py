@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 config = [
@@ -53,7 +52,7 @@ class ResidualBlock(nn.Module):
 
 
 def build_darknet(in_channels=3):
-    layers = nn.ModuleList()
+    layers = []
 
     for module in config:
         if isinstance(module, tuple):
@@ -71,4 +70,5 @@ def build_darknet(in_channels=3):
 
         if isinstance(module, list):
             layers.append(ResidualBlock(in_channels, num_repeats=module[0],))
-    return layers
+
+    return nn.Sequential(*layers)
