@@ -1,0 +1,14 @@
+import pytest
+import torch
+
+from detection.darknet import build_darknet
+
+
+@pytest.fixture
+def batch():
+    return torch.rand(64, 256, 256, 3)
+
+
+def test_module(batch):
+    model = build_darknet()
+    model(batch)

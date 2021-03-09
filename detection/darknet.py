@@ -52,9 +52,8 @@ class ResidualBlock(nn.Module):
         return x
 
 
-def build_darknet(self):
+def build_darknet(in_channels=3):
     layers = nn.ModuleList()
-    in_channels = self.in_channels
 
     for module in config:
         if isinstance(module, tuple):
