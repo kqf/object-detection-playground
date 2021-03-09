@@ -11,4 +11,4 @@ def batch():
 
 def test_module(batch):
     model = build_darknet()
-    model(batch)
+    assert model(batch).shape == (64, 1024, 8, 8)
