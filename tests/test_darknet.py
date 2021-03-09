@@ -6,7 +6,7 @@ from detection.darknet import build_darknet
 
 @pytest.fixture
 def batch():
-    return torch.rand(64, 256, 256, 3)
+    return torch.rand(64, 3, 256, 256)
 
 
 def test_module(batch):
