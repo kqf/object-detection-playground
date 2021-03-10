@@ -48,7 +48,7 @@ def residual(channels, num_repeats):
 
 def build_darknet(in_channels=3):
     model = torch.nn.Sequential(
-        conv(3, 32, kernel_size=3, stride=1),
+        conv(in_channels, 32, kernel_size=3, stride=1),
         conv(32, 64, kernel_size=3, stride=2),
         residual(64, num_repeats=1),
         conv(64, 128, kernel_size=3, stride=2),
