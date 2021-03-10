@@ -63,16 +63,16 @@ def build_darknet(in_channels=3):
             layers.append(residual(in_channels, num_repeats=module[0],))
 
     model = torch.nn.Sequential(
-        conv(32, 3, 1),
-        conv(64, 3, 2),
+        conv(3, 32, kernel_size=3, stride=1),
+        conv(32, 64, kernel_size=3, stride=2),
         residual(64, num_repeats=1),
-        conv(128, 3, 2),
+        conv(64, 128, kernel_size=3, stride=2),
         residual(128, num_repeats=2),
-        conv(256, 3, 2),
+        conv(128, 256, kernel_size=3, stride=2),
         residual(256, num_repeats=8),
-        conv(512, 3, 2),
+        conv(256, 512, kernel_size=3, stride=2),
         residual(512, num_repeats=8),
-        conv(1024, 3, 2),
+        conv(512, 1024, kernel_size=3, stride=2),
         residual(1024, num_repeats=4),
     )
     return model
