@@ -45,7 +45,6 @@ def residual(channels, num_repeats):
 
 def build_darknet(in_channels=3):
     layers = []
-
     for module in config:
         if isinstance(module, tuple):
             out_channels, kernel_size, stride = module
@@ -63,4 +62,17 @@ def build_darknet(in_channels=3):
         if isinstance(module, list):
             layers.append(residual(in_channels, num_repeats=module[0],))
 
-    return torch.nn.Sequential(*layers)
+    model = torch.nn.Sequential(
+        conv(3, 32, kernel_size=3, stride=1),
+        conv(32, 64, kernel_size=3, stride=2),
+        residual(64, num_repeats=1),
+        conv(64, 128, kernel_size=3, stride=2),
+        residual(128, num_repeats=2),
+        conv(128, 256, kernel_size=3, stride=2),
+        residual(256, num_repeats=8),
+        conv(256, 512, kernel_size=3, stride=2),
+        residual(512, num_repeats=8),
+        conv(512, 1024, kernel_size=3, stride=2),
+        residual(1024, num_repeats=4),
+    )
+    return model
