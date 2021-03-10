@@ -1,19 +1,5 @@
 import torch
 
-config = [
-    (32, 3, 1),
-    (64, 3, 2),
-    [1],
-    (128, 3, 2),
-    [2],
-    (256, 3, 2),
-    [8],
-    (512, 3, 2),
-    [8],
-    (1024, 3, 2),
-    [4],
-]
-
 
 class ResidualBlock(torch.nn.Module):
     def __init__(self, channels, num_repeats=1):
