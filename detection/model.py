@@ -2,7 +2,7 @@ import torch
 import skorch
 
 
-from detection.layers import YOLO
+from detection.models.v5 import YOLO
 from detection.losses.v5 import CombinedLoss
 
 
