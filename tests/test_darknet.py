@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from detection.darknet import build_darknet
+from detection.models.darknet import build_darknet
 
 
 @pytest.fixture
