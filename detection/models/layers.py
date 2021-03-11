@@ -1,8 +1,4 @@
-
 import torch
-import torchvision
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-
 
 
 class YOLO(torch.nn.Module):
