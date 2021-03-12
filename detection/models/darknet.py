@@ -22,19 +22,19 @@ def conv(in_channels, out_channels, padding=1, **kwargs):
     return block
 
 
-def residual(channels, num_repeats):
-    block = torch.nn.Sequential(*[
-        Residual(block(channels)) for _ in range(num_repeats)
-    ])
-    return block
-
-
 def block(channels):
     layer = torch.nn.Sequential(
         conv(channels, channels // 2, kernel_size=1, padding=0),
         conv(channels // 2, channels, kernel_size=3),
     )
     return layer
+
+
+def residual(channels, num_repeats):
+    resblock = torch.nn.Sequential(*[
+        Residual(block(channels)) for _ in range(num_repeats)
+    ])
+    return resblock
 
 
 def build_darknet(in_channels=3):
