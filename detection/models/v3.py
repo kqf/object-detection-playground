@@ -30,8 +30,7 @@ class CNNBlock(nn.Module):
     def forward(self, x):
         if self.use_bn_act:
             return self.leaky(self.bn(self.conv(x)))
-        else:
-            return self.conv(x)
+        return self.conv(x)
 
 
 class ResidualBlock(nn.Module):
