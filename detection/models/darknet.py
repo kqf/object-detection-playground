@@ -1,13 +1,10 @@
 import torch
 
 
-class ResidualBlock(torch.nn.Module):
-    def __init__(self, channels, num_repeats=1):
+class Residual(torch.nn.Module):
+    def __init__(self, layer):
         super().__init__()
-        self.layer = torch.nn.Sequential(
-            conv(channels, channels // 2, kernel_size=1, padding=0),
-            conv(channels // 2, channels, kernel_size=3),
-        )
+        self.layer
 
     def forward(self, x):
         return x + self.layer(x)
@@ -27,9 +24,17 @@ def conv(in_channels, out_channels, padding=1, **kwargs):
 
 def residual(channels, num_repeats):
     block = torch.nn.Sequential(*[
-        ResidualBlock(channels) for _ in range(num_repeats)
+        Residual(block(channels)) for _ in range(num_repeats)
     ])
     return block
+
+
+def block(channels):
+    layer = torch.nn.Sequential(
+        conv(channels, channels // 2, kernel_size=1, padding=0),
+        conv(channels // 2, channels, kernel_size=3),
+    )
+    return layer
 
 
 def build_darknet(in_channels=3):
