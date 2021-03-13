@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from detection.models.darknet import conv, block
+from detection.models.darknet import conv, block, build_darknet
 
 
 class ScalePrediction(nn.Module):
@@ -30,19 +30,24 @@ class ScalePrediction(nn.Module):
 class YOLOv3(nn.Module):
     def __init__(self, in_channels=3, num_classes=80):
         super().__init__()
+        self.backbone = build_darknet(in_channels=in_channels)
         self.num_classes = num_classes
         self.in_channels = in_channels
         self.layers = self._create_conv_layers()
 
-        self.layers = torch.nn.Sequential(
+        self.scale1 = torch.nn.Sequential(
             conv(1024, 512, 1, 1),
             conv(512, 1024, 3, 1),
             ScalePrediction(1024 // 2, num_classes),
+        )
+        self.scale2 = torch.nn.Sequential(
             conv(1024 // 2, 256, 1, 1),
             torch.nn.Upsample(scale_factor=2),
             conv(256, 256, 1, 1),
             conv(256, 512, 3, 1),
             ScalePrediction(512 // 2, num_classes),
+        )
+        self.scale2 = torch.nn.Sequential(
             conv(256, 128, 1, 1),
             torch.nn.Upsample(scale_factor=2),
             conv(128, 128, 1, 1),
@@ -52,20 +57,10 @@ class YOLOv3(nn.Module):
         )
 
     def forward(self, x):
-        outputs = []  # for each scale
-        route_connections = []
-        for layer in self.layers:
-            if isinstance(layer, ScalePrediction):
-                outputs.append(layer(x))
-                continue
+        x = self.backbone(x)
 
-            x = layer(x)
+        scale1 = self.scale1(x)
+        scale2 = self.scale2(scale1)
+        scale3 = self.scale3(scale2)
 
-            if isinstance(layer, block) and layer.num_repeats == 8:
-                route_connections.append(x)
-
-            elif isinstance(layer, nn.Upsample):
-                x = torch.cat([x, route_connections[-1]], dim=1)
-                route_connections.pop()
-
-        return outputs
+        return scale1, scale2, scale3
