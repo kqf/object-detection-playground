@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from detection.models.darknet import build_darknet
+from detection.models.darknet import Darknet
 
 
 @pytest.fixture
@@ -10,5 +10,5 @@ def batch():
 
 
 def test_module(batch):
-    model = build_darknet()
+    model = Darknet()
     assert model(batch).shape == (64, 1024, 8, 8)
