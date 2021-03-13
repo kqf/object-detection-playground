@@ -34,15 +34,19 @@ class YOLOv3(nn.Module):
         self.in_channels = in_channels
         self.layers = self._create_conv_layers()
 
-        self.layers = torch.nn.Sequential(
+        self.scale1 = torch.nn.Sequential(
             conv(1024, 512, 1, 1),
             conv(512, 1024, 3, 1),
             ScalePrediction(1024 // 2, num_classes),
+        )
+        self.scale2 = torch.nn.Sequential(
             conv(1024 // 2, 256, 1, 1),
             torch.nn.Upsample(scale_factor=2),
             conv(256, 256, 1, 1),
             conv(256, 512, 3, 1),
             ScalePrediction(512 // 2, num_classes),
+        )
+        self.scale2 = torch.nn.Sequential(
             conv(256, 128, 1, 1),
             torch.nn.Upsample(scale_factor=2),
             conv(128, 128, 1, 1),
