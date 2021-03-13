@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from detection.models.darknet import conv, block
+from detection.models.darknet import conv, block, build_darknet
 
 
 class ScalePrediction(nn.Module):
@@ -30,6 +30,7 @@ class ScalePrediction(nn.Module):
 class YOLOv3(nn.Module):
     def __init__(self, in_channels=3, num_classes=80):
         super().__init__()
+        self.backbone = build_darknet(in_channels=in_channels)
         self.num_classes = num_classes
         self.in_channels = in_channels
         self.layers = self._create_conv_layers()
