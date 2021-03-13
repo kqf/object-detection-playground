@@ -37,18 +37,31 @@ def residual(channels, num_repeats):
     return resblock
 
 
-def build_darknet(in_channels=3):
-    model = torch.nn.Sequential(
-        conv(in_channels, 32, kernel_size=3, stride=1),
-        conv(32, 64, kernel_size=3, stride=2),
-        residual(64, num_repeats=1),
-        conv(64, 128, kernel_size=3, stride=2),
-        residual(128, num_repeats=2),
-        conv(128, 256, kernel_size=3, stride=2),
-        residual(256, num_repeats=8),
-        conv(256, 512, kernel_size=3, stride=2),
-        residual(512, num_repeats=8),
-        conv(512, 1024, kernel_size=3, stride=2),
-        residual(1024, num_repeats=4),
-    )
-    return model
+class Darknet(torch.nn.Module):
+    """docstring for  Darknet"""
+
+    def __init__(self, in_channels=3):
+        super().__init__()
+        self.l3 = torch.nn.Sequential(
+            conv(in_channels, 32, kernel_size=3, stride=1),
+            conv(32, 64, kernel_size=3, stride=2),
+            residual(64, num_repeats=1),
+            conv(64, 128, kernel_size=3, stride=2),
+            residual(128, num_repeats=2),
+            conv(128, 256, kernel_size=3, stride=2),
+            residual(256, num_repeats=8),
+        )
+        self.l2 = torch.nn.Sequential(
+            conv(256, 512, kernel_size=3, stride=2),
+            residual(512, num_repeats=8),
+        )
+        self.l1 = torch.nn.Sequential(
+            conv(512, 1024, kernel_size=3, stride=2),
+            residual(1024, num_repeats=4),
+        )
+
+    def forward(self, x):
+        l3 = self.l3(x)
+        l2 = self.l2(l3)
+        l1 = self.l1(l2)
+        return l1, l2, l3
