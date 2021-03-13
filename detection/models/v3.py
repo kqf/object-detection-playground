@@ -56,20 +56,10 @@ class YOLOv3(nn.Module):
         )
 
     def forward(self, x):
-        outputs = []  # for each scale
-        route_connections = []
-        for layer in self.layers:
-            if isinstance(layer, ScalePrediction):
-                outputs.append(layer(x))
-                continue
+        x = self.backbone(x)
 
-            x = layer(x)
+        scale1 = self.scale1(x)
+        scale2 = self.scale2(scale1)
+        scale3 = self.scale3(scale2)
 
-            if isinstance(layer, block) and layer.num_repeats == 8:
-                route_connections.append(x)
-
-            elif isinstance(layer, nn.Upsample):
-                x = torch.cat([x, route_connections[-1]], dim=1)
-                route_connections.pop()
-
-        return outputs
+        return scale1, scale2, scale3
