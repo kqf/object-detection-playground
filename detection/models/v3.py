@@ -38,26 +38,26 @@ class YOLO(nn.Module):
         self.in_channels = in_channels
 
         self.scale1 = torch.nn.Sequential(
-            conv(1024, 512, kernel_size=1, stride=1, padding=0),
+            conv(1024, 512, kernel_size=1, stride=1),
             conv(512, 1024, kernel_size=3, stride=1, padding=0),
             ScalePrediction(1024 // 2, num_classes),
         )
         self.upsample2 = torch.nn.Sequential(
-            conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
+            conv(1024 // 2, 256, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
-            conv(256, 256, kernel_size=1, stride=1, padding=0),
+            conv(256, 256, kernel_size=1, stride=1),
         )
         self.scale2 = torch.nn.Sequential(
-            conv(256, 512, kernel_size=3, stride=1, padding=0),
+            conv(256, 512, kernel_size=3, stride=1, padding=1),
             ScalePrediction(512 // 2, num_classes),
         )
         self.upsample3 = torch.nn.Sequential(
-            conv(256, 128, kernel_size=1, stride=1, padding=0),
+            conv(256, 128, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
-            conv(128, 128, kernel_size=1, stride=1, padding=0),
+            conv(128, 128, kernel_size=1, stride=1),
         )
         self.scale3 = torch.nn.Sequential(
-            conv(128, 256, kernel_size=3, stride=1, padding=0),
+            conv(128, 256, kernel_size=3, stride=1, padding=1),
             ScalePrediction(256 // 2, num_classes),
 
         )
