@@ -33,29 +33,28 @@ class YOLO(nn.Module):
         self.backbone = Darknet(in_channels=in_channels)
         self.num_classes = num_classes
         self.in_channels = in_channels
-        self.layers = self._create_conv_layers()
 
         self.scale1 = torch.nn.Sequential(
-            conv(1024, 512, 1, 1),
-            conv(512, 1024, 3, 1),
+            conv(1024, 512, kernel_size=1, stride=1),
+            conv(512, 1024, kernel_size=3, stride=1),
             ScalePrediction(1024 // 2, num_classes),
         )
         self.upsample2 = torch.nn.Sequential(
-            conv(1024 // 2, 256, 1, 1),
+            conv(1024 // 2, 256, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
-            conv(256, 256, 1, 1),
+            conv(256, 256, kernel_size=1, stride=1),
         )
         self.scale2 = torch.nn.Sequential(
-            conv(256, 512, 3, 1),
+            conv(256, 512, kernel_size=3, stride=1),
             ScalePrediction(512 // 2, num_classes),
         )
         self.upsample3 = torch.nn.Sequential(
-            conv(256, 128, 1, 1),
+            conv(256, 128, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
-            conv(128, 128, 1, 1),
+            conv(128, 128, kernel_size=1, stride=1),
         )
         self.scale3 = torch.nn.Sequential(
-            conv(128, 256, 3, 1),
+            conv(128, 256, kernel_size=3, stride=1),
             ScalePrediction(256 // 2, num_classes),
 
         )
