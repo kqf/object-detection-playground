@@ -9,7 +9,7 @@ class ScalePrediction(nn.Module):
         super().__init__()
         self.pred = nn.Sequential(
             block(2 * in_channels),
-            conv(2 * in_channels, in_channels, kernel_size=1),
+            conv(2 * in_channels, in_channels, kernel_size=1, padding=0),
             conv(in_channels, 2 * in_channels, kernel_size=3, padding=1),
             torch.nn.Conv2d(
                 2 * in_channels, (num_classes + 5) * 3, kernel_size=1
@@ -18,9 +18,9 @@ class ScalePrediction(nn.Module):
         self.num_classes = num_classes
 
     def forward(self, x):
+        out = self.pred(x)
         return (
-            self.pred(x)
-            .reshape(
+            out.reshape(
                 x.shape[0], 3, self.num_classes + 5, x.shape[2], x.shape[3]
             )
             .permute(0, 1, 3, 4, 2)
@@ -68,6 +68,6 @@ class YOLO(nn.Module):
         scale2 = self.scale2(torch.cat([x, l2], dim=1))
 
         x = self.upsample3(scale2)
-        scale3 = self.scale2(torch.cat([x, l3], dim=1))
+        scale3 = self.scale3(torch.cat([x, l3], dim=1))
 
         return scale1, scale2, scale3
