@@ -7,9 +7,15 @@ from detection.models.darknet import conv, block, Darknet
 class ScalePrediction(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.pred = nn.Sequential(
+
+        self.xscale = nn.Sequential(
+            conv(1024, 512, kernel_size=1, stride=1),
+            conv(512, 1024, kernel_size=3, stride=1, padding=0),
             block(2 * in_channels),
             conv(2 * in_channels, in_channels, kernel_size=1, padding=0),
+        )
+
+        self.pred = nn.Sequential(
             conv(in_channels, 2 * in_channels, kernel_size=3, padding=1),
             torch.nn.Conv2d(
                 2 * in_channels, (num_classes + 5) * 3, kernel_size=1
@@ -18,8 +24,9 @@ class ScalePrediction(nn.Module):
         self.num_classes = num_classes
 
     def forward(self, x):
-        out = self.pred(x)
-        return (
+        xscale = self.xscale(x)
+        out = self.pred(xscale)
+        return xscale, (
             out.reshape(
                 x.shape[0], 3, self.num_classes + 5, x.shape[2], x.shape[3]
             )
@@ -35,26 +42,26 @@ class YOLO(nn.Module):
         self.in_channels = in_channels
 
         self.scale1 = torch.nn.Sequential(
-            conv(1024, 512, kernel_size=1, stride=1),
-            conv(512, 1024, kernel_size=3, stride=1),
             ScalePrediction(1024 // 2, num_classes),
         )
+        self.reduce2 = conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0)
+
         self.upsample2 = torch.nn.Sequential(
-            conv(1024 // 2, 256, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
             conv(256, 256, kernel_size=1, stride=1),
         )
         self.scale2 = torch.nn.Sequential(
-            conv(256, 512, kernel_size=3, stride=1),
+            conv(256, 512, kernel_size=3, stride=1, padding=1),
             ScalePrediction(512 // 2, num_classes),
         )
+        self.reduce3 = conv(256, 128, kernel_size=1, stride=1)
+
         self.upsample3 = torch.nn.Sequential(
-            conv(256, 128, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
             conv(128, 128, kernel_size=1, stride=1),
         )
         self.scale3 = torch.nn.Sequential(
-            conv(128, 256, kernel_size=3, stride=1),
+            conv(128, 256, kernel_size=3, stride=1, padding=1),
             ScalePrediction(256 // 2, num_classes),
 
         )
@@ -62,12 +69,15 @@ class YOLO(nn.Module):
     def forward(self, x):
         l1, l2, l3 = self.backbone(x)
 
-        scale1 = self.scale1(l1)
+        xscale, scale1 = self.scale1(l1)
+        x = self.reduce2(xscale)
+        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+        x = self.upsample2(torch.cat([x, l2], dim=1))
 
-        x = self.upsample2(scale1)
-        scale2 = self.scale2(torch.cat([x, l2], dim=1))
+        xscale, scale2 = self.scale2(x)
 
-        x = self.upsample3(scale2)
-        scale3 = self.scale3(torch.cat([x, l3], dim=1))
+        x = self.reduce3(xscale)
+        x = self.upsample3(torch.cat([x, l3], dim=1))
+        _, scale3 = self.scale3(x)
 
         return scale1, scale2, scale3
