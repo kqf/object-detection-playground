@@ -48,9 +48,9 @@ class YOLO(nn.Module):
         self.upsample2 = torch.nn.Sequential(
             conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
-            conv(256, 256, kernel_size=1, stride=1, padding=0),
         )
         self.scale2 = torch.nn.Sequential(
+            conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
             ScalePrediction(512 // 2, num_classes),
         )
@@ -58,9 +58,9 @@ class YOLO(nn.Module):
         self.upsample3 = torch.nn.Sequential(
             conv(256, 128, kernel_size=1, stride=1),
             torch.nn.Upsample(scale_factor=2),
-            conv(128, 128, kernel_size=1, stride=1, padding=0),
         )
         self.scale3 = torch.nn.Sequential(
+            conv(128 * 3, 128, kernel_size=1, stride=1, padding=0),
             conv(128, 256, kernel_size=3, stride=1, padding=1),
             ScalePrediction(256 // 2, num_classes),
 
@@ -70,8 +70,9 @@ class YOLO(nn.Module):
         l1, l2, l3 = self.backbone(x)
 
         xscale, scale1 = self.scale1(l1)
-        x = self.upsample2(x)
+        x = self.upsample2(xscale)
         xscale, scale2 = self.scale2(torch.cat([x, l2], dim=1))
+        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
 
         x = self.upsample3(xscale)
         _, scale3 = self.scale3(torch.cat([x, l3], dim=1))
