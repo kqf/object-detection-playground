@@ -4,17 +4,20 @@ import torch.nn as nn
 from detection.models.darknet import conv, block, Darknet
 
 
+def scaling(in_channels):
+    model = nn.Sequential(
+        conv(2 * in_channels, in_channels, kernel_size=1, stride=1),
+        conv(in_channels, 2 * in_channels, kernel_size=3, stride=1, padding=0),
+        block(2 * in_channels),
+        conv(2 * in_channels, in_channels, kernel_size=1, padding=0),
+    )
+    return model
+
+
 class ScalePrediction(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-
-        self.xscale = nn.Sequential(
-            conv(2 * in_channels, in_channels, kernel_size=1, stride=1),
-            conv(in_channels, 2 * in_channels, kernel_size=3, stride=1,
-                 padding=0),
-            block(2 * in_channels),
-            conv(2 * in_channels, in_channels, kernel_size=1, padding=0),
-        )
+        self.xscale = scaling(in_channels)
 
         self.pred = nn.Sequential(
             conv(in_channels, 2 * in_channels, kernel_size=3, padding=1),
