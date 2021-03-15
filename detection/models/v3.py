@@ -20,7 +20,7 @@ class ScalePrediction(nn.Module):
         super().__init__()
         self.xscale = scaling(in_channels)
         self.pred = nn.Sequential(
-            conv(in_channels, in_channels, kernel_size=3, padding=1),
+            conv(in_channels, in_channels // 2, kernel_size=3, padding=1),
             torch.nn.Conv2d(in_channels, (num_classes + 5) * 3, kernel_size=1),
         )
         self.num_classes = num_classes
