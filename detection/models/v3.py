@@ -9,8 +9,9 @@ class ScalePrediction(nn.Module):
         super().__init__()
 
         self.xscale = nn.Sequential(
-            conv(1024, 512, kernel_size=1, stride=1),
-            conv(512, 1024, kernel_size=3, stride=1, padding=0),
+            conv(2 * in_channels, in_channels, kernel_size=1, stride=1),
+            conv(in_channels, 2 * in_channels, kernel_size=3, stride=1,
+                 padding=0),
             block(2 * in_channels),
             conv(2 * in_channels, in_channels, kernel_size=1, padding=0),
         )
@@ -56,7 +57,7 @@ class YOLO(nn.Module):
         )
 
         self.upsample3 = torch.nn.Sequential(
-            conv(256, 128, kernel_size=1, stride=1),
+            conv(256, 128, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
         self.scale3 = torch.nn.Sequential(
@@ -72,7 +73,6 @@ class YOLO(nn.Module):
         xscale, scale1 = self.scale1(l1)
         x = self.upsample2(xscale)
         xscale, scale2 = self.scale2(torch.cat([x, l2], dim=1))
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
 
         x = self.upsample3(xscale)
         _, scale3 = self.scale3(torch.cat([x, l3], dim=1))
