@@ -18,13 +18,10 @@ def scaling(in_channels):
 class ScalePrediction(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.xscale = scaling(2 * in_channels)
-
+        self.xscale = scaling(in_channels)
         self.pred = nn.Sequential(
-            conv(in_channels, 2 * in_channels, kernel_size=3, padding=1),
-            torch.nn.Conv2d(
-                2 * in_channels, (num_classes + 5) * 3, kernel_size=1
-            ),
+            conv(in_channels, in_channels, kernel_size=3, padding=1),
+            torch.nn.Conv2d(in_channels, (num_classes + 5) * 3, kernel_size=1),
         )
         self.num_classes = num_classes
 
@@ -47,7 +44,7 @@ class YOLO(nn.Module):
         self.in_channels = in_channels
 
         self.scale1 = torch.nn.Sequential(
-            ScalePrediction(1024 // 2, num_classes),
+            ScalePrediction(1024, num_classes),
         )
 
         self.upsample2 = torch.nn.Sequential(
@@ -57,7 +54,7 @@ class YOLO(nn.Module):
         self.scale2 = torch.nn.Sequential(
             conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
-            ScalePrediction(512 // 2, num_classes),
+            ScalePrediction(512, num_classes),
         )
 
         self.upsample3 = torch.nn.Sequential(
@@ -67,7 +64,7 @@ class YOLO(nn.Module):
         self.scale3 = torch.nn.Sequential(
             conv(128 * 3, 128, kernel_size=1, stride=1, padding=0),
             conv(128, 256, kernel_size=3, stride=1, padding=1),
-            ScalePrediction(256 // 2, num_classes),
+            ScalePrediction(256, num_classes),
 
         )
 
