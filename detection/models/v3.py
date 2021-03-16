@@ -44,10 +44,6 @@ class YOLO(nn.Module):
         self.conv1 = torch.nn.Sequential(
             scaling(1024),
         )
-        self.scale1 = torch.nn.Sequential(
-            ScalePrediction(1024, num_classes),
-        )
-
         self.upsample2 = torch.nn.Sequential(
             conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
@@ -57,10 +53,6 @@ class YOLO(nn.Module):
             conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
             scaling(512),
-        )
-
-        self.scale2 = torch.nn.Sequential(
-            ScalePrediction(512, num_classes),
         )
 
         self.upsample3 = torch.nn.Sequential(
@@ -73,11 +65,9 @@ class YOLO(nn.Module):
             conv(128, 256, kernel_size=3, stride=1, padding=1),
             scaling(256),
         )
-
-        self.scale3 = torch.nn.Sequential(
-            ScalePrediction(256, num_classes),
-
-        )
+        self.scale1 = ScalePrediction(1024, num_classes)
+        self.scale2 = ScalePrediction(512, num_classes)
+        self.scale3 = ScalePrediction(256, num_classes)
 
     def forward(self, x):
         l1, l2, l3 = self.backbone(x)
