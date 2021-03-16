@@ -18,7 +18,6 @@ def scaling(in_channels):
 class ScalePrediction(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.xscale = scaling(in_channels)
         self.pred = nn.Sequential(
             conv(in_channels // 2, in_channels, kernel_size=3, padding=1),
             torch.nn.Conv2d(in_channels, (num_classes + 5) * 3, kernel_size=1),
@@ -43,6 +42,9 @@ class YOLO(nn.Module):
         self.num_classes = num_classes
         self.in_channels = in_channels
 
+        self.conv1 = torch.nn.Sequential(
+            scaling(1024),
+        )
         self.scale1 = torch.nn.Sequential(
             ScalePrediction(1024, num_classes),
         )
@@ -51,9 +53,14 @@ class YOLO(nn.Module):
             conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
-        self.scale2 = torch.nn.Sequential(
+
+        self.conv2 = torch.nn.Sequential(
             conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
+            scaling(512),
+        )
+
+        self.scale2 = torch.nn.Sequential(
             ScalePrediction(512, num_classes),
         )
 
@@ -61,9 +68,14 @@ class YOLO(nn.Module):
             conv(256, 128, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
-        self.scale3 = torch.nn.Sequential(
+
+        self.conv3 = torch.nn.Sequential(
             conv(128 * 3, 128, kernel_size=1, stride=1, padding=0),
             conv(128, 256, kernel_size=3, stride=1, padding=1),
+            scaling(256),
+        )
+
+        self.scale3 = torch.nn.Sequential(
             ScalePrediction(256, num_classes),
 
         )
@@ -71,11 +83,12 @@ class YOLO(nn.Module):
     def forward(self, x):
         l1, l2, l3 = self.backbone(x)
 
-        xscale, scale1 = self.scale1(l1)
-        x = self.upsample2(xscale)
-        xscale, scale2 = self.scale2(torch.cat([x, l2], dim=1))
+        x1 = self.conv1(l1)
 
-        x = self.upsample3(xscale)
-        _, scale3 = self.scale3(torch.cat([x, l3], dim=1))
+        xu = self.upsample2(x1)
+        x2 = self.conv2(torch.cat([xu, l2], dim=1))
 
-        return scale1, scale2, scale3
+        xu = self.upsample3(x2)
+        x3 = self.conv3(torch.cat([xu, l3], dim=1))
+
+        return self.scale1(x1), self.scale2(x2), self.scale3(x3)
