@@ -4,13 +4,12 @@ import torch.nn as nn
 from detection.models.darknet import conv, block, Darknet
 
 
-def scaling(in_channels):
+def cblock(in_channels, out_channels):
     model = nn.Sequential(
-        conv(in_channels, in_channels // 2, kernel_size=1, stride=1),
-        conv(in_channels // 2, in_channels, kernel_size=3, stride=1,
-             padding=0),
+        conv(in_channels, out_channels, kernel_size=1, stride=1),
+        conv(out_channels, in_channels, kernel_size=3, stride=1, padding=0),
         block(in_channels),
-        conv(in_channels, in_channels // 2, kernel_size=1, padding=0),
+        conv(in_channels, out_channels, kernel_size=1, padding=0),
     )
     return model
 
@@ -42,29 +41,29 @@ class YOLO(nn.Module):
         self.in_channels = in_channels
 
         self.conv1 = torch.nn.Sequential(
-            scaling(1024),
+            cblock(1024, 1024 // 2),
         )
+
         self.upsample2 = torch.nn.Sequential(
             conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
-
         self.conv2 = torch.nn.Sequential(
             conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
-            scaling(512),
+            cblock(512, 512 // 2),
         )
 
         self.upsample3 = torch.nn.Sequential(
             conv(256, 128, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
-
         self.conv3 = torch.nn.Sequential(
             conv(128 * 3, 128, kernel_size=1, stride=1, padding=0),
             conv(128, 256, kernel_size=3, stride=1, padding=1),
-            scaling(256),
+            cblock(256, 256 // 2),
         )
+
         self.scale1 = ScalePrediction(1024, num_classes)
         self.scale2 = ScalePrediction(512, num_classes)
         self.scale3 = ScalePrediction(256, num_classes)
