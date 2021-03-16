@@ -25,9 +25,8 @@ class ScalePrediction(nn.Module):
         self.num_classes = num_classes
 
     def forward(self, x):
-        xscale = self.xscale(x)
-        out = self.pred(xscale)
-        return xscale, (
+        out = self.pred(x)
+        return (
             out.reshape(
                 x.shape[0], 3, self.num_classes + 5, x.shape[2], x.shape[3]
             )
