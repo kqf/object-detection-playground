@@ -1,6 +1,8 @@
 import torch
 
-from detection.losses.utils import bbox_iou
+
+def bbox_iou(inputs, outputs):
+    pass
 
 
 class CombinedLoss(torch.nn.Module):
