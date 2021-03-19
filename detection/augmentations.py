@@ -9,6 +9,7 @@ _std = [1, 1, 1]
 bbox_params = {
     'format': 'yolo',
     'label_fields': ['labels'],
+    'min_visibility': 0.4,
 }
 
 
