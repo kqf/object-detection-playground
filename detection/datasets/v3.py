@@ -102,10 +102,9 @@ def iou(a, b):
 
 
 def build_targets(bboxes, labels, anchors, scales, iou_threshold):
-    targets = [torch.zeros((len(anchors[i]), s, s, 6))
-               for i, s in enumerate(scales)]
-
-    num_anchors_per_scale = anchors.shape[0]
+    # Three anchors per scale
+    targets = [torch.zeros((3, s, s, 6)) for i, s in enumerate(scales)]
+    num_anchors_per_scale = 3
 
     for box, class_label in zip(bboxes, labels):
         if np.isnan(box).any():
@@ -121,7 +120,10 @@ def build_targets(bboxes, labels, anchors, scales, iou_threshold):
             anchor_on_scale = int(anchor_idx % num_anchors_per_scale)
             s = scales[scale_idx]
             i, j = int(s * y), int(s * x)  # which cell
-            anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
+            try:
+                anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
+            except Exception:
+                import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
 
             if anchor_taken:
                 continue

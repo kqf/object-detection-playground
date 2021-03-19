@@ -5,7 +5,7 @@ from detection.datasets.v3 import DetectionDatasetV3
 from detection.model import build_model
 
 
-@pytest.mark.skip("Fix the dataset definition")
+# @pytest.mark.skip("Fix the dataset definition")
 def test_dummy(fake_dataset):
     df = read_data(fake_dataset / "train.csv")
     print(df.head())
