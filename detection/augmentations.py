@@ -7,8 +7,8 @@ _mean = [0, 0, 0]
 _std = [1, 1, 1]
 
 bbox_params = {
-    'format': 'pascal_voc',
-    'label_fields': ['labels']
+    'format': 'yolo',
+    'label_fields': ['labels'],
 }
 
 
