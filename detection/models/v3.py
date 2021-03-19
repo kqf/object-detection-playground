@@ -69,7 +69,6 @@ class YOLO(nn.Module):
         self.scale3 = ScalePrediction(256, num_classes)
 
     def forward(self, x):
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
         l1, l2, l3 = self.backbone(x)
 
         x1 = self.conv1(l1)
