@@ -1,5 +1,5 @@
 import pandas as pd
-from detection.dataset import DetectionDatasetV3
+from detection.datasets.v3 import DetectionDatasetV3
 
 
 def test_dataset(fake_dataset):
