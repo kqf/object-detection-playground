@@ -1,6 +1,6 @@
 import pytest
 
-from detection.datasets.v5 import read_data
+from detection.data import read_data
 from detection.datasets.v3 import DetectionDatasetV3
 from detection.model import build_model
 
