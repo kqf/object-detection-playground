@@ -59,6 +59,10 @@ class DetectionDatasetV3(Dataset):
 
         x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
         width, height = x2 - x1, y2 - y1
+        records['x_min'] = (x1 + x2) / 2
+        records['y_min'] = (y1 + y2) / 2
+        records['x_max'] = (x2 - x1)
+        records['y_max'] = (y2 - y1)
         boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
 
         area = torch.as_tensor(width * height, dtype=torch.float32)
@@ -80,6 +84,7 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': target['boxes'],
                 'labels': labels
             }
+            print(boxes)
             transformed = self.transforms(**sample)
             image = transformed['image']
             target['boxes'] = torch.tensor(transformed['bboxes'])
