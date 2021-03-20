@@ -51,9 +51,14 @@ class DetectionDatasetV3(Dataset):
         if records.loc[0, "class_id"] == 0:
             records = records.loc[[0], :]
 
-        boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
-        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
-        area = torch.as_tensor(area, dtype=torch.float32)
+        x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
+
+        width = x2 - x1
+        height = y2 - y1
+        coordintaes = [x1 + width / 2, y1 + height / 2, width, height]
+        boxes = np.stack(coordintaes).T
+
+        area = torch.as_tensor(width * height, dtype=torch.float32)
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
 
         # suppose all instances are not crowd
@@ -72,7 +77,10 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': target['boxes'],
                 'labels': labels
             }
-            transformed = self.transforms(**sample)
+            try:
+                transformed = self.transforms(**sample)
+            except Exception:
+                import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
             image = transformed['image']
             target['boxes'] = torch.tensor(transformed['bboxes'])
 
@@ -120,10 +128,7 @@ def build_targets(bboxes, labels, anchors, scales, iou_threshold):
             anchor_on_scale = int(anchor_idx % num_anchors_per_scale)
             s = scales[scale_idx]
             i, j = int(s * y), int(s * x)  # which cell
-            try:
-                anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
-            except Exception:
-                import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+            anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
 
             if anchor_taken:
                 continue
