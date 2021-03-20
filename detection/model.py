@@ -37,7 +37,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
 
     model = DetectionNet(
         YOLO,
-        batch_size=6,
+        batch_size=1,
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,

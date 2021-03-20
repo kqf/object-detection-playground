@@ -51,9 +51,21 @@ class DetectionDatasetV3(Dataset):
         if records.loc[0, "class_id"] == 0:
             records = records.loc[[0], :]
 
+        # Normalize the boundign boxes
+        records['x_min'] = records['x_min'] / image.shape[0]
+        records['x_max'] = records['x_max'] / image.shape[0]
+        records['y_min'] = records['y_min'] / image.shape[1]
+        records['y_max'] = records['y_max'] / image.shape[1]
+
+        x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
+        width, height = x2 - x1, y2 - y1
+        records['x_min'] = (x1 + x2) / 2
+        records['y_min'] = (y1 + y2) / 2
+        records['x_max'] = (x2 - x1)
+        records['y_max'] = (y2 - y1)
         boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
-        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
-        area = torch.as_tensor(area, dtype=torch.float32)
+
+        area = torch.as_tensor(width * height, dtype=torch.float32)
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
 
         # suppose all instances are not crowd
@@ -72,6 +84,7 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': target['boxes'],
                 'labels': labels
             }
+            print(boxes)
             transformed = self.transforms(**sample)
             image = transformed['image']
             target['boxes'] = torch.tensor(transformed['bboxes'])
@@ -102,10 +115,9 @@ def iou(a, b):
 
 
 def build_targets(bboxes, labels, anchors, scales, iou_threshold):
-    targets = [torch.zeros((len(anchors[i]), s, s, 6))
-               for i, s in enumerate(scales)]
-
-    num_anchors_per_scale = anchors.shape[0]
+    # Three anchors per scale
+    targets = [torch.zeros((3, s, s, 6)) for i, s in enumerate(scales)]
+    num_anchors_per_scale = 3
 
     for box, class_label in zip(bboxes, labels):
         if np.isnan(box).any():
