@@ -10,6 +10,6 @@ def test_dataset(fake_dataset):
         assert len(image.shape) == 3, "There are only 3 dimensions"
         assert image.shape[-1] == 3, "There are only 3 channels"
 
-        assert s1.shape == (2, 13, 13, 6)
-        assert s2.shape == (2, 26, 26, 6)
-        assert s3.shape == (2, 52, 52, 6)
+        assert s1.shape == (3, 13, 13, 6)
+        assert s2.shape == (3, 26, 26, 6)
+        assert s3.shape == (3, 52, 52, 6)
