@@ -58,45 +58,26 @@ class DetectionDatasetV3(Dataset):
         records['y_max'] = records['y_max'] / image.shape[1]
 
         x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-        width, height = x2 - x1, y2 - y1
         records['x_min'] = (x1 + x2) / 2
         records['y_min'] = (y1 + y2) / 2
         records['x_max'] = (x2 - x1)
         records['y_max'] = (y2 - y1)
         boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
 
-        area = torch.as_tensor(width * height, dtype=torch.float32)
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
-
-        # suppose all instances are not crowd
-        iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
-
-        target = {}
-        target['boxes'] = boxes
-        target['labels'] = labels
-        target['image_id'] = torch.tensor([index])
-        target['area'] = area
-        target['iscrowd'] = iscrowd
 
         if self.transforms:
             sample = {
                 'image': image,
-                'bboxes': target['boxes'],
+                'bboxes': boxes,
                 'labels': labels
             }
-            print(boxes)
             transformed = self.transforms(**sample)
             image = transformed['image']
-            target['boxes'] = torch.tensor(transformed['bboxes'])
-
-        if target["boxes"].shape[0] == 0:
-            # Albumentation cuts the target (class 14, 1x1px in the corner)
-            target["boxes"] = torch.tensor([0.0, 0.0, 1.0, 1.0])
-            target["area"] = torch.tensor([1.0], dtype=torch.float32)
-            target["labels"] = torch.tensor([0], dtype=torch.int64)
+            boxes = torch.tensor(transformed['bboxes'])
 
         targets = build_targets(
-            target["boxes"], target["labels"],
+            boxes, labels,
             self.anchors, self.scales, self.iou_threshold)
 
         return image, targets
