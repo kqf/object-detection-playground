@@ -66,30 +66,18 @@ class DetectionDatasetV3(Dataset):
 
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
 
-        target = {}
-        target['boxes'] = boxes
-        target['labels'] = labels
-        target['image_id'] = torch.tensor([index])
-
         if self.transforms:
             sample = {
                 'image': image,
-                'bboxes': target['boxes'],
+                'bboxes': boxes,
                 'labels': labels
             }
-            print(boxes)
             transformed = self.transforms(**sample)
             image = transformed['image']
-            target['boxes'] = torch.tensor(transformed['bboxes'])
-
-        if target["boxes"].shape[0] == 0:
-            # Albumentation cuts the target (class 14, 1x1px in the corner)
-            target["boxes"] = torch.tensor([0.0, 0.0, 1.0, 1.0])
-            target["area"] = torch.tensor([1.0], dtype=torch.float32)
-            target["labels"] = torch.tensor([0], dtype=torch.int64)
+            boxes = torch.tensor(transformed['bboxes'])
 
         targets = build_targets(
-            target["boxes"], target["labels"],
+            boxes, labels,
             self.anchors, self.scales, self.iou_threshold)
 
         return image, targets
