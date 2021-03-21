@@ -58,25 +58,18 @@ class DetectionDatasetV3(Dataset):
         records['y_max'] = records['y_max'] / image.shape[1]
 
         x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-        width, height = x2 - x1, y2 - y1
         records['x_min'] = (x1 + x2) / 2
         records['y_min'] = (y1 + y2) / 2
         records['x_max'] = (x2 - x1)
         records['y_max'] = (y2 - y1)
         boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
 
-        area = torch.as_tensor(width * height, dtype=torch.float32)
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
-
-        # suppose all instances are not crowd
-        iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
 
         target = {}
         target['boxes'] = boxes
         target['labels'] = labels
         target['image_id'] = torch.tensor([index])
-        target['area'] = area
-        target['iscrowd'] = iscrowd
 
         if self.transforms:
             sample = {
