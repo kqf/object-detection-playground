@@ -73,6 +73,7 @@ class DetectionDatasetV3(Dataset):
                 'labels': labels
             }
             transformed = self.transforms(**sample)
+
             image = transformed['image']
             boxes = torch.tensor(transformed['bboxes'])
 
