@@ -15,11 +15,11 @@ bbox_params = {
 
 def transform(train=True, mean=None, std=None, scale=1., size=2000):
     normalize = alb.Compose([
-        alb.PadIfNeeded(
-            min_height=int(size * scale),
-            min_width=int(size * scale),
-            border_mode=cv2.BORDER_CONSTANT,
-        ),
+        # alb.PadIfNeeded(
+        #     min_height=int(size * scale),
+        #     min_width=int(size * scale),
+        #     border_mode=cv2.BORDER_CONSTANT,
+        # ),
         alb.Normalize(mean=_mean, std=_std,
                       max_pixel_value=255.0, p=1.0),
         ToTensorV2(p=1.0)
