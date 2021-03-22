@@ -34,7 +34,13 @@ def annotations():
         "x_max": [np.nan, np.nan, 1653.0, 1611.0, np.nan],
         "y_max": [np.nan, np.nan, 1831.0, 1019.0, np.nan],
     }
-    return pd.DataFrame(data)
+
+    df = pd.DataFrame(data)
+    df.loc[df["class_id"] == 14, 'x_min'] = 691.0
+    df.loc[df["class_id"] == 14, 'x_max'] = 1653.0
+    df.loc[df["class_id"] == 14, 'y_min'] = 1375.0
+    df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
+    return df
 
 
 @pytest.fixture
