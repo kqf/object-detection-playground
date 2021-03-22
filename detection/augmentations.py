@@ -15,7 +15,6 @@ bbox_params = {
 
 def transform(train=True, mean=None, std=None, scale=1., size=256):
     normalize = alb.Compose([
-        alb.LongestMaxSize(max_size=int(size * scale)),
         alb.PadIfNeeded(
             min_height=int(size * scale),
             min_width=int(size * scale),
@@ -31,8 +30,6 @@ def transform(train=True, mean=None, std=None, scale=1., size=256):
 
     return alb.Compose([
         alb.Flip(0.5),
-        alb.ShiftScaleRotate(scale_limit=0.1, rotate_limit=45, p=0.25),
-        alb.LongestMaxSize(max_size=800, p=1.0),
         normalize,
 
     ], bbox_params=bbox_params)
