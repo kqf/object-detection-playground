@@ -67,14 +67,11 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': boxes,
                 'labels': labels
             }
-            try:
-                transformed = self.transforms(**sample)
-            except Exception as e:
-                print(e)
-                import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+            transformed = self.transforms(**sample)
 
             image = transformed['image']
-            boxes = torch.tensor(transformed['bboxes'])
+            boxes = transformed['bboxes']
+            labels = transformed['labels']
 
         targets = build_targets(
             boxes, labels,
