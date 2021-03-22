@@ -1,10 +1,16 @@
+import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
+from detection.augmentations import transform
 
 
-def test_dataset(fake_dataset):
+@pytest.mark.parametrize("transforms", [
+    transform(train=False),
+    transform(train=True),
+])
+def test_dataset(fake_dataset, transforms):
     df = pd.read_csv(fake_dataset / "train.csv")
-    dataset = DetectionDatasetV3(df, fake_dataset)
+    dataset = DetectionDatasetV3(df, fake_dataset, transforms=transforms)
 
     for image, (s1, s2, s3) in dataset:
         assert len(image.shape) == 3, "There are only 3 dimensions"
