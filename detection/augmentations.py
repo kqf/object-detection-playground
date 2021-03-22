@@ -13,7 +13,7 @@ bbox_params = {
 }
 
 
-def transform(train=True, mean=None, std=None, scale=1., size=256):
+def transform(train=True, mean=None, std=None, scale=1., size=2000):
     normalize = alb.Compose([
         alb.PadIfNeeded(
             min_height=int(size * scale),
