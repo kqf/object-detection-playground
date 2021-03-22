@@ -51,18 +51,13 @@ class DetectionDatasetV3(Dataset):
         if records.loc[0, "class_id"] == 0:
             records = records.loc[[0], :]
 
-        # Normalize the boundign boxes
-        records['x_min'] = records['x_min'] / image.shape[0]
-        records['x_max'] = records['x_max'] / image.shape[0]
-        records['y_min'] = records['y_min'] / image.shape[1]
-        records['y_max'] = records['y_max'] / image.shape[1]
-
         x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-        records['x_min'] = (x1 + x2) / 2
-        records['y_min'] = (y1 + y2) / 2
-        records['x_max'] = (x2 - x1)
-        records['y_max'] = (y2 - y1)
-        boxes = records[['x_min', 'y_min', 'x_max', 'y_max']].values
+        records['x_center'] = (x1 + x2) / 2 / image.shape[0]
+        records['y_center'] = (y1 + y2) / 2 / image.shape[1]
+        records['width'] = (x2 - x1) / image.shape[0]
+        records['height'] = (y2 - y1) / image.shape[1]
+
+        boxes = records[['x_center', 'y_center', 'width', 'height']].values
 
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
 
@@ -72,7 +67,11 @@ class DetectionDatasetV3(Dataset):
                 'bboxes': boxes,
                 'labels': labels
             }
-            transformed = self.transforms(**sample)
+            try:
+                transformed = self.transforms(**sample)
+            except Exception as e:
+                print(e)
+                import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
 
             image = transformed['image']
             boxes = torch.tensor(transformed['bboxes'])
