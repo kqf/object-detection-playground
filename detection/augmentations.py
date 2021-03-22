@@ -29,7 +29,6 @@ def transform(train=True, mean=None, std=None, scale=1., size=2000):
         return normalize
 
     return alb.Compose([
-        alb.Flip(0.5),
         normalize,
 
     ], bbox_params=bbox_params)
