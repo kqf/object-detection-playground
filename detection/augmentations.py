@@ -36,7 +36,7 @@ class DebugAugmentations(DualTransform):
 
 
 def transform(train=True, mean=None, std=None, scale=1., size=2000):
-    normalize = alb.Compose([
+    transforms = [
         # alb.PadIfNeeded(
         #     min_height=int(size * scale),
         #     min_width=int(size * scale),
@@ -46,12 +46,12 @@ def transform(train=True, mean=None, std=None, scale=1., size=2000):
         alb.Resize(size, size),
         alb.Normalize(mean=_mean, std=_std, max_pixel_value=255.0, p=1.0),
         ToTensorV2(p=1.0)
-    ], bbox_params=bbox_params)
+    ]
 
-    if not train:
-        return normalize
+    train_transforms = []
+    if train:
+        train_transforms = [
+            alb.Flip(0.5)
+        ]
 
-    return alb.Compose([
-        normalize,
-
-    ])
+    return alb.Compose(train_transforms + transforms, bbox_params=bbox_params)
