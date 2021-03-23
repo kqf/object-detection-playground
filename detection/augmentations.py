@@ -54,4 +54,4 @@ def transform(train=True, mean=None, std=None, scale=1., size=2000):
     return alb.Compose([
         normalize,
 
-    ], bbox_params=bbox_params)
+    ])
