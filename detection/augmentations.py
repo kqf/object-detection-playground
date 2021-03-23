@@ -51,6 +51,7 @@ def transform(train=True, mean=None, std=None, scale=1., size=2000):
     train_transforms = []
     if train:
         train_transforms = [
+            alb.Flip(0.5)
         ]
 
     return alb.Compose(train_transforms + transforms, bbox_params=bbox_params)
