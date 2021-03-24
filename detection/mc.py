@@ -2,9 +2,9 @@ import numpy as np
 
 
 def make_blob(
-    h=2000, w=2000,
     x_min=50, y_min=50,
     x_max=90, y_max=90,
+    h=2000, w=2000,
     **kwargs
 ):
     Y, X = np.ogrid[:h, :w]
