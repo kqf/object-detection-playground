@@ -14,22 +14,16 @@ def tensor2img(t, padding=0):
 
 
 def plot(*imgs):
-    fig, axes = plt.subplots(len(imgs), len(imgs[0]), figsize=(12, 5))
+    fig, axes = plt.subplots(4, 4, figsize=(12, 5))
 
-    # If there is a single row in the data
-    if len(imgs) == 1:
-        axes = [axes]
-
-    for row, raxes in zip(imgs, axes):
-        for i, (image, ax) in enumerate(zip(row, raxes)):
-            ax.grid(False)
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_title(f"Sample {i}")
-            try:
-                ax.imshow(image)
-            except TypeError:
-                ax.imshow(tensor2img(image))
+    for i, (image, bbox) in enumerate(imgs):
+        plt.subplot(4, 4, i + 1)
+        try:
+            plt.imshow(image)
+        except TypeError:
+            plt.imshow(tensor2img(image))
+        ax = plt.gca()
+        ax.add_patch(rectangle(*bbox))
     plt.show()
     return axes
 
