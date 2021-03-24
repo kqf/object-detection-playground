@@ -54,3 +54,8 @@ def compare(image, mask):
 def glance(dataset, batch_size, pfunc=plot):
     for batch in batches(dataset, batch_size):
         pfunc(*batch)
+
+
+def rectangle(x1, y1, x2, y2):
+    w, h = x2 - x1, y2 - y1
+    return plt.Rectangle((x1, y1), w, h, color='r', fill=False)
