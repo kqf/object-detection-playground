@@ -5,7 +5,7 @@ from detection.mc import make_blob, blob2image
 
 @pytest.fixture
 def bbox():
-    return [400, 400, 600, 800]
+    return [400, 400, 1200, 1200]
 
 
 def rectangle(x1, y1, x2, y2):

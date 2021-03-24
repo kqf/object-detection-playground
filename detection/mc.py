@@ -19,7 +19,7 @@ def make_blob(
     yy = (Y[..., None] - cy)
     dists = np.sqrt((xx / w) ** 2 + (yy / h) ** 2)
 
-    mask = dists <= 1
+    mask = dists <= 1. / 2.
     return mask.sum(axis=-1).astype(np.uint8)
 
 
