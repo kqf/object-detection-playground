@@ -45,9 +45,10 @@ def batches(dataset, batch_size):
         batch = []
 
 
-def compare(image, mask):
+def compare(image, bbox):
     plt.imshow(tensor2img(image))
-    plt.imshow(tensor2img(mask), alpha=0.6)
+    ax = plt.gca()
+    ax.add_patch(rectangle(*bbox))
     plt.show()
 
 
