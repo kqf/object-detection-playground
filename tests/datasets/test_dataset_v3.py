@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
 from detection.augmentations import transform
-from detection.plot import plot
+# from detection.plot import plot
 
 
 @pytest.mark.parametrize("transforms", [
