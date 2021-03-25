@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
 from detection.augmentations import transform
+from detection.plot import plot
 
 
 @pytest.mark.parametrize("transforms", [
@@ -19,3 +20,7 @@ def test_dataset(fake_dataset, transforms):
         assert s1.shape == (3, 13, 13, 6)
         assert s2.shape == (3, 26, 26, 6)
         assert s3.shape == (3, 52, 52, 6)
+
+        plot([image, s1])
+        plot([image, s2])
+        plot([image, s3])
