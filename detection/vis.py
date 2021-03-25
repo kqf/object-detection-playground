@@ -12,7 +12,12 @@ from detection.plot import plot
 def main(datapath):
     path = pathlib.Path(datapath)
     df = pd.read_csv(path / "train.csv")
-    dataset = DetectionDatasetV3(df, path, transforms=transform(train=True))
+
+    dataset = DetectionDatasetV3(
+        df,
+        path,
+        transforms=transform(train=True), no_anchors=True
+    )
 
     for image, (s1, s2, s3) in dataset:
         plot([image, s1])
