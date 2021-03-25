@@ -23,7 +23,6 @@ def plot(*imgs):
         except TypeError:
             plt.imshow(tensor2img(image))
         ax = plt.gca()
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
         ax.add_patch(rectangle(*bbox))
     plt.show()
     return axes
