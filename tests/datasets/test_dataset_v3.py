@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
 from detection.augmentations import transform
-# from detection.plot import plot
+from detection.plot import plot
 
 
 @pytest.mark.parametrize("transforms", [
@@ -21,6 +21,14 @@ def test_dataset(fake_dataset, transforms):
         assert s2.shape == (3, 26, 26, 6)
         assert s3.shape == (3, 52, 52, 6)
 
-    # plot([image, s1])
-    # plot([image, s2])
-    # plot([image, s3])
+
+def test_augmentations(fake_dataset):
+    df = pd.read_csv(fake_dataset / "train.csv")
+    dataset = DetectionDatasetV3(
+        df, fake_dataset,
+        transforms=transform(train=True),
+        no_anchors=True,
+    )
+
+    for image, anchors in dataset:
+        plot([image, anchors])
