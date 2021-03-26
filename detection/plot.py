@@ -13,7 +13,7 @@ def tensor2img(t, padding=0):
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
 
-def plot(*imgs):
+def plot(*imgs, block=True):
     fig, axes = plt.subplots(4, 4, figsize=(12, 5))
 
     for i, (image, bboxes) in enumerate(imgs):
@@ -25,7 +25,7 @@ def plot(*imgs):
         ax = plt.gca()
         for bbox in bboxes:
             ax.add_patch(rectangle(*bbox))
-    plt.show()
+    plt.show(block=block)
     return axes
 
 
