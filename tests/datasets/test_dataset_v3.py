@@ -22,7 +22,7 @@ def test_dataset(fake_dataset, transforms):
         assert s3.shape == (3, 52, 52, 6)
 
 
-def test_augmentations(fake_dataset):
+def test_augmentations(fake_dataset, block=False):
     df = pd.read_csv(fake_dataset / "train.csv")
     dataset = DetectionDatasetV3(
         df, fake_dataset,
@@ -31,4 +31,4 @@ def test_augmentations(fake_dataset):
     )
 
     for image, anchors in dataset:
-        plot([image, anchors])
+        plot([image, anchors], block=block)
