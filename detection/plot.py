@@ -16,14 +16,15 @@ def tensor2img(t, padding=0):
 def plot(*imgs):
     fig, axes = plt.subplots(4, 4, figsize=(12, 5))
 
-    for i, (image, bbox) in enumerate(imgs):
+    for i, (image, bboxes) in enumerate(imgs):
         plt.subplot(4, 4, i + 1)
         try:
             plt.imshow(image)
         except TypeError:
             plt.imshow(tensor2img(image))
         ax = plt.gca()
-        ax.add_patch(rectangle(*bbox))
+        for bbox in bboxes:
+            ax.add_patch(rectangle(*bbox))
     plt.show()
     return axes
 
