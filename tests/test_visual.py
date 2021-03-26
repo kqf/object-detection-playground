@@ -19,5 +19,5 @@ def test_mc(bbox, block=False):
 
 
 def test_plotting(bbox, block=False):
-    data = [(blob2image(make_blob(*bbox)), bbox) for i in range(16)]
+    data = [(blob2image(make_blob(*bbox)), [bbox]) for i in range(16)]
     plot(*data, block=block)
