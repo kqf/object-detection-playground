@@ -15,7 +15,7 @@ def tensor2img(t, padding=0):
 
 
 def plot(*imgs, block=True):
-    n_plots = sqrt(len(imgs))
+    n_plots = int(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
     for i, (image, bboxes) in enumerate(imgs):
