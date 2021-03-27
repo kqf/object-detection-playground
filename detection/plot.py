@@ -5,11 +5,15 @@ from torchvision.transforms.functional import to_pil_image
 from math import sqrt, ceil
 
 
-def tensor2img(t, padding=0):
+def normalize(x):
     std = torch.Tensor([0.229, 0.224, 0.225]).reshape(-1, 1, 1)
     mu = torch.Tensor([0.485, 0.456, 0.406]).reshape(-1, 1, 1)
+    return x * std + mu
+
+
+def tensor2img(t, padding=0):
     # return t * std + mu if t.shape[0] > 1 else t
-    img = to_pil_image(t * std + mu if t.shape[0] > 1 else t)
+    img = to_pil_image(normalize(t) if t.shape[0] > 1 else t)
     w, h = img.size
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
