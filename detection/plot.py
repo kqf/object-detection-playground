@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from torchvision.transforms.functional import to_pil_image
+from math import sqrt, ceil
 
 
 def tensor2img(t, padding=0):
@@ -14,10 +15,11 @@ def tensor2img(t, padding=0):
 
 
 def plot(*imgs, block=True):
-    fig, axes = plt.subplots(4, 4, figsize=(12, 5))
+    n_plots = ceil(sqrt(len(imgs)))
+    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
     for i, (image, bboxes) in enumerate(imgs):
-        plt.subplot(4, 4, i + 1)
+        plt.subplot(n_plots, n_plots, i + 1)
         try:
             plt.imshow(image)
         except TypeError:
