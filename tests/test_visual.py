@@ -18,6 +18,6 @@ def test_mc(bbox, block=False):
     plt.show(block=block)
 
 
-def test_plotting(bbox, block=False):
+def test_plotting(bbox, block=True):
     data = [(blob2image(make_blob(*bbox)), [bbox]) for i in range(16)]
     plot(*data, block=block)
