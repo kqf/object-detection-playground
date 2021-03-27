@@ -18,7 +18,7 @@ def tensor2img(t, padding=0):
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
 
-def plot(*imgs, block=True):
+def plot(*imgs, block=True, normalize=False):
     n_plots = ceil(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
@@ -27,7 +27,7 @@ def plot(*imgs, block=True):
         try:
             plt.imshow(image)
         except TypeError:
-            plt.imshow(tensor2img(image))
+            plt.imshow(tensor2img(image, normalize=normalize))
         ax = plt.gca()
         for bbox in bboxes:
             ax.add_patch(rectangle(*bbox))
@@ -46,8 +46,8 @@ def batches(dataset, batch_size):
         batch = []
 
 
-def compare(image, bbox):
-    plt.imshow(tensor2img(image))
+def compare(image, bbox, normalize=False):
+    plt.imshow(tensor2img(image, normalize=normalize))
     ax = plt.gca()
     ax.add_patch(rectangle(*bbox))
     plt.show()
