@@ -19,7 +19,7 @@ def plot(*imgs, block=True):
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
     for i, (image, bboxes) in enumerate(imgs):
-        plt.subplot(4, 4, i + 1)
+        plt.subplot(n_plots, n_plots, i + 1)
         try:
             plt.imshow(image)
         except TypeError:
