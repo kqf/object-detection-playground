@@ -5,16 +5,20 @@ from torchvision.transforms.functional import to_pil_image
 from math import sqrt, ceil
 
 
-def tensor2img(t, padding=0):
+def normalize(x):
     std = torch.Tensor([0.229, 0.224, 0.225]).reshape(-1, 1, 1)
     mu = torch.Tensor([0.485, 0.456, 0.406]).reshape(-1, 1, 1)
+    return x * std + mu
+
+
+def tensor2img(t, padding=0):
     # return t * std + mu if t.shape[0] > 1 else t
-    img = to_pil_image(t * std + mu if t.shape[0] > 1 else t)
+    img = to_pil_image(normalize(t) if t.shape[0] > 1 else t)
     w, h = img.size
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
 
-def plot(*imgs, block=True):
+def plot(*imgs, block=True, normalize=False):
     n_plots = ceil(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
@@ -23,7 +27,7 @@ def plot(*imgs, block=True):
         try:
             plt.imshow(image)
         except TypeError:
-            plt.imshow(tensor2img(image))
+            plt.imshow(tensor2img(image, normalize=normalize))
         ax = plt.gca()
         for bbox in bboxes:
             ax.add_patch(rectangle(*bbox))
@@ -42,8 +46,8 @@ def batches(dataset, batch_size):
         batch = []
 
 
-def compare(image, bbox):
-    plt.imshow(tensor2img(image))
+def compare(image, bbox, normalize=False):
+    plt.imshow(tensor2img(image, normalize=normalize))
     ax = plt.gca()
     ax.add_patch(rectangle(*bbox))
     plt.show()
