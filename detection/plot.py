@@ -11,6 +11,15 @@ def normalize(x):
     return x * std + mu
 
 
+def absolute_bbox(bbox, image_w, image_h):
+    x_center, y_center, w, h = bbox
+    x1 = (x_center - w / 2) * image_w
+    x2 = (x_center + w / 2) * image_w
+    y1 = (y_center - h / 2) * image_h
+    y2 = (y_center + h / 2) * image_h
+    return [x1, y1, x2, y2]
+
+
 def tensor2img(t, padding=0, normalize=True):
     # return t * std + mu if t.shape[0] > 1 else t
     img = to_pil_image(normalize(t) if normalize else t)
@@ -18,7 +27,7 @@ def tensor2img(t, padding=0, normalize=True):
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
 
-def plot(*imgs, block=True, normalize=False):
+def plot(*imgs, block=True, normalize=False, convert_bbox=False):
     n_plots = ceil(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
@@ -30,6 +39,8 @@ def plot(*imgs, block=True, normalize=False):
             plt.imshow(tensor2img(image, normalize=normalize))
         ax = plt.gca()
         for bbox in bboxes:
+            if convert_bbox:
+                bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox))
     plt.show(block=block)
     return axes
@@ -46,9 +57,11 @@ def batches(dataset, batch_size):
         batch = []
 
 
-def compare(image, bbox, normalize=False):
+def compare(image, bbox, normalize=False, convert_bbox=False):
     plt.imshow(tensor2img(image, normalize=normalize))
     ax = plt.gca()
+    if convert_bbox:
+        bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
     ax.add_patch(rectangle(*bbox))
     plt.show()
 
