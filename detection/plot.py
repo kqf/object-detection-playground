@@ -57,7 +57,7 @@ def batches(dataset, batch_size):
         batch = []
 
 
-def compare(image, bbox, normalize=False):
+def compare(image, bbox, normalize=False, convert_bbox=False):
     plt.imshow(tensor2img(image, normalize=normalize))
     ax = plt.gca()
     if convert_bbox:
