@@ -42,7 +42,7 @@ class CombinedLoss(torch.nn.Module):
 
         # Calculate the loss at each scale
         for pred, y, anchors in zip(predictions, target, self.anchors):
-            loss += self.forward(pred, y, anchors)
+            loss += self._forward(pred, y, anchors)
 
         return loss
 
