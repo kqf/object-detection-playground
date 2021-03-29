@@ -40,7 +40,6 @@ class CombinedLoss(torch.nn.Module):
     def forward(self, predictions, target):
         loss = torch.tensor(0)
 
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
         # Calculate the loss at each scale
         for pred, y, anchors in zip(predictions, target, self.anchors):
             loss += self._forward(pred, y, anchors)
