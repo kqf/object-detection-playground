@@ -4,6 +4,7 @@ import skorch
 
 from detection.models.v3 import YOLO
 from detection.losses.v3 import CombinedLoss
+from detection.datasets.v3 import DEFAULT_ANCHORS
 
 
 def init(w):
@@ -41,6 +42,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         max_epochs=max_epochs,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
+        criterion__anchors=DEFAULT_ANCHORS,
         # criterion__hyp=hyp,
         iterator_train__shuffle=True,
         iterator_train__num_workers=6,
