@@ -38,6 +38,15 @@ class CombinedLoss(torch.nn.Module):
         self.box = 1
 
     def forward(self, predictions, target):
+        loss = torch.tensor(0)
+
+        # Calculate the loss at each scale
+        for pred, y, anchors in zip(predictions, target, self.anchors):
+            loss += self.forward(pred, y, anchors)
+
+        return loss
+
+    def _forward(self, predictions, target, anchors):
         # Check where obj and noobj (we ignore if target == -1)
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         noobj = target[..., 0] == 0  # in paper this is Inoobj_i
@@ -46,7 +55,7 @@ class CombinedLoss(torch.nn.Module):
             (predictions[..., 0:1][noobj]), (target[..., 0:1][noobj]),
         )
 
-        anchors = self.anchors.reshape(1, 3, 1, 1, 2)
+        anchors = anchors.reshape(1, 3, 1, 1, 2)
         box_preds = torch.cat([
             self.sigmoid(predictions[..., 1:3]),
             torch.exp(predictions[..., 3:5]) * anchors
