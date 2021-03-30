@@ -62,7 +62,7 @@ class ScalePrediction(torch.nn.Module):
 
 
 def build_model(in_channels, num_classes):
-    layers = nn.ModuleList()
+    layers = []
     for module in config:
         if isinstance(module, tuple):
             out_channels, kernel_size, stride = module
@@ -95,4 +95,4 @@ def build_model(in_channels, num_classes):
                 layers.append(nn.Upsample(scale_factor=2),)
                 in_channels = in_channels * 3
 
-    return layers
+    return torch.nn.Sequential(*layers)
