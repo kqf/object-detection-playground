@@ -88,6 +88,8 @@ def build_model(in_channels, num_classes):
         elif isinstance(module, list):
             num_repeats = module[1]
             layers.append(Residual(in_channels, num_repeats=num_repeats,))
+            if num_repeats == 8:
+                layers.append(ResidualCache())
 
         elif isinstance(module, str):
             if module == "S":
