@@ -28,8 +28,7 @@ class CNN(nn.Module):
     def forward(self, x):
         if self.use_bn_act:
             return self.leaky(self.bn(self.conv(x)))
-        else:
-            return self.conv(x)
+        return self.conv(x)
 
 
 class Residual(nn.Module):
@@ -51,9 +50,18 @@ class Residual(nn.Module):
         for layer in self.layers:
             if self.use_residual:
                 x = x + layer(x)
-            else:
-                x = layer(x)
+            x = layer(x)
+        return x
 
+
+class ResidualCache(torch.nn.Module):
+    def forward(self, x):
+        self.cached = x
+        return x
+
+    def pop(self):
+        x = self.cached
+        del self.cached
         return x
 
 
@@ -80,6 +88,8 @@ def build_model(in_channels, num_classes):
         elif isinstance(module, list):
             num_repeats = module[1]
             layers.append(Residual(in_channels, num_repeats=num_repeats,))
+            if num_repeats == 8:
+                layers.append(ResidualCache())
 
         elif isinstance(module, str):
             if module == "S":
