@@ -54,6 +54,17 @@ class Residual(nn.Module):
         return x
 
 
+class ResidualCache(torch.nn.Module):
+    def forward(self, x):
+        self.cached = x
+        return x
+
+    def pop(self):
+        x = self.cached
+        del self.cached
+        return x
+
+
 class ScalePrediction(torch.nn.Module):
     pass
 
