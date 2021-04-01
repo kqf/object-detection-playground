@@ -65,7 +65,24 @@ class ResidualCache(torch.nn.Module):
 
 
 class ScalePrediction(torch.nn.Module):
-    pass
+    def __init__(self, in_channels, num_classes):
+        super().__init__()
+        self.n_preds = (num_classes + 5)
+        self.n_scales = 3
+        n_out = self.n_scales * self.n_preds
+        self.pred = torch.nn.Sequential(
+            CNN(in_channels, 2 * in_channels, kernel_size=3, padding=1),
+            CNN(2 * in_channels, n_out, bn_act=False, kernel_size=1),
+        )
+        self.num_classes = num_classes
+
+    def forward(self, x):
+        b, _, h, w = x.shape
+        return (
+            self.pred(x)
+            .reshape(b, self.n_preds, self.n_scales, h, w)
+            .permute(0, 1, 3, 4, 2)
+        )
 
 
 def build_model(in_channels, num_classes):
