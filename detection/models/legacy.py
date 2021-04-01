@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 
 config = [
     (32, 3, 1),
@@ -16,13 +15,13 @@ config = [
 ]
 
 
-class CNN(nn.Module):
+class CNN(torch.nn.Module):
     def __init__(self, in_channels, out_channels, bn_act=True, **kwargs):
         super().__init__()
-        self.conv = nn.Conv2d(in_channels, out_channels,
-                              bias=not bn_act, **kwargs)
-        self.bn = nn.BatchNorm2d(out_channels)
-        self.leaky = nn.LeakyReLU(0.1)
+        self.conv = torch.nn.Conv2d(in_channels, out_channels,
+                                    bias=not bn_act, **kwargs)
+        self.bn = torch.nn.BatchNorm2d(out_channels)
+        self.leaky = torch.nn.LeakyReLU(0.1)
         self.use_bn_act = bn_act
 
     def forward(self, x):
@@ -31,13 +30,13 @@ class CNN(nn.Module):
         return self.conv(x)
 
 
-class Residual(nn.Module):
+class Residual(torch.nn.Module):
     def __init__(self, channels, use_residual=True, num_repeats=1):
         super().__init__()
-        self.layers = nn.ModuleList()
+        self.layers = torch.nn.ModuleList()
         for repeat in range(num_repeats):
             self.layers += [
-                nn.Sequential(
+                torch.nn.Sequential(
                     CNN(channels, channels // 2, kernel_size=1),
                     CNN(channels // 2, channels, kernel_size=3, padding=1),
                 )
@@ -102,7 +101,7 @@ def build_model(in_channels, num_classes):
                 in_channels = in_channels // 2
 
             elif module == "U":
-                layers.append(nn.Upsample(scale_factor=2),)
+                layers.append(torch.nn.Upsample(scale_factor=2),)
                 in_channels = in_channels * 3
 
     return torch.nn.Sequential(*layers)
