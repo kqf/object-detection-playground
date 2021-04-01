@@ -9,6 +9,13 @@ from pathlib import Path
 from detection.mc import make_blob, blob2image
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "onlylocal: mark test to run only as they require the data ",
+    )
+
+
 @pytest.fixture
 def size():
     return 256
