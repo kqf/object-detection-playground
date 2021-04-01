@@ -101,7 +101,7 @@ def build_model(in_channels, num_classes):
                 in_channels = in_channels // 2
 
             elif module == "U":
-                layers.append(nn.Upsample(scale_factor=2),)
+                layers.append(torch.nn.Upsample(scale_factor=2),)
                 in_channels = in_channels * 3
 
     return torch.nn.Sequential(*layers)
