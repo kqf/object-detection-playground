@@ -1,6 +1,6 @@
 import pytest
 import torch
-from detection.models.darknet import SkipConcat
+from detection.models.legacy import SkipConcat
 
 
 @pytest.fixture
@@ -11,4 +11,4 @@ def batch():
 def test_skips(batch):
     layer = SkipConcat()
     x = layer(batch)
-    assert layer.cache() == x
+    assert layer.pop() == x
