@@ -11,4 +11,4 @@ def batch():
 def test_skips(batch):
     layer = SkipConcat()
     x = layer(batch)
-    assert layer.pop() == x
+    assert torch.allclose(layer.cache(), x)
