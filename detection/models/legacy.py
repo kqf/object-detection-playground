@@ -55,13 +55,11 @@ class Residual(torch.nn.Module):
 
 class SkipConcat(torch.nn.Module):
     def forward(self, x):
-        self.cached = x
-        return x
-
-    def pop(self):
-        x = self.cached
-        del self.cached
-        return x
+        if "cached" not in self.__dict__:
+            self.cached = torch.tensor(x)
+            return x
+        output = torch.cat([x, self.cached], axis=1)
+        return output
 
 
 class ScalePrediction(torch.nn.Module):
