@@ -11,4 +11,9 @@ def batch():
 def test_skips(batch):
     layer = SkipConcat()
     x = layer(batch)
-    assert torch.allclose(layer.cache(), x)
+
+    # Just identity
+    assert torch.allclose(batch, x)
+
+    # Second pass differs from the previous one
+    assert torch.allclose(layer(x), torch.cat([x, x], axis=1))
