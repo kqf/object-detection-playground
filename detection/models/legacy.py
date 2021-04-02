@@ -53,7 +53,7 @@ class Residual(torch.nn.Module):
         return x
 
 
-class ResidualCache(torch.nn.Module):
+class SkipConcat(torch.nn.Module):
     def forward(self, x):
         self.cached = x
         return x
@@ -105,7 +105,7 @@ def build_model(in_channels, num_classes):
             num_repeats = module[1]
             layers.append(Residual(in_channels, num_repeats=num_repeats,))
             if num_repeats == 8:
-                layers.append(ResidualCache())
+                layers.append(SkipConcat())
 
         elif isinstance(module, str):
             if module == "S":
