@@ -10,7 +10,6 @@ def batch():
     return torch.rand(64, 3, 256, 256)
 
 
-@pytest.mark.onlylocal
 def test_module(batch):
     model = Darknet()
     l1, l2, l3 = model(batch)
@@ -20,7 +19,6 @@ def test_module(batch):
     assert l3.shape == (64, 256, 32, 32)
 
 
-@pytest.mark.onlylocal
 def test_legacy(batch):
     model = torch.nn.Sequential(*build_model(3, 40))
     l1 = model(batch)
