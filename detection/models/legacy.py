@@ -53,15 +53,6 @@ class Residual(torch.nn.Module):
         return x
 
 
-class SkipConcat(torch.nn.Module):
-    def forward(self, x):
-        if "cached" not in self.__dict__:
-            self.cached = torch.tensor(x)
-            return x
-        output = torch.cat([x, self.cached], axis=1)
-        return output
-
-
 class ScalePrediction(torch.nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
@@ -102,8 +93,6 @@ def build_model(in_channels, num_classes, config=DARKNET_CONFIG):
         elif isinstance(module, list):
             num_repeats = module[1]
             layers.append(Residual(in_channels, num_repeats=num_repeats,))
-            if num_repeats == 8:
-                layers.append(SkipConcat())
 
         elif isinstance(module, str):
             if module == "S":
