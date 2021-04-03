@@ -1,6 +1,6 @@
 import torch
 
-config = [
+DARKNET_CONFIG = [
     (32, 3, 1),
     (64, 3, 2),
     ["B", 1],
@@ -83,7 +83,7 @@ class ScalePrediction(torch.nn.Module):
         )
 
 
-def build_model(in_channels, num_classes):
+def build_model(in_channels, num_classes, config=DARKNET_CONFIG):
     layers = []
     for module in config:
         if isinstance(module, tuple):
