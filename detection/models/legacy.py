@@ -108,3 +108,29 @@ def build_model(in_channels, num_classes, config=DARKNET_CONFIG):
                 layers.append(torch.nn.Upsample(scale_factor=2),)
                 in_channels = in_channels * 3
     return layers
+
+
+class YOLO(torch.nn.Module):
+    def __init__(self, in_channels=3, num_classes=80):
+        super().__init__()
+        layers = build_model(in_channels, num_classes)
+        self.layers = torch.nn.ModuleList(layers)
+
+    def forward(self, x):
+        outputs = []  # for each scale
+        route_connections = []
+        for layer in self.layers:
+            if isinstance(layer, ScalePrediction):
+                outputs.append(layer(x))
+                continue
+
+            x = layer(x)
+
+            if isinstance(layer, Residual) and layer.num_repeats == 8:
+                route_connections.append(x)
+
+            elif isinstance(layer, torch.nn.Upsample):
+                x = torch.cat([x, route_connections[-1]], dim=1)
+                route_connections.pop()
+
+        return outputs
