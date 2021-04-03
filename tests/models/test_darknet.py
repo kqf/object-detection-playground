@@ -19,6 +19,7 @@ def test_module(batch):
     assert l3.shape == (64, 256, 32, 32)
 
 
+@pytest.mark.skip("Remove this test probably")
 def test_legacy(batch):
     model = torch.nn.Sequential(*build_model(3, 40))
     l1 = model(batch)
