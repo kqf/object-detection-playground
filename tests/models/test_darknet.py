@@ -22,7 +22,7 @@ def test_module(batch):
 
 @pytest.mark.onlylocal
 def test_legacy(batch):
-    model = build_model(3, 40)
+    model = torch.nn.Sequential(*build_model(3, 40))
     l1 = model(batch)
     l2 = model[10].pop()
     l3 = model[7].pop()

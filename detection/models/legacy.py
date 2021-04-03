@@ -118,5 +118,4 @@ def build_model(in_channels, num_classes, config=DARKNET_CONFIG):
             elif module == "U":
                 layers.append(torch.nn.Upsample(scale_factor=2),)
                 in_channels = in_channels * 3
-
-    return torch.nn.Sequential(*layers)
+    return layers
