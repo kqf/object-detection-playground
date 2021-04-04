@@ -47,21 +47,21 @@ class YOLO(nn.Module):
         )
 
         self.upsample2 = torch.nn.Sequential(
-            conv(1024 // 2, 256, kernel_size=1, stride=1, padding=1),
+            conv(1024 // 2, 256, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
         self.conv2 = torch.nn.Sequential(
-            conv(256 * 3, 256, kernel_size=1, stride=1, padding=1),
+            conv(256 * 3, 256, kernel_size=1, stride=1, padding=0),
             conv(256, 512, kernel_size=3, stride=1, padding=1),
             cblock(512, 512 // 2),
         )
 
         self.upsample3 = torch.nn.Sequential(
-            conv(256, 128, kernel_size=1, stride=1, padding=1),
+            conv(256, 128, kernel_size=1, stride=1, padding=0),
             torch.nn.Upsample(scale_factor=2),
         )
         self.conv3 = torch.nn.Sequential(
-            conv(128 * 3, 128, kernel_size=1, stride=1, padding=1),
+            conv(128 * 3, 128, kernel_size=1, stride=1, padding=0),
             conv(128, 256, kernel_size=3, stride=1, padding=1),
             cblock(256, 256 // 2),
         )
