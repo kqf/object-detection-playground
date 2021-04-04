@@ -17,6 +17,8 @@ def cblock(in_channels, out_channels):
 class ScalePrediction(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
+        self.n_preds = num_classes + 5
+        self.n_scales = 3
         self.pred = nn.Sequential(
             conv(in_channels // 2, in_channels, kernel_size=3, padding=1),
             torch.nn.Conv2d(in_channels, (num_classes + 5) * 3, kernel_size=1),
@@ -24,11 +26,11 @@ class ScalePrediction(nn.Module):
         self.num_classes = num_classes
 
     def forward(self, x):
+        b, _, h, w = x.shape
+
         out = self.pred(x)
         return (
-            out.reshape(
-                x.shape[0], 3, self.num_classes + 5, x.shape[2], x.shape[3]
-            )
+            out.reshape(b, self.n_preds, self.n_scales, h, w)
             .permute(0, 1, 3, 4, 2)
         )
 

@@ -72,7 +72,7 @@ class Residual(torch.nn.Module):
 class ScalePrediction(torch.nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
-        self.n_preds = (num_classes + 5)
+        self.n_preds = num_classes + 5
         self.n_scales = 3
         n_out = self.n_scales * self.n_preds
         self.pred = torch.nn.Sequential(
