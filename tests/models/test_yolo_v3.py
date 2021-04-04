@@ -24,7 +24,6 @@ def test_module(batch):
     32,
     32 * 2,
     32 * 10,
-    460,
 ])
 def test_legacy_module(batch, size):
     model = LOLO()
