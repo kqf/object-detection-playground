@@ -6,7 +6,7 @@ from detection.augmentations import transform
 from detection.model import build_model
 
 
-@pytest.mark.skip("Fix the prediction/targets shapes")
+# @pytest.mark.skip("Fix the prediction/targets shapes")
 def test_dummy(fake_dataset):
     df = read_data(fake_dataset / "train.csv")
     print(df.head())

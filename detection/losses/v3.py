@@ -38,7 +38,7 @@ class CombinedLoss(torch.nn.Module):
         self.box = 1
 
     def forward(self, predictions, target):
-        loss = torch.tensor(0)
+        loss = torch.tensor(0).float()
 
         # Calculate the loss at each scale
         for pred, y, anchors in zip(predictions, target, self.anchors):
