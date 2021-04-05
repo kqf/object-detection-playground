@@ -36,7 +36,7 @@ class DebugAugmentations(DualTransform):
         return {}
 
 
-def transform(train=True, mean=None, std=None, scale=1., size=128):
+def transform(train=True, mean=None, std=None, scale=1., size=32 * 13):
 
     if size % 32 != 0:
         warnings.warn(f"Image shape should be a multiple of 32, got {size}")
