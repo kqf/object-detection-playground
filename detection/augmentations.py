@@ -1,4 +1,5 @@
 # import cv2
+import warnings
 import albumentations as alb
 from albumentations.pytorch import ToTensorV2
 from albumentations.core.transforms_interface import DualTransform
@@ -37,6 +38,8 @@ class DebugAugmentations(DualTransform):
 
 def transform(train=True, mean=None, std=None, scale=1., size=128):
 
+    if size % 32 != 0:
+        warnings.warn(f"Image shape should be a multiple of 32, got {size}")
 
     transforms = [
         # alb.PadIfNeeded(
