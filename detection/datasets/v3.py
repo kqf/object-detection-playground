@@ -25,6 +25,7 @@ class DetectionDatasetV3(Dataset):
         iou_threshold=0.5,
         transforms=None,
         no_anchors=False,
+        imsize=320,
     ):
         super().__init__()
 
@@ -35,8 +36,11 @@ class DetectionDatasetV3(Dataset):
         self.no_anchors = no_anchors
 
         self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
-        self.scales = scales or DEFAULT_SCALES
         self.iou_threshold = iou_threshold
+        self.scales = scales or DEFAULT_SCALES
+
+        scale = imsize // 32
+        self.scales = [scale, scale * 2, scale * 4]
 
     def __getitem__(self, index):
         image_id = self.image_ids[index]
