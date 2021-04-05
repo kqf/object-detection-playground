@@ -35,7 +35,9 @@ class DebugAugmentations(DualTransform):
         return {}
 
 
-def transform(train=True, mean=None, std=None, scale=1., size=256):
+def transform(train=True, mean=None, std=None, scale=1., size=128):
+
+
     transforms = [
         # alb.PadIfNeeded(
         #     min_height=int(size * scale),
