@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 
 
@@ -33,3 +34,20 @@ def blob2image(blob, channels=3, epsilon=0.1):
 
     # Convet to image scale
     return (extended + noise * 255).astype(np.uint8)
+
+
+def annotations(n_points=1000, h=2000, w=2000):
+    x = np.random.uniform(0, h, (n_points, 2))
+    y = np.random.uniform(0, h, (n_points, 2))
+    df = pd.DataFrame({"image_id": np.arange(n_points)})
+    df["image_id"] = [1, 2, 3, 4, 5],
+
+    df["x_min"] = x.min(axis=1)
+    df["y_min"] = y.min(axis=1)
+
+    df["x_max"] = x.max(axis=0)
+    df["y_max"] = x.max(axis=0)
+    labels = (df["x_max"] - df["x_min"]) > (df["y_max"] - df["y_min"])
+    df["class_id"] = labels.astype(int)
+    df["class_name"] = labels.astype(str)
+    return df
