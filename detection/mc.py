@@ -1,5 +1,8 @@
+import cv2
 import pandas as pd
 import numpy as np
+
+from pathlib import Path
 
 
 def make_blob(
@@ -37,7 +40,7 @@ def blob2image(blob, channels=3, epsilon=0.1):
 
 
 def annotations(n_points=1000, h=2000, w=2000):
-    x = np.random.uniform(0, h, (n_points, 2))
+    x = np.random.uniform(0, w, (n_points, 2))
     y = np.random.uniform(0, h, (n_points, 2))
     df = pd.DataFrame({"image_id": np.arange(n_points)})
     df["image_id"] = [1, 2, 3, 4, 5],
@@ -51,3 +54,13 @@ def annotations(n_points=1000, h=2000, w=2000):
     df["class_id"] = labels.astype(int)
     df["class_name"] = labels.astype(str)
     return df
+
+
+def generate_to_directory(annotations, dirname):
+    path = Path(dirname)
+    for row in annotations.to_dict(orient="records"):
+        image_id = row["image_id"]
+        img = blob2image(make_blob(**row))
+        ifile = f"{image_id}.png"
+        cv2.imwrite(str(path / ifile), img)
+    annotations.to_csv(path / "train.csv", index=False)

@@ -1,4 +1,3 @@
-import cv2
 import pytest
 import tempfile
 import numpy as np
@@ -6,7 +5,7 @@ import pandas as pd
 
 from pathlib import Path
 
-from detection.mc import make_blob, blob2image
+from detection.mc import generate_to_directory
 
 
 def pytest_configure(config):
@@ -54,11 +53,5 @@ def annotations():
 def fake_dataset(annotations, size=256):
     with tempfile.TemporaryDirectory() as dirname:
         path = Path(dirname)
-        for row in annotations.to_dict(orient="records"):
-            image_id = row["image_id"]
-            img = blob2image(make_blob(**row))
-            ifile = f"{image_id}.png"
-            cv2.imwrite(str(path / ifile), img)
-
-        annotations.to_csv(path / "train.csv", index=False)
+        generate_to_directory(annotations, path)
         yield path
