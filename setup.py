@@ -7,6 +7,7 @@ setup(
     entry_points={
         'console_scripts': [
             'train=models.main:main',
+            'generate=models.main:main',
         ],
     },
 )
