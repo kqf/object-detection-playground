@@ -1,4 +1,5 @@
 import cv2
+import click
 import pandas as pd
 import numpy as np
 
@@ -39,17 +40,20 @@ def blob2image(blob, channels=3, epsilon=0.1):
     return (extended + noise * 255).astype(np.uint8)
 
 
-def annotations(n_points=1000, h=2000, w=2000):
+def annotations(n_points=32, h=2000, w=2000):
     x = np.random.uniform(0, w, (n_points, 2))
     y = np.random.uniform(0, h, (n_points, 2))
-    df = pd.DataFrame({"image_id": np.arange(n_points)})
-    df["image_id"] = [1, 2, 3, 4, 5],
+    df = pd.DataFrame({
+        # NB: Replace np.arange by np.uniform(0, n_images, n_points)
+        #     to get the dataset with multiple images
+        "image_id": np.arange(n_points)
+    })
 
     df["x_min"] = x.min(axis=1)
     df["y_min"] = y.min(axis=1)
 
-    df["x_max"] = x.max(axis=0)
-    df["y_max"] = x.max(axis=0)
+    df["x_max"] = x.max(axis=1)
+    df["y_max"] = x.max(axis=1)
     labels = (df["x_max"] - df["x_min"]) > (df["y_max"] - df["y_min"])
     df["class_id"] = labels.astype(int)
     df["class_name"] = labels.astype(str)
@@ -58,9 +62,19 @@ def annotations(n_points=1000, h=2000, w=2000):
 
 def generate_to_directory(annotations, dirname):
     path = Path(dirname)
+    # TODO: Add support for multiple blobs per image
     for row in annotations.to_dict(orient="records"):
         image_id = row["image_id"]
         img = blob2image(make_blob(**row))
         ifile = f"{image_id}.png"
         cv2.imwrite(str(path / ifile), img)
     annotations.to_csv(path / "train.csv", index=False)
+
+
+@click.command()
+@click.option("--fout", type=click.Path(exists=False))
+def generate(fout):
+    df = annotations()
+    path = Path(fout)
+    path.mkdir(parents=True, exist_ok=True)
+    generate_to_directory(df, path)
