@@ -62,6 +62,7 @@ def annotations(n_points=512, h=2000, w=2000):
 
 def generate_to_directory(annotations, dirname):
     path = Path(dirname)
+    # TODO: Add support for multiple blobs per image
     for row in annotations.to_dict(orient="records"):
         image_id = row["image_id"]
         img = blob2image(make_blob(**row))
