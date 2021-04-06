@@ -43,8 +43,11 @@ def blob2image(blob, channels=3, epsilon=0.1):
 def annotations(n_points=512, h=2000, w=2000):
     x = np.random.uniform(0, w, (n_points, 2))
     y = np.random.uniform(0, h, (n_points, 2))
-    df = pd.DataFrame({"image_id": np.arange(n_points)})
-    df["image_id"] = [1, 2, 3, 4, 5],
+    df = pd.DataFrame({
+        # NB: Replace np.arange by np.uniform(0, n_images, n_points)
+        #     to get the dataset with multiple images
+        "image_id": np.arange(n_points)
+    })
 
     df["x_min"] = x.min(axis=1)
     df["y_min"] = y.min(axis=1)
@@ -71,4 +74,6 @@ def generate_to_directory(annotations, dirname):
 @click.option("--fout", type=click.Path(exists=True))
 def generate(fout):
     df = annotations()
-    with open(fout, w) as f:
+    path = Path(fout)
+    path.mkdir(parents=True, exist_ok=True)
+    generate_to_directory(df, path)
