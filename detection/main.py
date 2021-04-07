@@ -4,7 +4,7 @@ from pathlib import Path
 from click import Path as cpath
 
 from detection.data import read_data
-from detection.datasets.v5 import DetectionDataset
+from detection.datasets.frcnn import DetectionDataset
 from detection.augmentations import transform
 from detection.model import build_model
 
