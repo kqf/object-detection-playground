@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'train=detection.main:main',
+            'train=scripts.main:main',
             'generate=detection.mc:generate',
         ],
     },
