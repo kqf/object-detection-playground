@@ -12,5 +12,4 @@ data/train/processed: data/train
 	rm $^/*.dicom
 
 
-.PHONY: infer develop push-data push-kernels
-.PRECIOUS: data/train/fold%.json
+.PHONY: develop
