@@ -1,5 +1,4 @@
 import cv2
-import click
 import pandas as pd
 import numpy as np
 
@@ -69,12 +68,3 @@ def generate_to_directory(annotations, dirname):
         ifile = f"{image_id}.png"
         cv2.imwrite(str(path / ifile), img)
     annotations.to_csv(path / "train.csv", index=False)
-
-
-@click.command()
-@click.option("--fout", type=click.Path(exists=False))
-def generate(fout):
-    df = annotations()
-    path = Path(fout)
-    path.mkdir(parents=True, exist_ok=True)
-    generate_to_directory(df, path)
