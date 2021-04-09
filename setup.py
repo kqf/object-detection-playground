@@ -7,7 +7,7 @@ setup(
     entry_points={
         'console_scripts': [
             'train=scripts.main:main',
-            'generate=detection.mc:generate',
+            'generate=scripts.generate:main',
         ],
     },
 )
