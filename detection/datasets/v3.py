@@ -25,7 +25,6 @@ class DetectionDatasetV3(Dataset):
         iou_threshold=0.5,
         transforms=None,
         no_anchors=False,
-        imsize=320,
     ):
         super().__init__()
 
