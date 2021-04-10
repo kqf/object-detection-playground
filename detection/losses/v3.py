@@ -1,5 +1,7 @@
 import torch
 
+objectness = ..., slice(0, 1)
+
 
 def bbox_iou(preds, labels):
     a_x1 = preds[..., 0:1] - preds[..., 2:3] / 2
