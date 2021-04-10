@@ -1,7 +1,7 @@
 import torch
 
 
-def bbox_iou(preds, labels, box_format="midpoint"):
+def bbox_iou(preds, labels):
     a_x1 = preds[..., 0:1] - preds[..., 2:3] / 2
     a_y1 = preds[..., 1:2] - preds[..., 3:4] / 2
     a_x2 = preds[..., 0:1] + preds[..., 2:3] / 2
