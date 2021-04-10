@@ -36,7 +36,9 @@ class DebugAugmentations(DualTransform):
         return {}
 
 
-def transform(train=True, mean=None, std=None, scale=1., size=32 * 13):
+def transform(train=True, mean=None, std=None, size=32 * 13):
+    mean = mean or _mean
+    std = std or _std
 
     if size % 32 != 0:
         warnings.warn(f"Image shape should be a multiple of 32, got {size}")
@@ -49,7 +51,7 @@ def transform(train=True, mean=None, std=None, scale=1., size=32 * 13):
         # ),
         # DebugAugmentations(),
         alb.Resize(size, size),
-        alb.Normalize(mean=_mean, std=_std, max_pixel_value=255.0, p=1.0),
+        alb.Normalize(mean=mean, std=std, max_pixel_value=255.0, p=1.0),
         ToTensorV2(p=1.0)
     ]
 
