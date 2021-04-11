@@ -9,7 +9,9 @@ def test_loss():
     # x, y
     target[..., 1] = 0.5
     target[..., 2] = 0.5
-    target[..., 3:5] = DEFAULT_ANCHORS[0][0]
+
+    anchors_scale1 = DEFAULT_ANCHORS[0]
+    target[..., 3:5] = anchors_scale1[None, :, None, None, :]
     # NB: class label is zero, this corresponds to the first class
     #     the prediction index for the first class is 5 = 1 (is obj) + 4 coords
     target[..., 5] = 0
@@ -33,4 +35,4 @@ def test_loss():
 
     criterion = CombinedLoss(DEFAULT_ANCHORS)
     loss = criterion._forward(predictions, target, DEFAULT_ANCHORS[0])
-    torch.testing.assert_allclose(loss, 428.6184)
+    torch.testing.assert_allclose(loss, 162.244)

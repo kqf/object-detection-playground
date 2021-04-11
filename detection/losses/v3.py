@@ -60,8 +60,11 @@ class CombinedLoss(torch.nn.Module):
         ) / no_obj_denominator
 
         anchors = anchors.reshape(1, 3, 1, 1, 2)
+
+        # x,y coordinates
+        predictions[..., 1:3] = self.sigmoid(predictions[..., 1:3])
         box_preds = torch.cat([
-            self.sigmoid(predictions[..., 1:3]),
+            predictions[..., 1:3],
             torch.exp(predictions[..., 3:5]) * anchors
         ], dim=-1)
 
@@ -69,12 +72,13 @@ class CombinedLoss(torch.nn.Module):
         detection = self.bce(
             (predictions[..., 0:1][obj]), (ious * target[..., 0:1][obj]))
 
-        # x,y coordinates
-        predictions[..., 1:3] = self.sigmoid(predictions[..., 1:3])
-
         # width, height coordinate
-        target[..., 3:5] = torch.log((1e-16 + target[..., 3:5] / anchors))
-        box = self.mse(predictions[..., 1:5][obj], target[..., 1:5][obj])
+        tboxes = torch.cat([
+            target[..., 1:3],
+            torch.log((1e-16 + target[..., 3:5] / anchors)),
+        ], dim=-1)
+
+        box = self.mse(predictions[..., 1:5][obj], tboxes[obj])
 
         classification = self.entropy(
             (predictions[..., 5:][obj]), (target[..., 5][obj].long()),
