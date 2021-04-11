@@ -28,7 +28,7 @@ class CombinedLoss(torch.nn.Module):
         super().__init__()
         self.anchors = anchors
         self.mse = torch.nn.MSELoss()
-        self.bce = torch.nn.BCEWithLogitsLoss()
+        self.bce = torch.nn.BCEWithLogitsLoss(reduction="sum")
         self.entropy = torch.nn.CrossEntropyLoss()
         self.sigmoid = torch.nn.Sigmoid()
 
@@ -53,10 +53,11 @@ class CombinedLoss(torch.nn.Module):
 
         predictions = predictions.transpose(1, -1)
 
+        no_obj_denominator = noobj.shape[0] + (noobj.shape[0] < 1)
         no_detection = self.bce(
             (predictions[..., 0:1][noobj]),
             (target[..., 0:1][noobj]),
-        )
+        ) / no_obj_denominator
 
         anchors = anchors.reshape(1, 3, 1, 1, 2)
         box_preds = torch.cat([
