@@ -29,6 +29,7 @@ class CombinedLoss(torch.nn.Module):
         self.anchors = anchors
         self.mse = torch.nn.MSELoss()
         self.bce = torch.nn.BCEWithLogitsLoss(reduction="sum")
+        self.objectness = torch.nn.BCEWithLogitsLoss()
         self.entropy = torch.nn.CrossEntropyLoss()
         self.sigmoid = torch.nn.Sigmoid()
 
@@ -69,7 +70,7 @@ class CombinedLoss(torch.nn.Module):
         ], dim=-1)
 
         ious = bbox_iou(box_preds[obj], target[..., 1:5][obj]).detach()
-        detection = self.bce(
+        detection = self.objectness(
             (predictions[..., 0:1][obj]), (ious * target[..., 0:1][obj]))
 
         # width, height coordinate
