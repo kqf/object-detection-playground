@@ -71,8 +71,9 @@ class CombinedLoss(torch.nn.Module):
 
         ious = bbox_iou(box_preds[obj], target[..., 1:5][obj]).detach()
         detection = self.objectness(
-            (predictions[..., 0:1][obj]), (ious * target[..., 0:1][obj]))
-
+            (predictions[..., 0:1][obj]),
+            (ious * target[..., 0:1][obj])
+        )
         # width, height coordinate
         tboxes = torch.cat([
             target[..., 1:3],
