@@ -7,14 +7,14 @@ def test_loss():
     target = torch.zeros([2, 3, 13, 13, 6])
     target[0, ..., 0] = 1
     # x, y
-    target[0, ..., 1] = 0.5
-    target[0, ..., 2] = 0.5
+    target[..., 1] = 0.5
+    target[..., 2] = 0.5
 
     anchors_scale1 = DEFAULT_ANCHORS[0]
-    target[0, ..., 3:5] = anchors_scale1[None, :, None, None, :]
+    target[..., 3:5] = anchors_scale1[None, :, None, None, :]
     # NB: class label is zero, this corresponds to the first class
     #     the prediction index for the first class is 5 = 1 (is obj) + 4 coords
-    target[0, ..., 5] = 0
+    target[..., 5] = 0
 
     predictions = torch.zeros([2, 85, 13, 13, 3])
     predictions = predictions.transpose(1, -1)
@@ -22,15 +22,15 @@ def test_loss():
     predictions[1, ..., 0] = -999
 
     # predictions go through the sigmoid function
-    predictions[0, ..., 1] = torch.logit(torch.tensor(0.5))
-    predictions[0, ..., 2] = torch.logit(torch.tensor(0.5))
+    predictions[..., 1] = torch.logit(torch.tensor(0.5))
+    predictions[..., 2] = torch.logit(torch.tensor(0.5))
 
     # It should be scaled through the exp
-    predictions[0, ..., 3] = 0
-    predictions[0, ..., 4] = 0
+    predictions[..., 3] = 0
+    predictions[..., 4] = 0
 
     # Set the proper label
-    predictions[0, ..., 5] = 9999
+    predictions[..., 5] = 9999
     # Transpose back
     predictions = predictions.transpose(1, -1)
 
