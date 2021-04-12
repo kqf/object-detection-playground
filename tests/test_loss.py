@@ -18,7 +18,7 @@ def test_loss():
 
     predictions = torch.zeros([1, 85, 13, 13, 3])
     predictions = predictions.transpose(1, -1)
-    predictions[..., 0] = 0.9999
+    predictions[..., 0] = 9
 
     # predictions go through the sigmoid function
     predictions[..., 1] = torch.logit(torch.tensor(0.5))
@@ -35,4 +35,4 @@ def test_loss():
 
     criterion = CombinedLoss(DEFAULT_ANCHORS)
     loss = criterion._forward(predictions, target, DEFAULT_ANCHORS[0])
-    torch.testing.assert_allclose(loss, 162.244)
+    torch.testing.assert_allclose(loss, 3.403, atol=1e-3, rtol=1e-3)
