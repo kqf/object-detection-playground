@@ -35,4 +35,4 @@ def test_loss():
 
     criterion = CombinedLoss(DEFAULT_ANCHORS)
     loss = criterion._forward(predictions, target, DEFAULT_ANCHORS[0])
-    torch.testing.assert_allclose(loss, 3.403, rtol=1e-3)
+    torch.testing.assert_allclose(loss, 3.403, atol=1e-3, rtol=1e-3)
