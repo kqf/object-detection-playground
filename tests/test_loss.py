@@ -29,10 +29,10 @@ def test_loss():
     predictions[..., 4] = 0
 
     # Set the proper label
-    predictions[..., 5] = 1
+    predictions[..., 5] = 9999
     # Transpose back
     predictions = predictions.transpose(1, -1)
 
     criterion = CombinedLoss(DEFAULT_ANCHORS)
     loss = criterion._forward(predictions, target, DEFAULT_ANCHORS[0])
-    torch.testing.assert_allclose(loss, 3.403, atol=1e-3, rtol=1e-3)
+    torch.testing.assert_allclose(loss, 0.000, atol=1e-3, rtol=1e-3)
