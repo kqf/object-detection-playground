@@ -4,8 +4,8 @@ from detection.losses.v3 import CombinedLoss
 
 
 def test_loss():
-    target = torch.zeros([1, 3, 13, 13, 6])
-    target[..., 0] = 1
+    target = torch.zeros([2, 3, 13, 13, 6])
+    target[0, ..., 0] = 1
     # x, y
     target[..., 1] = 0.5
     target[..., 2] = 0.5
@@ -16,9 +16,10 @@ def test_loss():
     #     the prediction index for the first class is 5 = 1 (is obj) + 4 coords
     target[..., 5] = 0
 
-    predictions = torch.zeros([1, 85, 13, 13, 3])
+    predictions = torch.zeros([2, 85, 13, 13, 3])
     predictions = predictions.transpose(1, -1)
-    predictions[..., 0] = 9
+    predictions[0, ..., 0] = 9
+    predictions[1, ..., 0] = -999
 
     # predictions go through the sigmoid function
     predictions[..., 1] = torch.logit(torch.tensor(0.5))
