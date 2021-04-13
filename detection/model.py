@@ -31,6 +31,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         YOLO,
         batch_size=16,
         max_epochs=max_epochs,
+        lr=0.0001,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
         criterion__anchors=DEFAULT_ANCHORS,
