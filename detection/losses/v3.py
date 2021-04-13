@@ -26,7 +26,7 @@ def bbox_iou(preds, labels):
 class CombinedLoss(torch.nn.Module):
     def __init__(self, anchors):
         super().__init__()
-        self.anchors = torch.nn.ParameterList(anchors)
+        self.anchors = anchors
         self.mse = torch.nn.MSELoss()
         self.bce = torch.nn.BCEWithLogitsLoss(reduction="sum")
         self.objectness = torch.nn.BCEWithLogitsLoss()
@@ -43,6 +43,8 @@ class CombinedLoss(torch.nn.Module):
 
         # Calculate the loss at each scale
         for pred, y, anchors in zip(predictions, target, self.anchors):
+            loss = loss.to(y.device)
+            anchors = anchors.to(y.device)
             loss += self._forward(pred, y, anchors)
 
         return loss
