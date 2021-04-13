@@ -26,7 +26,7 @@ def bbox_iou(preds, labels):
 class CombinedLoss(torch.nn.Module):
     def __init__(self, anchors):
         super().__init__()
-        self.anchors = anchors
+        self.anchors = torch.nn.ParameterList(anchors)
         self.mse = torch.nn.MSELoss()
         self.bce = torch.nn.BCEWithLogitsLoss(reduction="sum")
         self.objectness = torch.nn.BCEWithLogitsLoss()
