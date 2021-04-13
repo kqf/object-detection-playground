@@ -10,5 +10,5 @@ def test_dummy(fake_dataset):
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    model = build_model(max_epochs=5)
+    model = build_model(max_epochs=2)
     model.fit(train)
