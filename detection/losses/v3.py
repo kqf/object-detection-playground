@@ -4,7 +4,6 @@ objectness = ..., slice(0, 1)
 bbox_xy = ..., slice(1, 3)
 bbox_wh = ..., slice(3, 5)
 bbox_all = ..., slice(1, 5)
-bbox_all = ..., slice(1, 5)
 
 
 def bbox_iou(preds, labels):
@@ -33,16 +32,16 @@ class CombinedLoss(torch.nn.Module):
     def __init__(self, anchors):
         super().__init__()
         self.anchors = anchors
-        self.mse = torch.nn.MSELoss()
-        self.bce = torch.nn.BCEWithLogitsLoss(reduction="sum")
-        self.objectness = torch.nn.BCEWithLogitsLoss()
-        self.entropy = torch.nn.CrossEntropyLoss()
-        self.sigmoid = torch.nn.Sigmoid()
 
-        self.classification = 1
-        self.noobj = 1
-        self.obj = 1
+        self.lcls = 1
+        self.det = 1
         self.box = 1
+        self.obj = 1
+
+        pos_weight = torch.tensor([self.obj])
+        self.objectness = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        self.classification = torch.nn.CrossEntropyLoss()
+        self.bbox = torch.nn.MSELoss()
 
     def forward(self, pred, target):
         loss = torch.tensor(0).float()
@@ -72,14 +71,14 @@ class CombinedLoss(torch.nn.Module):
         anchors = anchors.reshape(1, 3, 2)
 
         # x,y coordinates
-        pred[bbox_xy] = self.sigmoid(pred[bbox_xy])
+        pred[bbox_xy] = torch.nn.functional.sigmoid(pred[bbox_xy])
         box_preds = torch.cat([
             pred[bbox_xy],
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
-        detection = self.objectness(
+        det = self.objectness(
             pred[objectness],
             ious * target[objectness]
         )
@@ -89,15 +88,11 @@ class CombinedLoss(torch.nn.Module):
         ], dim=-1)
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
-        box = self.mse(pred[bbox_all][obj], tboxes[obj])
+        box = self.bbox(pred[bbox_all][obj], tboxes[obj])
 
-        classification = self.entropy(
+        lcls = self.classification(
             pred[..., 5:][obj],
             target[..., 5][obj].long(),
         )
 
-        return (
-            self.box * box
-            + self.obj * detection
-            + self.classification * classification
-        )  # noqa
+        return self.det * det + self.box * box + self.lcls * lcls
