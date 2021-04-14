@@ -1,5 +1,11 @@
 import torch
 
+objectness = ..., slice(0, 1)
+bbox_xy = ..., slice(1, 3)
+bbox_wh = ..., slice(3, 5)
+bbox_all = ..., slice(1, 5)
+bbox_all = ..., slice(1, 5)
+
 
 def bbox_iou(preds, labels):
     a_x1 = preds[..., 0:1] - preds[..., 2:3] / 2
@@ -66,24 +72,24 @@ class CombinedLoss(torch.nn.Module):
         anchors = anchors.reshape(1, 3, 2)
 
         # x,y coordinates
-        pred[..., 1:3] = self.sigmoid(pred[..., 1:3])
+        pred[bbox_xy] = self.sigmoid(pred[bbox_xy])
         box_preds = torch.cat([
-            pred[..., 1:3],
-            torch.exp(pred[..., 3:5]) * anchors
+            pred[bbox_xy],
+            torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
-        ious = bbox_iou(box_preds, target[..., 1:5]).detach()
+        ious = bbox_iou(box_preds, target[bbox_all]).detach()
         detection = self.objectness(
-            pred[..., 0:1],
-            ious * target[..., 0:1]
+            pred[objectness],
+            ious * target[objectness]
         )
         tboxes = torch.cat([
-            target[..., 1:3],
-            torch.log((1e-16 + target[..., 3:5] / anchors)),
+            target[bbox_xy],
+            torch.log((1e-16 + target[bbox_wh] / anchors)),
         ], dim=-1)
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
-        box = self.mse(pred[..., 1:5][obj], tboxes[obj])
+        box = self.mse(pred[bbox_all][obj], tboxes[obj])
 
         classification = self.entropy(
             pred[..., 5:][obj],
