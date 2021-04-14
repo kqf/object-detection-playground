@@ -50,14 +50,19 @@ class CombinedLoss(torch.nn.Module):
         return loss
 
     def _forward(self, pred, target, anchors):
-        # Check where obj and noobj (we ignore if target == -1)
+        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
         pred = pred.permute(0, 2, 3, 4, 1)
+
+        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
         pred = pred.reshape(-1, pred.shape[-2], pred.shape[-1])
 
+        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
         target = target.permute(0, 2, 3, 1, 4)
-        target = target.reshape(-1, target.shape[-2], target.shape[-1])
-        obj = target[..., 0] == 1  # in paper this is Iobj_i
 
+        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
+        target = target.reshape(-1, target.shape[-2], target.shape[-1])
+
+        # [scale, 2] -> [1, scale, 2]
         anchors = anchors.reshape(1, 3, 2)
 
         # x,y coordinates
@@ -69,19 +74,20 @@ class CombinedLoss(torch.nn.Module):
 
         ious = bbox_iou(box_preds, target[..., 1:5]).detach()
         detection = self.objectness(
-            (pred[..., 0:1]),
-            (ious * target[..., 0:1])
+            pred[..., 0:1],
+            ious * target[..., 0:1]
         )
-        # width, height coordinate
         tboxes = torch.cat([
             target[..., 1:3],
             torch.log((1e-16 + target[..., 3:5] / anchors)),
         ], dim=-1)
 
+        obj = target[..., 0] == 1  # in paper this is Iobj_i
         box = self.mse(pred[..., 1:5][obj], tboxes[obj])
 
         classification = self.entropy(
-            (pred[..., 5:][obj]), (target[..., 5][obj].long()),
+            pred[..., 5:][obj],
+            target[..., 5][obj].long(),
         )
 
         return (
