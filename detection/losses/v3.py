@@ -4,7 +4,6 @@ objectness = ..., slice(0, 1)
 bbox_xy = ..., slice(1, 3)
 bbox_wh = ..., slice(3, 5)
 bbox_all = ..., slice(1, 5)
-bbox_all = ..., slice(1, 5)
 
 
 def bbox_iou(preds, labels):
