@@ -38,59 +38,60 @@ class CombinedLoss(torch.nn.Module):
         self.obj = 1
         self.box = 1
 
-    def forward(self, predictions, target):
+    def forward(self, pred, target):
         loss = torch.tensor(0).float()
 
         # Calculate the loss at each scale
-        for pred, y, anchors in zip(predictions, target, self.anchors):
+        for pred, y, anchors in zip(pred, target, self.anchors):
             loss = loss.to(y.device)
             anchors = anchors.to(y.device)
             loss += self._forward(pred, y, anchors)
 
         return loss
 
-    def _forward(self, predictions, target, anchors):
-        # Check where obj and noobj (we ignore if target == -1)
-        obj = target[..., 0] == 1  # in paper this is Iobj_i
-        noobj = target[..., 0] == 0  # in paper this is Inoobj_i
+    def _forward(self, pred, target, anchors):
+        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
+        pred = pred.permute(0, 2, 3, 4, 1)
 
-        predictions = predictions.transpose(1, -1)
+        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
+        pred = pred.reshape(-1, pred.shape[-2], pred.shape[-1])
 
-        no_obj_denominator = noobj.shape[0] + (noobj.shape[0] < 1)
-        no_detection = self.bce(
-            (predictions[..., 0:1][noobj]),
-            (target[..., 0:1][noobj]),
-        ) / no_obj_denominator
+        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
+        target = target.permute(0, 2, 3, 1, 4)
 
-        anchors = anchors.reshape(1, 3, 1, 1, 2)
+        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
+        target = target.reshape(-1, target.shape[-2], target.shape[-1])
+
+        # [scale, 2] -> [1, scale, 2]
+        anchors = anchors.reshape(1, 3, 2)
 
         # x,y coordinates
-        predictions[..., 1:3] = self.sigmoid(predictions[..., 1:3])
+        pred[..., 1:3] = self.sigmoid(pred[..., 1:3])
         box_preds = torch.cat([
-            predictions[..., 1:3],
-            torch.exp(predictions[..., 3:5]) * anchors
+            pred[..., 1:3],
+            torch.exp(pred[..., 3:5]) * anchors
         ], dim=-1)
 
-        ious = bbox_iou(box_preds[obj], target[..., 1:5][obj]).detach()
+        ious = bbox_iou(box_preds, target[..., 1:5]).detach()
         detection = self.objectness(
-            (predictions[..., 0:1][obj]),
-            (ious * target[..., 0:1][obj])
+            pred[..., 0:1],
+            ious * target[..., 0:1]
         )
-        # width, height coordinate
         tboxes = torch.cat([
             target[..., 1:3],
             torch.log((1e-16 + target[..., 3:5] / anchors)),
         ], dim=-1)
 
-        box = self.mse(predictions[..., 1:5][obj], tboxes[obj])
+        obj = target[..., 0] == 1  # in paper this is Iobj_i
+        box = self.mse(pred[..., 1:5][obj], tboxes[obj])
 
         classification = self.entropy(
-            (predictions[..., 5:][obj]), (target[..., 5][obj].long()),
+            pred[..., 5:][obj],
+            target[..., 5][obj].long(),
         )
 
         return (
             self.box * box
             + self.obj * detection
-            + self.noobj * no_detection
             + self.classification * classification
         )  # noqa
