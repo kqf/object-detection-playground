@@ -1,31 +1,10 @@
 import torch
+from detection.metrics import bbox_iou
 
 objectness = ..., slice(0, 1)
 bbox_xy = ..., slice(1, 3)
 bbox_wh = ..., slice(3, 5)
 bbox_all = ..., slice(1, 5)
-
-
-def bbox_iou(preds, labels):
-    a_x1 = preds[..., 0:1] - preds[..., 2:3] / 2
-    a_y1 = preds[..., 1:2] - preds[..., 3:4] / 2
-    a_x2 = preds[..., 0:1] + preds[..., 2:3] / 2
-    a_y2 = preds[..., 1:2] + preds[..., 3:4] / 2
-    b_x1 = labels[..., 0:1] - labels[..., 2:3] / 2
-    b_y1 = labels[..., 1:2] - labels[..., 3:4] / 2
-    b_x2 = labels[..., 0:1] + labels[..., 2:3] / 2
-    b_y2 = labels[..., 1:2] + labels[..., 3:4] / 2
-
-    x1 = torch.max(a_x1, b_x1)
-    y1 = torch.max(a_y1, b_y1)
-    x2 = torch.min(a_x2, b_x2)
-    y2 = torch.min(a_y2, b_y2)
-
-    intersection = (x2 - x1).clamp(0) * (y2 - y1).clamp(0)
-    a_area = abs((a_x2 - a_x1) * (a_y2 - a_y1))
-    b_area = abs((b_x2 - b_x1) * (b_y2 - b_y1))
-
-    return intersection / (a_area + b_area - intersection + 1e-6)
 
 
 class CombinedLoss(torch.nn.Module):
