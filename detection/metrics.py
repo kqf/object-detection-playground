@@ -24,7 +24,7 @@ def bbox_iou(preds, labels):
     return intersection / (a_area + b_area - intersection + 1e-6)
 
 
-def map(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):
+def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):
     # list storing all AP for respective classes
     average_precisions = []
 
