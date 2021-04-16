@@ -14,11 +14,19 @@ def init(w):
 
 
 def infer(batch):
-    batch[..., 0:2] = torch.sigmoid(batch[..., 0:2])
-    batch[..., 2:5] = torch.exp(batch[..., 2:5])
-    batch[..., 0] = torch.sigmoid(batch[..., 0])
-    batch[..., 5] = torch.argmax(batch[..., 5:], dim=-1).unsqueeze(-1)
-    return batch[..., :6]
+    predictions = []
+
+    for i, scale in enumerate(batch):
+        # Copy don't mutate the original batch
+        prediction = batch[..., :6].detach().clone()
+
+        prediction[..., 0:2] = torch.sigmoid(scale[..., 0:2])
+        prediction[..., 2:5] = torch.exp(scale[..., 2:5])
+        prediction[..., 0] = torch.sigmoid(scale[..., 0])
+        prediction[..., 5] = torch.argmax(scale[..., 5:], dim=-1).unsqueeze(-1)
+        predictions.append(prediction)
+
+    return predictions
 
 
 class DetectionNet(skorch.NeuralNet):
