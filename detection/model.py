@@ -13,6 +13,14 @@ def init(w):
     return torch.nn.init.xavier_uniform_(w)
 
 
+def infer(batch):
+    batch[..., 0:2] = torch.sigmoid(batch[..., 0:2])
+    batch[..., 2:5] = torch.exp(batch[..., 2:5])
+    batch[..., 0] = torch.sigmoid(batch[..., 0])
+    batch[..., 5] = torch.argmax(batch[..., 5:], dim=-1).unsqueeze(-1)
+    return batch[..., :6]
+
+
 class DetectionNet(skorch.NeuralNet):
     pass
 
@@ -40,6 +48,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         iterator_valid__shuffle=False,
         iterator_valid__num_workers=6,
         train_split=train_split,
+        predict_nonlinearity=infer,
         callbacks=[
             skorch.callbacks.ProgressBar(),
             # skorch.callbacks.Checkpoint(dirname=logdir),
