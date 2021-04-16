@@ -15,6 +15,7 @@ def batch(predictions_size=6):
     return preds
 
 
+@pytest.mark.skip("Implement me")
 def test_nms(batch):
     img = torch.ones(3, 460, 460)
     plot((img, [x[1:5] for x in batch]), convert_bbox=True)
