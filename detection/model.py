@@ -18,14 +18,17 @@ def init(w):
 def infer(batch, anchor_boxes):
     predictions = []
 
-    for i, (scale, achors) in enumerate(batch, anchor_boxes):
+    for i, (pred, achors) in enumerate(batch, anchor_boxes):
         # Copy don't mutate the original batch
         prediction = batch[..., :6].detach().clone()
 
-        prediction[..., 0:2] = torch.sigmoid(scale[..., 0:2])
-        prediction[..., 2:5] = torch.exp(scale[..., 2:5]) * anchor_boxes
-        prediction[..., 0] = torch.sigmoid(scale[..., 0])
-        prediction[..., 5] = torch.argmax(scale[..., 5:], dim=-1).unsqueeze(-1)
+        # pred [batch_size, n_anchors, s, s, 5 + nclasses]
+        scale = pred.shape[2]
+
+        prediction[..., 0:2] = torch.sigmod(pred[..., 0:2])
+        prediction[..., 2:5] = torch.exp(pred[..., 2:5]) * anchor_boxes * scale
+        prediction[..., 0] = torch.sigmoid(pred[..., 0])
+        prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1).unsqueeze(-1)
         predictions.append(prediction)
 
     return predictions
