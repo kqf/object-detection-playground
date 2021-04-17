@@ -12,3 +12,5 @@ def test_dummy(fake_dataset):
 
     model = build_model(max_epochs=2)
     model.fit(train)
+
+    scale1, scale2, scale3 = model.predict(train)
