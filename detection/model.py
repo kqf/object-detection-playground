@@ -15,6 +15,20 @@ def init(w):
     return torch.nn.init.xavier_uniform_(w)
 
 
+def to_global(x, scale):
+    cells = (
+        torch.arange(scale)
+        .repeat(x.shape[0], 3, scale, 1)
+        .unsqueeze(-1)
+        .to(x.device)
+    )
+
+    x[..., 0:1] = (x[..., 0:1] + cells) / scale
+    x[..., 1:2] = (x[..., 1:2] + cells.transpose(3, 2)) / scale
+    x[..., 2:4] = x[..., 2:4] / scale
+    return x
+
+
 def infer(batch, anchor_boxes):
     predictions = []
 
@@ -29,7 +43,9 @@ def infer(batch, anchor_boxes):
         prediction[..., 2:5] = torch.exp(pred[..., 2:5]) * anchor_boxes * scale
         prediction[..., 0] = torch.sigmoid(pred[..., 0])
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1).unsqueeze(-1)
-        predictions.append(prediction)
+
+        final = to_global(prediction, scale=scale)
+        predictions.append(final)
 
     return predictions
 
