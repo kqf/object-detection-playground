@@ -2,6 +2,8 @@ import torch
 import skorch
 
 
+from functional import partial
+
 from detection.models.v3 import YOLO
 from detection.losses.v3 import CombinedLoss
 from detection.datasets.v3 import DEFAULT_ANCHORS
@@ -13,15 +15,15 @@ def init(w):
     return torch.nn.init.xavier_uniform_(w)
 
 
-def infer(batch):
+def infer(batch, anchor_boxes):
     predictions = []
 
-    for i, scale in enumerate(batch):
+    for i, (scale, achors) in enumerate(batch, anchor_boxes):
         # Copy don't mutate the original batch
         prediction = batch[..., :6].detach().clone()
 
         prediction[..., 0:2] = torch.sigmoid(scale[..., 0:2])
-        prediction[..., 2:5] = torch.exp(scale[..., 2:5])
+        prediction[..., 2:5] = torch.exp(scale[..., 2:5]) * anchor_boxes
         prediction[..., 0] = torch.sigmoid(scale[..., 0])
         prediction[..., 5] = torch.argmax(scale[..., 5:], dim=-1).unsqueeze(-1)
         predictions.append(prediction)
@@ -56,7 +58,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         iterator_valid__shuffle=False,
         iterator_valid__num_workers=6,
         train_split=train_split,
-        predict_nonlinearity=infer,
+        predict_nonlinearity=partial(infer, anchor_boxes=DEFAULT_ANCHORS),
         callbacks=[
             skorch.callbacks.ProgressBar(),
             # skorch.callbacks.Checkpoint(dirname=logdir),
