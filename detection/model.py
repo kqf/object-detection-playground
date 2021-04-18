@@ -61,8 +61,7 @@ class DetectionNet(skorch.NeuralNet):
         nonlin = self._get_predict_nonlinearity()
         y_probas = []
         for yp in self.forward_iter(X, training=False):
-            yp = yp[0] if isinstance(yp, tuple) else yp
-            yp = nonlin(yp)
+            yp = nonlin(yp[0])
             y_probas.append(skorch.utils.to_numpy(yp))
         y_proba = np.concatenate(y_probas, 0)
         return y_proba
