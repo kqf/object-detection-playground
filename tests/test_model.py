@@ -14,4 +14,4 @@ def test_dummy(fake_dataset):
     model.fit(train)
 
     # TODO: Fix me
-    # scale1, scale2, scale3 = model.predict(train)
+    scale1, scale2, scale3 = model.predict(train)

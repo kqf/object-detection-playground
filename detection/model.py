@@ -32,7 +32,7 @@ def to_global(x, scale):
 def infer(batch, anchor_boxes):
     predictions = []
 
-    for i, (pred, achors) in enumerate(batch, anchor_boxes):
+    for i, (pred, achors) in enumerate(zip(batch, anchor_boxes)):
         # Copy don't mutate the original batch
         prediction = batch[..., :6].detach().clone()
 
