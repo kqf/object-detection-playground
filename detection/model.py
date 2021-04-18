@@ -22,10 +22,10 @@ def to_global(x, scale):
         .repeat(x.shape[0], 3, scale, 1)
         .unsqueeze(-1)
         .to(x.device)
-    )
+    ).permute(0, 2, 3, 1, 4)
 
     x[..., 0:1] = (x[..., 0:1] + cells) / scale
-    x[..., 1:2] = (x[..., 1:2] + cells.transpose(3, 2)) / scale
+    x[..., 1:2] = (x[..., 1:2] + cells.transpose(2, 1)) / scale
     x[..., 2:4] = x[..., 2:4] / scale
     return x
 
@@ -46,7 +46,7 @@ def infer(batch, anchor_boxes):
         prediction[..., 0] = torch.sigmoid(pred[..., 0])
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
         prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors * scale
-        prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1).unsqueeze(-1)
+        prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
         final = to_global(prediction, scale=scale)
         predictions.append(final)
@@ -60,7 +60,7 @@ class DetectionNet(skorch.NeuralNet):
         nonlin = self._get_predict_nonlinearity()
         y_probas = []
         for yp in self.forward_iter(X, training=False):
-            yp = nonlin(yp)
+            yp = nonlin(yp)[0]
             y_probas.append(skorch.utils.to_numpy(yp))
         y_proba = np.concatenate(y_probas, 0)
         return y_proba
