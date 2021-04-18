@@ -2,7 +2,7 @@ import torch
 import skorch
 
 
-from functional import partial
+from functools import partial
 
 from detection.models.v3 import YOLO
 from detection.losses.v3 import CombinedLoss
