@@ -3,7 +3,7 @@ import skorch
 import numpy as np
 
 
-# from functools import partial
+from functools import partial
 
 from detection.models.v3 import YOLO
 from detection.losses.v3 import CombinedLoss
@@ -22,10 +22,10 @@ def to_global(x, scale):
         .repeat(x.shape[0], 3, scale, 1)
         .unsqueeze(-1)
         .to(x.device)
-    )
+    ).permute(0, 2, 3, 1, 4)
 
     x[..., 0:1] = (x[..., 0:1] + cells) / scale
-    x[..., 1:2] = (x[..., 1:2] + cells.transpose(3, 2)) / scale
+    x[..., 1:2] = (x[..., 1:2] + cells.transpose(2, 1)) / scale
     x[..., 2:4] = x[..., 2:4] / scale
     return x
 
@@ -33,21 +33,20 @@ def to_global(x, scale):
 def infer(batch, anchor_boxes):
     predictions = []
 
-    for i, (pred, achors) in enumerate(zip(batch, anchor_boxes)):
+    for i, (pred, anchors) in enumerate(zip(batch, anchor_boxes)):
+        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
+        pred = pred.permute(0, 2, 3, 4, 1)
+
         # Copy don't mutate the original batch
-        prediction = batch[..., :6].detach().clone()
+        prediction = pred[..., :6].detach().clone() * 0
 
         # pred [batch_size, n_anchors, s, s, 5 + nclasses]
         scale = pred.shape[2]
 
-        prediction[..., 0:2] = torch.sigmoid(pred[..., 0:2])
-        import ipdb
-        ipdb.set_trace()
-        import IPython
-        IPython.embed()  # noqa
-        prediction[..., 2:5] = torch.exp(pred[..., 2:5]) * anchor_boxes * scale
         prediction[..., 0] = torch.sigmoid(pred[..., 0])
-        prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1).unsqueeze(-1)
+        prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
+        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors * scale
+        prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
         final = to_global(prediction, scale=scale)
         predictions.append(final)
@@ -61,7 +60,7 @@ class DetectionNet(skorch.NeuralNet):
         nonlin = self._get_predict_nonlinearity()
         y_probas = []
         for yp in self.forward_iter(X, training=False):
-            yp = nonlin(yp[0])
+            yp = nonlin(yp)[0]
             y_probas.append(skorch.utils.to_numpy(yp))
         y_proba = np.concatenate(y_probas, 0)
         return y_proba
@@ -90,7 +89,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         iterator_valid__shuffle=False,
         iterator_valid__num_workers=6,
         train_split=train_split,
-        # predict_nonlinearity=partial(infer, anchor_boxes=DEFAULT_ANCHORS),
+        predict_nonlinearity=partial(infer, anchor_boxes=DEFAULT_ANCHORS),
         callbacks=[
             skorch.callbacks.ProgressBar(),
             # skorch.callbacks.Checkpoint(dirname=logdir),
