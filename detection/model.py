@@ -54,6 +54,11 @@ def infer(batch, anchor_boxes):
     return predictions
 
 
+def merge_scales(predictions):
+    import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+    pass
+
+
 class DetectionNet(skorch.NeuralNet):
 
     def predict_proba(self, X):
