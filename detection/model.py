@@ -55,8 +55,13 @@ def infer(batch, anchor_boxes):
 
 
 def merge_scales(predictions):
-    import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
-    pass
+    # Flatten along the batch dimension
+    flat = []
+    for scale in predictions:
+        flat.append([x.reshape(-1, x.shape[-1]) for x in scale])
+
+    # The results along the batch dimension
+    return [torch.cat(x) for x in zip(*flat)]
 
 
 class DetectionNet(skorch.NeuralNet):

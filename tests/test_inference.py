@@ -18,3 +18,4 @@ def predictions(bsize):
 def test_merge_scales(predictions, bsize):
     merged = merge_scales(predictions)
     assert len(merged) == bsize
+    assert all([x.shape[-1] == 6 for x in merged])
