@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from detection.model import merge_scales
+from detection.inference import merge_scales
 
 
 @pytest.fixture
