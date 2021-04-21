@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from detection.inference import merge_scales
+from detection.inference import merge_scales, nms
 from detection.plot import plot
 
 
@@ -20,6 +20,7 @@ def test_merge_scales(predictions, bsize):
     merged = merge_scales(predictions)
     assert len(merged) == bsize
     assert all([x.shape[-1] == 6 for x in merged])
+    nms(merged[0])
 
 
 @pytest.fixture
