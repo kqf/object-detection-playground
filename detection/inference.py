@@ -42,7 +42,8 @@ def nonlin(batch, anchor_boxes):
 
 def infer(batch, anchor_boxes):
     predictions = nonlin(batch, anchor_boxes)
-    return predictions
+    merged = merge_scales(predictions)
+    return merged
 
 
 def merge_scales(predictions):
