@@ -16,7 +16,7 @@ def to_global(x, scale):
     return x
 
 
-def infer(batch, anchor_boxes):
+def nonlin(batch, anchor_boxes):
     predictions = []
 
     for i, (pred, anchors) in enumerate(zip(batch, anchor_boxes)):
@@ -37,6 +37,11 @@ def infer(batch, anchor_boxes):
         final = to_global(prediction, scale=scale)
         predictions.append(final)
 
+    return predictions
+
+
+def infer(batch, anchor_boxes):
+    predictions = nonlin(batch, anchor_boxes)
     return predictions
 
 
