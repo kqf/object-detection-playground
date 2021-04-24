@@ -27,7 +27,7 @@ def tensor2img(t, padding=0, normalize=True):
     return np.array(img.crop((padding, padding, w - padding, h - padding)))
 
 
-def plot(*imgs, block=True, normalize=False, convert_bbox=False):
+def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
     n_plots = ceil(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
 
@@ -43,6 +43,8 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False):
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox))
     plt.show(block=block)
+    if ofile is not None:
+        plt.savefig(ofile)
     return axes
 
 
