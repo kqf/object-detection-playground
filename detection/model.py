@@ -25,8 +25,7 @@ class DetectionNet(skorch.NeuralNet):
         for yp in self.forward_iter(X, training=False):
             for scale in nonlin(yp):
                 y_probas.append(skorch.utils.to_numpy(scale))
-        y_proba = np.concatenate(y_probas, 0)
-        return y_proba
+        return y_probas
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
