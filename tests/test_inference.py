@@ -1,26 +1,30 @@
 import torch
 import pytest
 
-from detection.inference import merge_scales, nms
+from detection.inference import infer, nms
 from detection.plot import plot
+from detection.datasets.v3 import DEFAULT_ANCHORS
 
 
 @pytest.fixture
-def predictions(bsize):
+def batch(bsize):
     scales = [
-        torch.zeros((bsize, 3, 13, 13, 6)),
-        torch.zeros((bsize, 3, 26, 26, 6)),
-        torch.zeros((bsize, 3, 52, 52, 6)),
+        torch.zeros([bsize, 85, 13, 13, 3]),
+        torch.zeros([bsize, 85, 26, 26, 3]),
+        torch.zeros([bsize, 85, 52, 52, 3]),
     ]
     return scales
 
 
 @pytest.mark.parametrize("bsize", [16])
-def test_merge_scales(predictions, bsize):
-    merged = merge_scales(predictions)
-    assert len(merged) == bsize
-    assert all([x.shape[-1] == 6 for x in merged])
-    nms(merged[0])
+def test_inference(batch, bsize):
+    predictions = infer(batch, DEFAULT_ANCHORS)
+    assert len(predictions) == bsize
+    assert all([x.shape[-1] == 5 for x in predictions])
+
+    # Check if nms works
+    for sample in predictions:
+        nms(sample)
 
 
 @pytest.fixture
