@@ -1,6 +1,5 @@
 import torch
 import skorch
-import numpy as np
 
 
 from functools import partial
@@ -21,12 +20,11 @@ class DetectionNet(skorch.NeuralNet):
 
     def predict_proba(self, X):
         nonlin = self._get_predict_nonlinearity()
-        y_probas = [[], [], []]
+        y_probas = []
         for yp in self.forward_iter(X, training=False):
-            for yprob, scale in zip(y_probas, nonlin(yp)):
-                yprob.append(skorch.utils.to_numpy(scale))
-        y_proba = [np.concatenate(yprob, 0) for yprob in y_probas]
-        return y_proba
+            for scale in nonlin(yp):
+                y_probas.append(skorch.utils.to_numpy(scale))
+        return y_probas
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):

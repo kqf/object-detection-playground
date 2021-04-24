@@ -16,5 +16,5 @@ def test_dummy(fake_dataset):
     model.fit(train)
 
     # TODO: Fix me
-    scale1, scale2, scale3 = model.predict(train)
-    plot([train[0][0], scale1[:, 1:5]], ofile="test-dummy.png")
+    preds = model.predict(train)
+    plot([train[0][0], preds[0][:, :4]], ofile="test-dummy.png")

@@ -1,4 +1,4 @@
-# Object Detection Playground ![tests](https://github.com/kqf/vinbigdata/workflows/tests/badge.svg)
+# Object Detection Playground [![tests](https://github.com/kqf/vinbigdata/workflows/tests/badge.svg)](https://github.com/kqf/object-detection-playground/actions/)
 
 ## Download
 To download the dataset do:
