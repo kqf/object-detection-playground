@@ -22,6 +22,10 @@ def test_inference(batch, bsize):
     assert len(predictions) == bsize
     assert all([x.shape[-1] == 5 for x in predictions])
 
+    # Check if nms works
+    for sample in predictions:
+        nms(sample)
+
 
 @pytest.fixture
 def merged_batch(predictions_size=6):
