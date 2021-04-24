@@ -17,5 +17,4 @@ def test_dummy(fake_dataset):
 
     # TODO: Fix me
     scale1, scale2, scale3 = model.predict(train)
-    print(scale1.shape)
-    plot(scale1)
+    plot([train[0][0], scale1[:, 1:5]])
