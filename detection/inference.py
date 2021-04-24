@@ -43,7 +43,10 @@ def nonlin(batch, anchor_boxes):
 def infer(batch, anchor_boxes):
     predictions = nonlin(batch, anchor_boxes)
     merged = merge_scales(predictions)
-    return merged
+
+    # Run over all samples in the dataset
+    supressed = [no_nms(sample) for sample in merged]
+    return supressed
 
 
 def merge_scales(predictions):
@@ -87,3 +90,8 @@ def nms(pred, min_iou=0.5):
     ious = bbox_iou(pred[:, None, 1:5], pred[None, :, 1:5])
     result = same_object * not_maximum * (ious > min_iou).squeeze(-1)
     return ~result
+
+
+def no_nms(pred, threshold=0.5):
+    positive = pred[:, 1] > threshold
+    return pred[positive, 1:]

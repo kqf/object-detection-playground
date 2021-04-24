@@ -18,10 +18,9 @@ def batch(bsize):
 
 @pytest.mark.parametrize("bsize", [16])
 def test_inference(batch, bsize):
-    merged = infer(batch, DEFAULT_ANCHORS)
-    assert len(merged) == bsize
-    assert all([x.shape[-1] == 6 for x in merged])
-    nms(merged[0])
+    predictions = infer(batch, DEFAULT_ANCHORS)
+    assert len(predictions) == bsize
+    assert all([x.shape[-1] == 5 for x in predictions])
 
 
 @pytest.fixture
