@@ -32,7 +32,7 @@ def expected_batch(bsize, scale=13):
 def batch(expected_batch, scale=13):
     scales = []
 
-    for i, x in enumerate(expected_batch):
+    for i, (x, anchors) in enumerate(zip(expected_batch, DEFAULT_ANCHORS)):
         n = x.shape[2]
 
         x_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
@@ -41,8 +41,11 @@ def batch(expected_batch, scale=13):
         # Convert to local
         x[:, 1] = x[:, 1] * n - x_cells
         x[:, 2] = x[:, 2] * n - y_cells
-        x[:, 3] /= n
-        x[:, 4] /= n
+        x[:, 3:5] /= n
+
+        # Apply inverse "nonlinearity" for predictions
+        x[:, 0:3] = torch.logit(x[:, 0:3])
+        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3))
 
         # Append the global predictions
         scales.append(x)
@@ -50,13 +53,24 @@ def batch(expected_batch, scale=13):
     return scales
 
 
+@pytest.fixture
+def expected(expected_batch):
+    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1)[..., :5]
+                                 for x in expected_batch])
+    return merged_batch
+
+
 @pytest.mark.parametrize("bsize", [16])
-def test_inference(batch, bsize):
+def test_inference(expected, batch, bsize):
     predictions = infer(batch, DEFAULT_ANCHORS)
     assert len(predictions) == bsize
-    assert all([x.shape[-1] == 5 for x in predictions])
+    # assert all([x.shape[-1] == 5 for x in predictions])
 
-    # Check if nms works
+    for pred, nominal in zip(predictions, expected):
+        assert pred.shape == nominal.shape
+        torch.testing.assert_allclose(pred, nominal)
+
+        # Check if nms works
     for sample in predictions:
         nms(sample)
 
