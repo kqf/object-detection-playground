@@ -39,17 +39,6 @@ def test_inference(batch, bsize):
         nms(sample)
 
 
-@pytest.fixture
-def merged_batch(predictions_size=6):
-    preds = torch.zeros(predictions_size, 6)
-    preds[:, 0] = torch.linspace(0, 0.99, predictions_size)
-    preds[:, 1] = torch.linspace(0.4, 0.6, predictions_size)
-    preds[:, 2] = torch.linspace(0.4, 0.6, predictions_size)
-    preds[:, 3] = 0.2
-    preds[:, 4] = 0.2
-    return preds
-
-
 @pytest.mark.parametrize("bsize", [4])
 def test_nms(batch, bsize=10):
     merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1) for x in batch])
