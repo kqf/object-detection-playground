@@ -90,6 +90,6 @@ def nms(pred, min_iou=0.5):
     return ~result
 
 
-def no_nms(pred, threshold=0.5):
+def no_nms(pred, threshold=0.0):
     positive = pred[:, 1] > threshold
     return pred[positive, 1:]
