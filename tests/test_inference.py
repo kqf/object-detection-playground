@@ -1,7 +1,7 @@
 import torch
 import pytest
 
-from detection.inference import infer, nms, to_global, merge_scales
+from detection.inference import infer, nms, merge_scales
 from detection.plot import plot
 from detection.datasets.v3 import DEFAULT_ANCHORS
 
@@ -10,17 +10,17 @@ from detection.datasets.v3 import DEFAULT_ANCHORS
 def batch(bsize, scale=13):
     scales = []
 
-    for n in [scale, scale * 2, scale * 4]:
+    for i, n in enumerate([scale, scale * 2, scale * 4]):
         x = torch.zeros([bsize, 85, n, n, 3])
-        x[:, 0] = torch.zeros(1, n, n, 3) + 0.8
-        x[:, 1] = torch.zeros(1, n, n, 3) + 0.5
-        x[:, 2] = torch.zeros(1, n, n, 3) + 0.5
-        x[:, 3] = 0.01 * n
-        x[:, 4] = 0.01 * n
+        x_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
+        y_cells = torch.arange(n).reshape(1, 1, 1, n, 1)
 
-        # Conver to the global scale
-        x_nonlin = to_global(x[1:].permute(0, 2, 3, 4, 1), n)
-        x[1:] = x_nonlin.permute(0, 4, 1, 2, 3).detach().clone()
+        x[:, 0] = torch.zeros(1, n, n, 3) + 0.9
+        x[:, 1] = (torch.zeros(1, n, n, 3) + 0.5 + x_cells) / n
+        x[:, 2] = (torch.zeros(1, n, n, 3) + 0.5 + y_cells) / n
+        x[:, 3] = 0.01
+        x[:, 4] = 0.01
+        x[:, 5] = 1
 
         # Append the global predictions
         scales.append(x)

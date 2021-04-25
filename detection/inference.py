@@ -3,15 +3,13 @@ from detection.metrics import bbox_iou
 
 
 def to_global(x, scale):
-    cells = (
-        torch.arange(scale)
-        .repeat(x.shape[0], 3, scale, 1)
-        .unsqueeze(-1)
-        .to(x.device)
-    ).permute(0, 2, 3, 1, 4)
+    cells = torch.arange(scale).to(x.device)
 
-    x[..., 0:1] = (x[..., 0:1] + cells) / scale
-    x[..., 1:2] = (x[..., 1:2] + cells.transpose(2, 1)) / scale
+    x_cells = cells.reshape(1, scale, 1, 1, 1)
+    y_cells = cells.reshape(1, 1, scale, 1, 1)
+
+    x[..., 0:1] = (x[..., 0:1] + x_cells) / scale
+    x[..., 1:2] = (x[..., 1:2] + y_cells) / scale
     x[..., 2:4] = x[..., 2:4] / scale
     return x
 
