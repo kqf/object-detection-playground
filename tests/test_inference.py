@@ -13,13 +13,17 @@ def batch(bsize, scale=13):
     for n in [scale, scale * 2, scale * 4]:
         x = torch.zeros([bsize, 85, n, n, 3])
         x[:, 0] = torch.zeros(1, n, n, 3) + 0.8
-        x[:, 1] = torch.zeros(1, n, n, 3) + 0.4
-        x[:, 2] = torch.zeros(1, n, n, 3)
-        x[:, 3] = 0.2 * n
-        x[:, 4] = 0.2 * n
+        x[:, 1] = torch.zeros(1, n, n, 3) + 0.5
+        x[:, 2] = torch.zeros(1, n, n, 3) + 0.5
+        x[:, 3] = 0.01 * n
+        x[:, 4] = 0.01 * n
 
-        x_nonlin = to_global(x.permute(0, 2, 3, 4, 1), n)
-        scales.append(x_nonlin.permute(0, 4, 1, 2, 3))
+        # Conver to the global scale
+        x_nonlin = to_global(x[1:].permute(0, 2, 3, 4, 1), n)
+        x[1:] = x_nonlin.permute(0, 4, 1, 2, 3).detach().clone()
+
+        # Append the global predictions
+        scales.append(x)
 
     return scales
 
@@ -46,9 +50,8 @@ def merged_batch(predictions_size=6):
     return preds
 
 
-@pytest.mark.skip
-def test_nms(batch):
-    merged_batch = merge_scales(batch[0])
-    import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
-    img = torch.ones(batch[0], 460, 460)
-    plot((img, [x[1:5] for x in merged_batch]), convert_bbox=True)
+@pytest.mark.parametrize("bsize", [4])
+def test_nms(batch, bsize=10):
+    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1) for x in batch])
+    img = torch.ones(3, 460, 460)
+    plot((img, [x[1:5] for x in merged_batch[0]]), convert_bbox=True)
