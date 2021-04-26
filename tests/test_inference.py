@@ -55,9 +55,14 @@ def batch(expected_batch, scale=13):
 
 @pytest.fixture
 def expected(expected_batch):
-    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1)[..., :5]
-                                 for x in expected_batch])
-    return merged_batch
+    merged = merge_scales([x.permute(0, 2, 3, 4, 1)[..., 1:6]
+                           for x in expected_batch])
+
+    # Class labels start from zero
+    for x in merged:
+        x[..., -1] = 0
+
+    return merged
 
 
 # @pytest.mark.skip("Fix the label scores")
@@ -65,12 +70,11 @@ def expected(expected_batch):
 def test_inference(expected, batch, bsize):
     predictions = infer(batch, DEFAULT_ANCHORS)
     assert len(predictions) == bsize
-    # assert all([x.shape[-1] == 5 for x in predictions])
+    assert all([x.shape[-1] == 5 for x in predictions])
 
     for pred, nominal in zip(predictions, expected):
         assert pred.shape == nominal.shape
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
-        # torch.testing.assert_allclose(pred, nominal)
+        torch.testing.assert_allclose(pred, nominal)
 
         # Check if nms works
     for sample in predictions:
@@ -80,7 +84,7 @@ def test_inference(expected, batch, bsize):
 @pytest.mark.skip()
 @pytest.mark.parametrize("bsize", [4])
 def test_nms(expected_batch, bsize=10):
-    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1)
-                                 for x in expected_batch])
+    merged = merge_scales([x.permute(0, 2, 3, 4, 1)
+                           for x in expected_batch])
     img = torch.ones(3, 460, 460)
-    plot((img, [x[1:5] for x in merged_batch[0]]), convert_bbox=True)
+    plot((img, [x[1:5] for x in merged[0]]), convert_bbox=True)
