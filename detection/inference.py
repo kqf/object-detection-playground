@@ -10,7 +10,7 @@ def to_global(x, scale):
 
     x[..., 0:1] = (x[..., 0:1] + x_cells) / scale
     x[..., 1:2] = (x[..., 1:2] + y_cells) / scale
-    x[..., 2:4] = x[..., 2:4] / scale
+    x[..., 2:5] = x[..., 2:5] / scale
     return x
 
 
