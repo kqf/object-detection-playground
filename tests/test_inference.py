@@ -41,11 +41,11 @@ def batch(expected_batch, scale=13):
         # Convert to local
         x[:, 1] = x[:, 1] * n - x_cells
         x[:, 2] = x[:, 2] * n - y_cells
-        x[:, 3:5] /= n
+        x[:, 3:5] *= n
 
         # Apply inverse "nonlinearity" for predictions
         x[:, 0:3] = torch.logit(x[:, 0:3])
-        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3))
+        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3) / n)
 
         # Append the global predictions
         scales.append(x)
@@ -55,17 +55,22 @@ def batch(expected_batch, scale=13):
 
 @pytest.fixture
 def expected(expected_batch):
-    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1)[..., :5]
-                                 for x in expected_batch])
-    return merged_batch
+    merged = merge_scales([x.permute(0, 2, 3, 4, 1)[..., 1:6]
+                           for x in expected_batch])
+
+    # Class labels start from zero
+    for x in merged:
+        x[..., -1] = 0
+
+    return merged
 
 
-@pytest.mark.skip("Fix the label scores")
+# @pytest.mark.skip("Fix the label scores")
 @pytest.mark.parametrize("bsize", [16])
 def test_inference(expected, batch, bsize):
     predictions = infer(batch, DEFAULT_ANCHORS)
     assert len(predictions) == bsize
-    # assert all([x.shape[-1] == 5 for x in predictions])
+    assert all([x.shape[-1] == 5 for x in predictions])
 
     for pred, nominal in zip(predictions, expected):
         assert pred.shape == nominal.shape
@@ -79,7 +84,7 @@ def test_inference(expected, batch, bsize):
 @pytest.mark.skip()
 @pytest.mark.parametrize("bsize", [4])
 def test_nms(expected_batch, bsize=10):
-    merged_batch = merge_scales([x.permute(0, 2, 3, 4, 1)
-                                 for x in expected_batch])
+    merged = merge_scales([x.permute(0, 2, 3, 4, 1)
+                           for x in expected_batch])
     img = torch.ones(3, 460, 460)
-    plot((img, [x[1:5] for x in merged_batch[0]]), convert_bbox=True)
+    plot((img, [x[1:5] for x in merged[0]]), convert_bbox=True)

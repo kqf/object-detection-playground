@@ -8,9 +8,9 @@ def to_global(x, scale):
     x_cells = cells.reshape(1, scale, 1, 1, 1)
     y_cells = cells.reshape(1, 1, scale, 1, 1)
 
-    x[..., 0:1] = (x[..., 0:1] + x_cells) / scale
-    x[..., 1:2] = (x[..., 1:2] + y_cells) / scale
-    x[..., 2:4] = x[..., 2:4] / scale
+    x[..., 1:2] = (x[..., 1:2] + x_cells) / scale
+    x[..., 2:3] = (x[..., 2:3] + y_cells) / scale
+    x[..., 3:5] = x[..., 3:5] / scale
     return x
 
 
