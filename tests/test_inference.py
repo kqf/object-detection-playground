@@ -41,11 +41,11 @@ def batch(expected_batch, scale=13):
         # Convert to local
         x[:, 1] = x[:, 1] * n - x_cells
         x[:, 2] = x[:, 2] * n - y_cells
-        x[:, 3:5] /= n
+        x[:, 3:5] *= n
 
         # Apply inverse "nonlinearity" for predictions
         x[:, 0:3] = torch.logit(x[:, 0:3])
-        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3))
+        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3) / n)
 
         # Append the global predictions
         scales.append(x)
@@ -60,7 +60,7 @@ def expected(expected_batch):
     return merged_batch
 
 
-@pytest.mark.skip("Fix the label scores")
+# @pytest.mark.skip("Fix the label scores")
 @pytest.mark.parametrize("bsize", [16])
 def test_inference(expected, batch, bsize):
     predictions = infer(batch, DEFAULT_ANCHORS)
@@ -69,7 +69,8 @@ def test_inference(expected, batch, bsize):
 
     for pred, nominal in zip(predictions, expected):
         assert pred.shape == nominal.shape
-        torch.testing.assert_allclose(pred, nominal)
+        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+        # torch.testing.assert_allclose(pred, nominal)
 
         # Check if nms works
     for sample in predictions:
