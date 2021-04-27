@@ -80,8 +80,9 @@ def test_inference(expected, batch, bsize):
     for sample in predictions:
         nms(sample)
 
+# @pytest.mark.skip()
 
-@pytest.mark.skip()
+
 @pytest.mark.parametrize("bsize", [4])
 def test_nms(expected_batch, bsize=10):
     merged = merge_scales([x.permute(0, 2, 3, 4, 1)

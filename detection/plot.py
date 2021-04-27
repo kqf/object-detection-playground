@@ -12,12 +12,12 @@ def normalize(x):
 
 
 def absolute_bbox(bbox, image_w, image_h):
-    x_center, y_center, w, h = bbox
+    x_center, y_center, w, h, *color = bbox
     x1 = (x_center - w / 2) * image_w
     x2 = (x_center + w / 2) * image_w
     y1 = (y_center - h / 2) * image_h
     y2 = (y_center + h / 2) * image_h
-    return [x1, y1, x2, y2]
+    return [x1, y1, x2, y2] + color
 
 
 def tensor2img(t, padding=0, normalize=True):
@@ -73,6 +73,7 @@ def glance(dataset, batch_size, pfunc=plot):
         pfunc(*batch)
 
 
-def rectangle(x1, y1, x2, y2):
+def rectangle(x1, y1, x2, y2, c=1):
     w, h = x2 - x1, y2 - y1
-    return plt.Rectangle((x1, y1), w, h, color='r', fill=False)
+    color = plt.cm.RdYlBu(1. / c)
+    return plt.Rectangle((x1, y1), w, h, color=color, fill=False)
