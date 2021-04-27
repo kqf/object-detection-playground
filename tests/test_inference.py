@@ -20,7 +20,7 @@ def expected_batch(bsize, scale=13):
         x[:, 2] = (torch.zeros(1, n, n, 3) + 0.5 + y_cells) / n
         x[:, 3] = 0.01
         x[:, 4] = 0.01
-        x[:, 5] = 1
+        x[:, 5] = torch.arange(n).reshape(1, 1, 1, n, 1)
 
         # Append the global predictions
         scales.append(x)
@@ -81,10 +81,10 @@ def test_inference(expected, batch, bsize):
         nms(sample)
 
 
-@pytest.mark.skip()
+@pytest.mark.skip
 @pytest.mark.parametrize("bsize", [4])
 def test_nms(expected_batch, bsize=10):
     merged = merge_scales([x.permute(0, 2, 3, 4, 1)
                            for x in expected_batch])
     img = torch.ones(3, 460, 460)
-    plot((img, [x[1:5] for x in merged[0]]), convert_bbox=True)
+    plot((img, [x[1:6] for x in merged[0]]), convert_bbox=True)
