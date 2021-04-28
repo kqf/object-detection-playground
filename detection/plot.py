@@ -29,7 +29,7 @@ def tensor2img(t, padding=0, normalize=True):
 
 def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
     n_plots = ceil(sqrt(len(imgs)))
-    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 12))
+    fig, axes = plt.subplots(n_plots, n_plots, figsize=(9, 9))
 
     for i, (image, bboxes) in enumerate(imgs):
         plt.subplot(n_plots, n_plots, i + 1)
