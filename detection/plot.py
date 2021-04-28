@@ -29,7 +29,7 @@ def tensor2img(t, padding=0, normalize=True):
 
 def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
     n_plots = ceil(sqrt(len(imgs)))
-    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
+    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 12))
 
     for i, (image, bboxes) in enumerate(imgs):
         plt.subplot(n_plots, n_plots, i + 1)
@@ -42,9 +42,10 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
             if convert_bbox:
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox))
-    plt.show(block=block)
+    plt.tight_layout()
     if ofile is not None:
         plt.savefig(ofile)
+    plt.show(block=block)
     return axes
 
 
@@ -73,7 +74,7 @@ def glance(dataset, batch_size, pfunc=plot):
         pfunc(*batch)
 
 
-def rectangle(x1, y1, x2, y2, c=1):
+def rectangle(x1, y1, x2, y2, c=0):
     w, h = x2 - x1, y2 - y1
     color = plt.cm.RdYlBu(1. / int(c + 1))
     return plt.Rectangle((x1, y1), w, h, color=color, fill=False)
