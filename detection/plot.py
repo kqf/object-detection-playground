@@ -42,8 +42,9 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
             if convert_bbox:
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox))
+    plt.tight_layout()
     if ofile is not None:
-        plt.savefig(ofile)
+        plt.savefig(ofile, bbox_inches='tight', dpi=100)
     plt.show(block=block)
     return axes
 
