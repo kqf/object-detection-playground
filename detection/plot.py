@@ -29,7 +29,7 @@ def tensor2img(t, padding=0, normalize=True):
 
 def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
     n_plots = ceil(sqrt(len(imgs)))
-    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 5))
+    fig, axes = plt.subplots(n_plots, n_plots, figsize=(12, 12))
 
     for i, (image, bboxes) in enumerate(imgs):
         plt.subplot(n_plots, n_plots, i + 1)
@@ -44,7 +44,7 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
             ax.add_patch(rectangle(*bbox))
     plt.tight_layout()
     if ofile is not None:
-        plt.savefig(ofile, bbox_inches='tight', dpi=100)
+        plt.savefig(ofile)
     plt.show(block=block)
     return axes
 
