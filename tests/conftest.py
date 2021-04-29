@@ -7,6 +7,18 @@ from pathlib import Path
 
 from detection.mc import generate_to_directory
 
+import torch
+import random
+
+
+SEED = 137
+
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+torch.backends.cudnn.deterministic = True
+
 
 def pytest_configure(config):
     config.addinivalue_line(
