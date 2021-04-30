@@ -13,7 +13,7 @@ def test_dummy(fake_dataset, fixed_seed):
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    model = build_model(max_epochs=10)
+    model = build_model(max_epochs=2)
     model.fit(train)
     preds = model.predict(train)
     first_image_pred = preds[0][:, :4]
@@ -31,5 +31,5 @@ def test_dummy(fake_dataset, fixed_seed):
     #     first_image_pred[:, 2] = 0.2
     #     first_image_pred[:, 3] = 0.2
 
-    plot((first_image, first_image_pred),
+    plot((1 - first_image, first_image_pred),
          convert_bbox=True, ofile='dummy-test.png')
