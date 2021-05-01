@@ -58,6 +58,11 @@ def annotations():
     df.loc[df["class_id"] == 14, 'x_max'] = 1653.0
     df.loc[df["class_id"] == 14, 'y_min'] = 1375.0
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
+
+    df.loc[:, 'x_min'] = 691.0
+    df.loc[:, 'x_max'] = 1653.0
+    df.loc[:, 'y_min'] = 1375.0
+    df.loc[:, 'y_max'] = 1831.0
     return df
 
 
