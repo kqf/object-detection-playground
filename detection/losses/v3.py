@@ -20,7 +20,7 @@ class CombinedLoss(torch.nn.Module):
         pos_weight = torch.tensor([self.obj])
         self.objectness = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
         self.classification = torch.nn.CrossEntropyLoss()
-        self.bbox = torch.nn.MSELoss()
+        self.regression = torch.nn.MSELoss()
 
     def forward(self, pred, target):
         loss = torch.tensor(0).float()
@@ -50,14 +50,13 @@ class CombinedLoss(torch.nn.Module):
         anchors = anchors.reshape(1, 3, 2)
 
         # x,y coordinates
-        pred[bbox_xy] = torch.nn.functional.sigmoid(pred[bbox_xy])
         box_preds = torch.cat([
-            pred[bbox_xy],
+            torch.nn.functional.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
-        det = self.objectness(
+        det = self.regression(
             pred[objectness],
             ious * target[objectness]
         )
@@ -67,7 +66,7 @@ class CombinedLoss(torch.nn.Module):
         ], dim=-1)
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
-        box = self.bbox(pred[bbox_all][obj], tboxes[obj])
+        box = self.regression(pred[bbox_all][obj], tboxes[obj])
 
         lcls = self.classification(
             pred[..., 5:][obj],
