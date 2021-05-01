@@ -49,6 +49,8 @@ class CombinedLoss(torch.nn.Module):
         # [scale, 2] -> [1, scale, 2]
         anchors = anchors.reshape(1, 3, 2)
 
+        nodet = self.objectness(pred[objectness], target[objectness])
+
         # x,y coordinates
         box_preds = torch.cat([
             torch.nn.functional.sigmoid(pred[bbox_xy]),
@@ -73,4 +75,4 @@ class CombinedLoss(torch.nn.Module):
             target[..., 5][obj].long(),
         )
 
-        return self.det * det + self.box * box + self.lcls * lcls
+        return self.det * det + self.box * box + self.lcls * lcls + nodet
