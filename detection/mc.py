@@ -31,7 +31,7 @@ def blob2image(blob, channels=3, epsilon=0.1):
     h, w = blob.shape
 
     extended = blob[..., None]
-    return ~(extended + 255)
+    return extended + 255
 
     # Add a small term to add noise to the empty regions
     # noise = np.random.poisson(extended + epsilon, size=(h, w, channels))
