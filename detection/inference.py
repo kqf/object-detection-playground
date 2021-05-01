@@ -5,8 +5,8 @@ from detection.metrics import bbox_iou
 def to_global(x, scale):
     cells = torch.arange(scale).to(x.device)
 
-    x_cells = cells.reshape(1, scale, 1, 1, 1)
-    y_cells = cells.reshape(1, 1, scale, 1, 1)
+    x_cells = cells.reshape(1, 1, scale, 1, 1)
+    y_cells = cells.reshape(1, scale, 1, 1, 1)
 
     x[..., 1:2] = (x[..., 1:2] + x_cells) / scale
     x[..., 2:3] = (x[..., 2:3] + y_cells) / scale
@@ -90,6 +90,7 @@ def nms(pred, min_iou=0.5):
     return ~result
 
 
-def no_nms(pred, threshold=0.0):
-    positive = pred[:, 1] > threshold
+def no_nms(pred, threshold=0.00):
+    print(pred[:, 0].max())
+    positive = pred[:, 0] > threshold
     return pred[positive, 1:]

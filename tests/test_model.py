@@ -31,5 +31,5 @@ def test_dummy(fake_dataset, fixed_seed):
     #     first_image_pred[:, 2] = 0.2
     #     first_image_pred[:, 3] = 0.2
 
-    plot((1 - first_image, first_image_pred),
+    plot((first_image, first_image_pred),
          convert_bbox=True, ofile='dummy-test.png')
