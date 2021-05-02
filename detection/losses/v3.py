@@ -49,7 +49,11 @@ class CombinedLoss(torch.nn.Module):
         # [scale, 2] -> [1, scale, 2]
         anchors = anchors.reshape(1, 3, 2)
 
-        nodet = self.objectness(pred[objectness], target[objectness])
+        noobj = target[..., 0] == 0  # in paper this is Iobj_i
+        nodet = self.objectness(
+            pred[objectness][noobj],
+            target[objectness][noobj]
+        )
 
         # x,y coordinates
         box_preds = torch.cat([
@@ -57,17 +61,17 @@ class CombinedLoss(torch.nn.Module):
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
+        obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
-            pred[objectness],
-            ious * target[objectness]
+            pred[objectness][obj],
+            ious[obj] * target[objectness][obj]
         )
         tboxes = torch.cat([
             target[bbox_xy],
             torch.log((1e-16 + target[bbox_wh] / anchors)),
         ], dim=-1)
 
-        obj = target[..., 0] == 1  # in paper this is Iobj_i
         box = self.regression(pred[bbox_all][obj], tboxes[obj])
 
         lcls = self.classification(
