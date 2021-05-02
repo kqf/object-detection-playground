@@ -64,6 +64,15 @@ def annotations():
     df.loc[:, 'y_min'] = 400.0
     df.loc[:, 'y_max'] = 400.0 + 2000 * 0.22
     df.loc[:, "class_id"] = 1
+
+    df["height"] = 2000
+    df["width"] = 2000
+
+    x1, y1, x2, y2 = df[['x_min', 'y_min', 'x_max', 'y_max']].values.T
+    df['x_center'] = (x1 + x2) / 2 / df["height"]
+    df['y_center'] = (y1 + y2) / 2 / df["width"]
+    df['width'] = (x2 - x1) / df["height"]
+    df['height'] = (y2 - y1) / df["width"]
     return df
 
 

@@ -51,12 +51,6 @@ class DetectionDatasetV3(Dataset):
         if records.loc[0, "class_id"] == 0:
             records = records.loc[[0], :]
 
-        x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-        records['x_center'] = (x1 + x2) / 2 / image.shape[0]
-        records['y_center'] = (y1 + y2) / 2 / image.shape[1]
-        records['width'] = (x2 - x1) / image.shape[0]
-        records['height'] = (y2 - y1) / image.shape[1]
-
         boxes = records[['x_center', 'y_center', 'width', 'height']].values
 
         labels = torch.tensor(records["class_id"].values, dtype=torch.int64)
