@@ -13,7 +13,7 @@ def test_dummy(fake_dataset, fixed_seed):
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    model = build_model(max_epochs=40)
+    model = build_model(max_epochs=2)
     model.fit(train)
     preds = model.predict(train)
     first_image_pred = preds[0][:, :4]

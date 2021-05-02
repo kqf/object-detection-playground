@@ -68,11 +68,16 @@ class CombinedLoss(torch.nn.Module):
             ious[obj] * target[objectness][obj]
         )
         tboxes = torch.cat([
-            torch.logit(1e-16 + target[bbox_xy]),
+            target[bbox_xy],
             torch.log((1e-16 + target[bbox_wh] / anchors)),
         ], dim=-1)
 
-        box = self.regression(pred[bbox_all][obj], tboxes[obj])
+        pred_boxes = torch.cat([
+            torch.nn.functional.sigmoid(pred[bbox_xy]),
+            pred[bbox_wh]
+        ], dim=-1)
+
+        box = self.regression(pred_boxes[obj], tboxes[obj])
 
         lcls = self.classification(
             pred[..., 5:][obj],

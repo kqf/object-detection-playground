@@ -41,7 +41,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         YOLO,
         batch_size=64,
         max_epochs=max_epochs,
-        lr=0.0001,
+        lr=0.000002,
         optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
@@ -57,7 +57,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
             # skorch.callbacks.Checkpoint(dirname=logdir),
             skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
             # scheduler,
-            skorch.callbacks.Initializer("*", init),
+            # skorch.callbacks.Initializer("*", init),
         ],
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     )
