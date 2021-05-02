@@ -24,7 +24,6 @@ class DetectionDatasetV3(Dataset):
         scales=None,
         iou_threshold=0.5,
         transforms=None,
-        no_anchors=False,
     ):
         super().__init__()
 
@@ -32,7 +31,6 @@ class DetectionDatasetV3(Dataset):
         self.df = dataframe
         self.image_dir = image_dir
         self.transforms = transforms
-        self.no_anchors = no_anchors
 
         self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
         self.iou_threshold = iou_threshold
@@ -74,9 +72,6 @@ class DetectionDatasetV3(Dataset):
             image = transformed['image']
             boxes = transformed['bboxes']
             labels = transformed['labels']
-
-        if self.no_anchors:
-            return image, boxes
 
         _, width, height = image.shape
         targets = build_targets(

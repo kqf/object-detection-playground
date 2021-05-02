@@ -27,8 +27,8 @@ def test_augmentations(fake_dataset, block=False):
     dataset = DetectionDatasetV3(
         df, fake_dataset,
         transforms=transform(train=True),
-        no_anchors=True,
     )
 
-    for image, anchors in dataset:
-        plot([image, anchors], block=block, convert_bbox=True)
+    for i in range(len(dataset)):
+        image, bboxes, _ = dataset.example(i)
+        plot([image, [], bboxes], block=block, convert_bbox=True)
