@@ -20,5 +20,6 @@ def test_mc(bbox, block=False):
 
 @pytest.mark.parametrize("n_images", [1, 5, 16])
 def test_plotting(bbox, n_images, block=False):
-    data = [(blob2image(make_blob(*bbox)), [bbox]) for i in range(n_images)]
+    data = [(blob2image(make_blob(*bbox)), [bbox], [bbox])
+            for i in range(n_images)]
     plot(*data, block=block)
