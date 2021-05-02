@@ -24,7 +24,6 @@ class DetectionDatasetV3(Dataset):
         scales=None,
         iou_threshold=0.5,
         transforms=None,
-        no_anchors=False,
     ):
         super().__init__()
 
@@ -32,13 +31,12 @@ class DetectionDatasetV3(Dataset):
         self.df = dataframe
         self.image_dir = image_dir
         self.transforms = transforms
-        self.no_anchors = no_anchors
 
         self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
 
-    def __getitem__(self, index):
+    def example(self, index):
         image_id = self.image_ids[index]
         records = self.df[(self.df['image_id'] == image_id)]
         records = records.reset_index(drop=True)
@@ -75,9 +73,6 @@ class DetectionDatasetV3(Dataset):
             boxes = transformed['bboxes']
             labels = transformed['labels']
 
-        if self.no_anchors:
-            return image, boxes
-
         _, width, height = image.shape
         targets = build_targets(
             boxes, labels,
@@ -87,10 +82,14 @@ class DetectionDatasetV3(Dataset):
             im_size=width,
         )
 
-        return image, targets
+        return image, boxes, targets
 
     def __len__(self):
         return self.image_ids.shape[0]
+
+    def __getitem__(self, index):
+        image, boxes, targets = self.example(index)
+        return image, targets
 
 
 def iou(a, b):

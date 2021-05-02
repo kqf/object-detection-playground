@@ -17,7 +17,7 @@ def test_dummy(fake_dataset, fixed_seed):
     model.fit(train)
     preds = model.predict(train)
     first_image_pred = preds[0][:, :4]
-    first_image = train[0][0]
+    first_image, targets, _ = train.example(0)
 
     # first_image = torch.ones((3, 460, 460))
     # for first_image in train:
@@ -31,5 +31,5 @@ def test_dummy(fake_dataset, fixed_seed):
     #     first_image_pred[:, 2] = 0.2
     #     first_image_pred[:, 3] = 0.2
 
-    plot((first_image, first_image_pred),
+    plot((first_image, first_image_pred, targets),
          convert_bbox=True, ofile='dummy-test.png')
