@@ -38,7 +38,7 @@ class DetectionDatasetV3(Dataset):
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
 
-    def __getitem__(self, index):
+    def example(self, index):
         image_id = self.image_ids[index]
         records = self.df[(self.df['image_id'] == image_id)]
         records = records.reset_index(drop=True)
@@ -87,10 +87,14 @@ class DetectionDatasetV3(Dataset):
             im_size=width,
         )
 
-        return image, targets
+        return image, boxes, targets
 
     def __len__(self):
         return self.image_ids.shape[0]
+
+    def __getitem__(self, index):
+        image, boxes, targets = self.example(index)
+        return image, targets
 
 
 def iou(a, b):
