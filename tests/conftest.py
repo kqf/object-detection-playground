@@ -69,10 +69,10 @@ def annotations():
     df["width"] = 2000
 
     x1, y1, x2, y2 = df[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-    df['x_center'] = (x1 + x2) / 2 / df["height"]
-    df['y_center'] = (y1 + y2) / 2 / df["width"]
-    df['width'] = (x2 - x1) / df["height"]
-    df['height'] = (y2 - y1) / df["width"]
+    df['x_center'] = (x1 + x2) / 2 / df["width"]
+    df['y_center'] = (y1 + y2) / 2 / df["height"]
+    df['width'] = (x2 - x1) / df["width"]
+    df['height'] = (y2 - y1) / df["height"]
     return df
 
 
