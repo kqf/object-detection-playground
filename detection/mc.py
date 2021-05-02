@@ -8,10 +8,10 @@ from pathlib import Path
 def make_blob(
     x_min=50, y_min=50,
     x_max=90, y_max=90,
-    height=2000, width=2000,
+    h=2000, w=2000,
     **kwargs
 ):
-    Y, X = np.ogrid[:height, :width]
+    Y, X = np.ogrid[:h, :w]
 
     w = (x_max - x_min)
     h = (y_max - y_min)
