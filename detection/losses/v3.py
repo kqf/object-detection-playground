@@ -20,7 +20,7 @@ class CombinedLoss(torch.nn.Module):
         pos_weight = torch.tensor([self.obj])
         self.objectness = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
         self.classification = torch.nn.CrossEntropyLoss()
-        self.bbox = torch.nn.MSELoss()
+        self.regression = torch.nn.MSELoss()
 
     def forward(self, pred, target):
         loss = torch.tensor(0).float()
@@ -49,29 +49,40 @@ class CombinedLoss(torch.nn.Module):
         # [scale, 2] -> [1, scale, 2]
         anchors = anchors.reshape(1, 3, 2)
 
+        noobj = target[..., 0] == 0  # in paper this is Iobj_i
+        nodet = self.classification(
+            pred[objectness][noobj],
+            (target[objectness][noobj].view(-1)).long()
+        )
+
         # x,y coordinates
-        pred[bbox_xy] = torch.nn.functional.sigmoid(pred[bbox_xy])
         box_preds = torch.cat([
-            pred[bbox_xy],
+            torch.nn.functional.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
+        obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
-        det = self.objectness(
-            pred[objectness],
-            ious * target[objectness]
+        det = self.regression(
+            torch.sigmoid(pred[objectness][obj]),
+            ious[obj] * target[objectness][obj]
         )
         tboxes = torch.cat([
             target[bbox_xy],
             torch.log((1e-16 + target[bbox_wh] / anchors)),
         ], dim=-1)
 
-        obj = target[..., 0] == 1  # in paper this is Iobj_i
-        box = self.bbox(pred[bbox_all][obj], tboxes[obj])
+        pred_boxes = torch.cat([
+            torch.nn.functional.sigmoid(pred[bbox_xy]),
+            pred[bbox_wh]
+        ], dim=-1)
+
+        box = self.regression(pred_boxes[obj], tboxes[obj])
 
         lcls = self.classification(
             pred[..., 5:][obj],
             target[..., 5][obj].long(),
         )
 
-        return self.det * det + self.box * box + self.lcls * lcls
+        loss = self.det * det + self.box * box + self.lcls * lcls + nodet
+        return loss
