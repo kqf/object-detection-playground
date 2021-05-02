@@ -31,17 +31,24 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
     n_plots = ceil(sqrt(len(imgs)))
     fig, axes = plt.subplots(n_plots, n_plots, figsize=(9, 9))
 
-    for i, (image, bboxes) in enumerate(imgs):
+    for i, (image, bboxes, targets) in enumerate(imgs):
         plt.subplot(n_plots, n_plots, i + 1)
         try:
             plt.imshow(image)
         except TypeError:
             plt.imshow(tensor2img(image, normalize=normalize))
         ax = plt.gca()
+
         for bbox in bboxes:
             if convert_bbox:
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox))
+
+        for bbox in targets:
+            if convert_bbox:
+                bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
+            ax.add_patch(rectangle(*bbox, c=9999))
+
     plt.tight_layout()
     if ofile is not None:
         plt.savefig(ofile)
