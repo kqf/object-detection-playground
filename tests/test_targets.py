@@ -16,7 +16,7 @@ def test_targets(fake_dataset, fixed_seed):
         for scale in targets:
             # No need to apply the nonlinearities
             # Convert to the global refenrence frame
-            pred = to_global(scale.permute(1, 2, 0, 3), scale.shape[2])
+            pred = to_global(scale.permute(1, 2, 0, 3))
 
             # "Apply" the NMS
             final_output = pred[pred[..., 0] == 1]
