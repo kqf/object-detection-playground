@@ -2,15 +2,18 @@ import torch
 from detection.metrics import bbox_iou
 
 
-def to_global(x, scale):
-    cells = torch.arange(scale).to(x.device)
+def to_global(x):
+    # x[batch, scale, x_cells, y_cells, 6]
+    n_cells = x.shape[1]
 
-    x_cells = cells.reshape(1, 1, scale, 1, 1)
-    y_cells = cells.reshape(1, scale, 1, 1, 1)
+    cells = torch.arange(n_cells).to(x.device)
 
-    x[..., 1:2] = (x[..., 1:2] + x_cells) / scale
-    x[..., 2:3] = (x[..., 2:3] + y_cells) / scale
-    x[..., 3:5] = x[..., 3:5] / scale
+    x_cells = cells.reshape(1, 1, n_cells, 1, 1)
+    y_cells = cells.reshape(1, n_cells, 1, 1, 1)
+
+    x[..., 1:2] = (x[..., 1:2] + x_cells) / n_cells
+    x[..., 2:3] = (x[..., 2:3] + y_cells) / n_cells
+    x[..., 3:5] = x[..., 3:5] / n_cells
     return x
 
 
