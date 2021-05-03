@@ -39,15 +39,15 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
             plt.imshow(tensor2img(image, normalize=normalize))
         ax = plt.gca()
 
-        for bbox in bboxes:
-            if convert_bbox:
-                bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
-            ax.add_patch(rectangle(*bbox))
-
         for bbox in targets:
             if convert_bbox:
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
             ax.add_patch(rectangle(*bbox, c=9999))
+
+        for bbox in bboxes:
+            if convert_bbox:
+                bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
+            ax.add_patch(rectangle(*bbox))
 
     plt.tight_layout()
     if ofile is not None:
