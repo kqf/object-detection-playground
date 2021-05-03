@@ -21,6 +21,9 @@ def test_targets(fake_dataset, fixed_seed):
             # "Apply" the NMS
             final_output = pred[pred[..., 0] == 1]
 
-            torch.testing.assert_allclose(final_output[:, 1:5], bbox[0])
-            # plot((torch.ones(3, 2000, 2000), final_output[:, 1:5], bbox),
-            #      convert_bbox=True)
+            target = final_output[:, 1:5].flatten()
+            torch.testing.assert_allclose(target, bbox[0])
+
+            # Compare visually
+            # img = torch.ones(3, 2000, 2000)
+            # plot((img, target, bbox), convert_bbox=True)
