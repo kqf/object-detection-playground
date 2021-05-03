@@ -42,7 +42,7 @@ def plot(*imgs, block=True, normalize=False, convert_bbox=False, ofile=None):
         for bbox in targets:
             if convert_bbox:
                 bbox = absolute_bbox(bbox, image.shape[1], image.shape[2])
-            ax.add_patch(rectangle(*bbox, c=9999))
+            ax.add_patch(rectangle(*bbox, c=9999, lw=2, ls=':'))
 
         for bbox in bboxes:
             if convert_bbox:
@@ -81,7 +81,7 @@ def glance(dataset, batch_size, pfunc=plot):
         pfunc(*batch)
 
 
-def rectangle(x1, y1, x2, y2, c=0):
+def rectangle(x1, y1, x2, y2, c=0, lw=1, ls='-'):
     w, h = x2 - x1, y2 - y1
     color = plt.cm.RdYlBu(1. / int(c + 1))
-    return plt.Rectangle((x1, y1), w, h, color=color, fill=False)
+    return plt.Rectangle((x1, y1), w, h, color=color, fill=False, lw=lw, ls=ls)
