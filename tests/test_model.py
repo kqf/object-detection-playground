@@ -8,7 +8,7 @@ from detection.model import build_model
 from detection.plot import plot
 
 
-def test_dummy(fake_dataset, fixed_seed):
+def test_model(fake_dataset, fixed_seed):
     df = read_data(fake_dataset / "train.csv")
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
