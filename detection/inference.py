@@ -35,7 +35,7 @@ def nonlin(batch, anchor_boxes):
         prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors * scale
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
-        final = to_global(prediction, scale=scale)
+        final = to_global(prediction)
         predictions.append(final)
 
     return predictions
