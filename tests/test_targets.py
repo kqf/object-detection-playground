@@ -4,7 +4,7 @@ from detection.data import read_data
 from detection.datasets.v3 import DetectionDatasetV3
 from detection.augmentations import transform
 from detection.inference import to_global
-from detection.plot import plot
+# from detection.plot import plot
 
 
 def test_targets(fake_dataset, fixed_seed):
@@ -21,6 +21,6 @@ def test_targets(fake_dataset, fixed_seed):
             # "Apply" the NMS
             final_output = pred[pred[..., 0] == 1]
 
-            # torch.testing.assert_allclose(final_output[:, 1:5], bbox[0])
-            plot((torch.ones(3, 2000, 2000), final_output[:, 1:5], bbox),
-                 convert_bbox=True)
+            torch.testing.assert_allclose(final_output[:, 1:5], bbox[0])
+            # plot((torch.ones(3, 2000, 2000), final_output[:, 1:5], bbox),
+            #      convert_bbox=True)
