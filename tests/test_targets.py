@@ -11,7 +11,7 @@ def test_targets(fake_dataset, fixed_seed):
     df = read_data(fake_dataset / "train.csv")
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    for i in range(len(train)):
+    for i in range(len(train))[:1]:
         image, bbox, targets = train.example(i)
         for scale in targets:
             # No need to apply the nonlinearities
@@ -26,4 +26,4 @@ def test_targets(fake_dataset, fixed_seed):
 
             # Compare visually
             # img = torch.ones(3, 2000, 2000)
-            # plot((img, target, bbox), convert_bbox=True)
+            # plot((img, target.reshape(1, -1), bbox), convert_bbox=True)
