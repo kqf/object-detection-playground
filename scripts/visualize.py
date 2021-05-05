@@ -20,6 +20,6 @@ def main(datapath):
     )
 
     for image, (s1, s2, s3) in dataset:
-        plot([image, s1, None])
-        plot([image, s2, None])
-        plot([image, s3, None])
+        plot([image, s1, []])
+        plot([image, s2, []])
+        plot([image, s3, []])
