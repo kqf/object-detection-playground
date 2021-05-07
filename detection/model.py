@@ -32,8 +32,8 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         policy=torch.optim.lr_scheduler.CyclicLR,
         base_lr=0.00001,
         max_lr=0.4,
-        step_size_up=1900,
-        step_size_down=3900,
+        step_size_up=1000,
+        step_size_down=4000,
         step_every='batch',
     )
 
