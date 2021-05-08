@@ -1,4 +1,3 @@
-import pytest
 import torch
 
 from detection.data import read_data
@@ -8,7 +7,6 @@ from detection.inference import to_global
 # from detection.plot import plot
 
 
-@pytest.mark.skip
 def test_targets(fake_dataset, fixed_seed):
     df = read_data(fake_dataset / "train.csv")
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
