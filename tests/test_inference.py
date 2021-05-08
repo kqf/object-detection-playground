@@ -65,7 +65,6 @@ def expected(expected_batch):
     return merged
 
 
-@pytest.mark.skip("Reinclude the anchors")
 @pytest.mark.parametrize("bsize", [16])
 def test_inference(expected, batch, bsize):
     predictions = infer(batch, DEFAULT_ANCHORS)
