@@ -7,25 +7,16 @@ class Conv(torch.nn.Module):
         super().__init__()
         pad = (kernel_size - 1) // 2
 
-        self.conv = torch.nn.Sequential([
+        layers = [
             torch.nn.Conv2d(in_channels, out_channels, kernel_size,
                             stride, pad, bias=bias),
-        ])
-
-        if bn:
-            self.conv.append(nn.BatchNorm2d(out_channels))
-
-        if activation == "mish":
-            self.conv.append(Mish())
-        elif activation == "relu":
-            self.conv.append(nn.ReLU(inplace=True))
-        elif activation == "leaky":
-            self.conv.append(nn.LeakyReLU(0.1, inplace=True))
+            torch.nn.BatchNorm2d(out_channels) if bn else torch.nn.Identity(),
+            activation,
+        ]
+        self.conv = torch.nn.Sequential(*layers)
 
     def forward(self, x):
-        for l in self.conv:
-            x = l(x)
-        return x
+        return self.conv(x)
 
 
 class DownSample(torch.nn.Module):
