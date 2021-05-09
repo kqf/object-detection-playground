@@ -1,5 +1,7 @@
 import torch
 
+from detection.models.darknet import Residual
+
 
 class Conv(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride,
@@ -17,6 +19,14 @@ class Conv(torch.nn.Module):
 
     def forward(self, x):
         return self.conv(x)
+
+
+def res_block(self, ch, nblocks=1, activation=torch.nn.ReLU):
+    layers = []
+    for _ in range(nblocks):
+        layers.append(Residual(Conv(ch, ch, 1, 1, activation=activation)))
+        layers.append(Residual(Conv(ch, ch, 3, 1, activation=activation)))
+    return torch.nn.Sequential(*layers)
 
 
 class DownSample(torch.nn.Module):
