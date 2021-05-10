@@ -42,37 +42,38 @@ class Neck(torch.nn.Module):
 class Head(torch.nn.Module):
     def __init__(self, output_ch, n_classes):
         super().__init__()
-        self.conv1 = Conv(128, 256, 3, 1, 'leaky')
-        self.conv2 = Conv(256, output_ch, 1, 1, 'linear', bn=False, bias=True)
+        leaky = torch.nn.LeakyReLU
+        lin = torch.nn.Identity
+        self.conv1 = Conv(128, 256, 3, 1, leaky())
+        self.conv2 = Conv(256, output_ch, 1, 1, lin(), bn=False, bias=True)
 
         # First scale
 
         # R -4
-        self.conv3 = Conv(128, 256, 3, 2, 'leaky')
+        self.conv3 = Conv(128, 256, 3, 2, leaky())
 
         # R -1 -16
-        self.conv4 = Conv(512, 256, 1, 1, 'leaky')
-        self.conv5 = Conv(256, 512, 3, 1, 'leaky')
-        self.conv6 = Conv(512, 256, 1, 1, 'leaky')
-        self.conv7 = Conv(256, 512, 3, 1, 'leaky')
-        self.conv8 = Conv(512, 256, 1, 1, 'leaky')
-        self.conv9 = Conv(256, 512, 3, 1, 'leaky')
-        self.conv10 = Conv(512, output_ch, 1, 1, 'linear', bn=False, bias=True)
+        self.conv4 = Conv(512, 256, 1, 1, leaky())
+        self.conv5 = Conv(256, 512, 3, 1, leaky())
+        self.conv6 = Conv(512, 256, 1, 1, leaky())
+        self.conv7 = Conv(256, 512, 3, 1, leaky())
+        self.conv8 = Conv(512, 256, 1, 1, leaky())
+        self.conv9 = Conv(256, 512, 3, 1, leaky())
+        self.conv10 = Conv(512, output_ch, 1, 1, lin(), bn=False, bias=True)
 
         # Second scale
 
         # R -4
-        self.conv11 = Conv(256, 512, 3, 2, 'leaky')
+        self.conv11 = Conv(256, 512, 3, 2, leaky())
 
         # R -1 -37
-        self.conv12 = Conv(1024, 512, 1, 1, 'leaky')
-        self.conv13 = Conv(512, 1024, 3, 1, 'leaky')
-        self.conv14 = Conv(1024, 512, 1, 1, 'leaky')
-        self.conv15 = Conv(512, 1024, 3, 1, 'leaky')
-        self.conv16 = Conv(1024, 512, 1, 1, 'leaky')
-        self.conv17 = Conv(512, 1024, 3, 1, 'leaky')
-        self.conv18 = Conv(1024, output_ch, 1, 1,
-                           'linear', bn=False, bias=True)
+        self.conv12 = Conv(1024, 512, 1, 1, leaky())
+        self.conv13 = Conv(512, 1024, 3, 1, leaky())
+        self.conv14 = Conv(1024, 512, 1, 1, leaky())
+        self.conv15 = Conv(512, 1024, 3, 1, leaky())
+        self.conv16 = Conv(1024, 512, 1, 1, leaky())
+        self.conv17 = Conv(512, 1024, 3, 1, leaky())
+        self.conv18 = Conv(1024, output_ch, 1, 1, lin(), bn=False, bias=True)
         # The third scale
 
     def forward(self, scale1, scale2, scale3):
