@@ -21,7 +21,7 @@ class Conv(torch.nn.Module):
         return self.conv(x)
 
 
-def res_block(self, ch, nblocks=1, activation=torch.nn.ReLU):
+def resblock(self, ch, nblocks=1, activation=torch.nn.ReLU):
     layers = []
     for _ in range(nblocks):
         layers.append(Residual(Conv(ch, ch, 1, 1, activation=activation)))
@@ -79,6 +79,34 @@ class DownSample1(torch.nn.Module):
         x7 = torch.cat([x7, x3], dim=1)
         x8 = self.conv8(x7)
         return x8
+
+
+class DownSample2(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = Conv(64, 128, 3, 2, 'mish')
+        self.conv2 = Conv(128, 64, 1, 1, 'mish')
+        # r -2
+        self.conv3 = Conv(128, 64, 1, 1, 'mish')
+
+        self.resblock = resblock(ch=64, nblocks=2)
+
+        # s -3
+        self.conv4 = Conv(64, 64, 1, 1, 'mish')
+        # r -1 -10
+        self.conv5 = Conv(128, 128, 1, 1, 'mish')
+
+    def forward(self, x):
+        x1 = self.conv1(x)
+        x2 = self.conv2(x1)
+        x3 = self.conv3(x1)
+
+        r = self.resblock(x3)
+        x4 = self.conv4(r)
+
+        x4 = torch.cat([x4, x2], dim=1)
+        x5 = self.conv5(x4)
+        return x5
 
 
 class Head(torch.nn.Module):
