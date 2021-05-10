@@ -75,13 +75,13 @@ class Head(torch.nn.Module):
                            'linear', bn=False, bias=True)
         # The third scale
 
-    def forward(self, input1, input2, input3):
-        x1 = self.conv1(input1)
+    def forward(self, scale1, scale2, scale3):
+        x1 = self.conv1(scale1)
         x2 = self.conv2(x1)
 
-        x3 = self.conv3(input1)
+        x3 = self.conv3(scale1)
         # R -1 -16
-        x3 = torch.cat([x3, input2], dim=1)
+        x3 = torch.cat([x3, scale2], dim=1)
         x4 = self.conv4(x3)
         x5 = self.conv5(x4)
         x6 = self.conv6(x5)
@@ -93,7 +93,7 @@ class Head(torch.nn.Module):
         # R -4
         x11 = self.conv11(x8)
         # R -1 -37
-        x11 = torch.cat([x11, input3], dim=1)
+        x11 = torch.cat([x11, scale3], dim=1)
 
         x12 = self.conv12(x11)
         x13 = self.conv13(x12)
