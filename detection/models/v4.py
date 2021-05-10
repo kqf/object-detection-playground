@@ -39,6 +39,48 @@ class Neck(torch.nn.Module):
         pass
 
 
+class DownSample1(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        # TODO: relu -> mish
+        self.conv1 = Conv(3, 32, 3, 1, 'mish')
+
+        self.conv2 = Conv(32, 64, 3, 2, 'mish')
+        self.conv3 = Conv(64, 64, 1, 1, 'mish')
+        # [route]
+        # layers = -2
+        self.conv4 = Conv(64, 64, 1, 1, 'mish')
+
+        self.conv5 = Conv(64, 32, 1, 1, 'mish')
+        self.conv6 = Conv(32, 64, 3, 1, 'mish')
+        # [shortcut]
+        # from=-3
+        # activation = linear
+
+        self.conv7 = Conv(64, 64, 1, 1, 'mish')
+        # [route]
+        # layers = -1, -7
+        self.conv8 = Conv(128, 64, 1, 1, 'mish')
+
+    def forward(self, x):
+        x1 = self.conv1(x)
+        x2 = self.conv2(x1)
+        x3 = self.conv3(x2)
+        # route -2
+        x4 = self.conv4(x2)
+        x5 = self.conv5(x4)
+        x6 = self.conv6(x5)
+        # shortcut -3
+        x6 = x6 + x4
+
+        x7 = self.conv7(x6)
+        # [route]
+        # layers = -1, -7
+        x7 = torch.cat([x7, x3], dim=1)
+        x8 = self.conv8(x7)
+        return x8
+
+
 class Head(torch.nn.Module):
     def __init__(self, output_ch, n_classes):
         super().__init__()
