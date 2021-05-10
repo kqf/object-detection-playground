@@ -40,27 +40,27 @@ class Neck(torch.nn.Module):
 
 
 class DownSample1(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, activation=torch.nn.ReLU):
         super().__init__()
         # TODO: relu -> mish
-        self.conv1 = Conv(3, 32, 3, 1, 'mish')
+        self.conv1 = Conv(3, 32, 3, 1, activation)
 
-        self.conv2 = Conv(32, 64, 3, 2, 'mish')
-        self.conv3 = Conv(64, 64, 1, 1, 'mish')
+        self.conv2 = Conv(32, 64, 3, 2, activation)
+        self.conv3 = Conv(64, 64, 1, 1, activation)
         # [route]
         # layers = -2
-        self.conv4 = Conv(64, 64, 1, 1, 'mish')
+        self.conv4 = Conv(64, 64, 1, 1, activation)
 
-        self.conv5 = Conv(64, 32, 1, 1, 'mish')
-        self.conv6 = Conv(32, 64, 3, 1, 'mish')
+        self.conv5 = Conv(64, 32, 1, 1, activation)
+        self.conv6 = Conv(32, 64, 3, 1, activation)
         # [shortcut]
         # from=-3
         # activation = linear
 
-        self.conv7 = Conv(64, 64, 1, 1, 'mish')
+        self.conv7 = Conv(64, 64, 1, 1, activation)
         # [route]
         # layers = -1, -7
-        self.conv8 = Conv(128, 64, 1, 1, 'mish')
+        self.conv8 = Conv(128, 64, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -160,7 +160,7 @@ class YOLO(torch.nn.Module):
         super().__init__()
 
         # backbone
-        self.down1 = DownSample()
+        self.down1 = DownSample1()
         self.down2 = DownSample()
         self.down3 = DownSample()
         self.down4 = DownSample()
