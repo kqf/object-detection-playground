@@ -21,7 +21,7 @@ class Conv(torch.nn.Module):
         return self.conv(x)
 
 
-def resblock(self, ch, nblocks=1, activation=torch.nn.ReLU):
+def resblock(ch, nblocks=1, activation=torch.nn.ReLU()):
     layers = []
     for _ in range(nblocks):
         layers.append(Residual(Conv(ch, ch, 1, 1, activation=activation)))
