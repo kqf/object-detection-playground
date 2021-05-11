@@ -82,19 +82,20 @@ class DownSample1(torch.nn.Module):
 
 
 class DownSample2(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, activation=torch.nn.ReLU):
         super().__init__()
-        self.conv1 = Conv(64, 128, 3, 2, 'mish')
-        self.conv2 = Conv(128, 64, 1, 1, 'mish')
+        # TODO: relu -> mish
+        self.conv1 = Conv(64, 128, 3, 2, activation())
+        self.conv2 = Conv(128, 64, 1, 1, activation())
         # r -2
-        self.conv3 = Conv(128, 64, 1, 1, 'mish')
+        self.conv3 = Conv(128, 64, 1, 1, activation())
 
         self.resblock = resblock(ch=64, nblocks=2)
 
         # s -3
-        self.conv4 = Conv(64, 64, 1, 1, 'mish')
+        self.conv4 = Conv(64, 64, 1, 1, activation())
         # r -1 -10
-        self.conv5 = Conv(128, 128, 1, 1, 'mish')
+        self.conv5 = Conv(128, 128, 1, 1, activation())
 
     def forward(self, x):
         x1 = self.conv1(x)
