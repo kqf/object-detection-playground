@@ -77,7 +77,7 @@ class CombinedLoss(torch.nn.Module):
             pred[bbox_wh]
         ], dim=-1)
 
-        box = self.regression(pred_boxes[obj], tboxes[obj])
+        box = self.regression(pred_boxes[obj], tboxes[obj]) ** 2
 
         lcls = self.classification(
             pred[..., 5:][obj],
