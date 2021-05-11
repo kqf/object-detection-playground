@@ -47,11 +47,11 @@ def transform(train=True, mean=None, std=None, size=32 * 13):
         warnings.warn(f"Image shape should be a multiple of 32, got {size}")
 
     transforms = [
-        alb.PadIfNeeded(
-            min_height=int(size),
-            min_width=int(size),
-            border_mode=cv2.BORDER_CONSTANT,
-        ),
+        # alb.PadIfNeeded(
+        #     min_height=int(size),
+        #     min_width=int(size),
+        #     border_mode=cv2.BORDER_CONSTANT,
+        # ),
         # DebugAugmentations(),
         alb.Resize(size, size),
         alb.Normalize(mean=mean, std=std, max_pixel_value=255.0, p=1.0),
@@ -61,7 +61,7 @@ def transform(train=True, mean=None, std=None, size=32 * 13):
     train_transforms = []
     if train:
         train_transforms = [
-            alb.Flip(0.5)
+            # alb.Flip(0.5)
         ]
 
     return alb.Compose(train_transforms + transforms, bbox_params=bbox_params)
