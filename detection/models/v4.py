@@ -135,15 +135,15 @@ class DownSample3(torch.nn.Module):
 
 
 class DownSample4(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, activation=torch.nn.LeakyReLU):
         super().__init__()
-        self.conv1 = Conv(256, 512, 3, 2, 'mish')
-        self.conv2 = Conv(512, 256, 1, 1, 'mish')
-        self.conv3 = Conv(512, 256, 1, 1, 'mish')
+        self.conv1 = Conv(256, 512, 3, 2, activation())
+        self.conv2 = Conv(512, 256, 1, 1, activation())
+        self.conv3 = Conv(512, 256, 1, 1, activation())
 
         self.resblock = resblock(ch=256, nblocks=8)
-        self.conv4 = Conv(256, 256, 1, 1, 'mish')
-        self.conv5 = Conv(512, 512, 1, 1, 'mish')
+        self.conv4 = Conv(256, 256, 1, 1, activation())
+        self.conv5 = Conv(512, 512, 1, 1, activation())
 
     def forward(self, input):
         x1 = self.conv1(input)
