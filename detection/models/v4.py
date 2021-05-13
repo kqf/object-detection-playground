@@ -134,6 +134,30 @@ class DownSample3(torch.nn.Module):
         return x5
 
 
+class DownSample4(torch.nn.Module):
+    def __init__(self, activation=torch.nn.LeakyReLU):
+        super().__init__()
+        self.conv1 = Conv(256, 512, 3, 2, activation())
+        self.conv2 = Conv(512, 256, 1, 1, activation())
+        self.conv3 = Conv(512, 256, 1, 1, activation())
+
+        self.resblock = resblock(ch=256, nblocks=8)
+        self.conv4 = Conv(256, 256, 1, 1, activation())
+        self.conv5 = Conv(512, 512, 1, 1, activation())
+
+    def forward(self, input):
+        x1 = self.conv1(input)
+        x2 = self.conv2(x1)
+        x3 = self.conv3(x1)
+
+        r = self.resblock(x3)
+        x4 = self.conv4(r)
+
+        x4 = torch.cat([x4, x2], dim=1)
+        x5 = self.conv5(x4)
+        return x5
+
+
 class Head(torch.nn.Module):
     def __init__(self, output_ch, n_classes):
         super().__init__()
