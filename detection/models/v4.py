@@ -214,8 +214,8 @@ class YOLO(torch.nn.Module):
 
         # backbone
         self.down1 = DownSample1()
-        self.down2 = DownSample()
-        self.down3 = DownSample()
+        self.down2 = DownSample2()
+        self.down3 = DownSample3()
         self.down4 = DownSample()
         self.down5 = DownSample()
         # neck
