@@ -74,6 +74,7 @@ def annotations(n_samples=4):
     df['width'] = (x2 - x1) / df["w"]
     df['height'] = (y2 - y1) / df["h"]
 
+    # TODO: remove this part when debugging is over
     df = df.sample(n=n_samples, replace=True).reset_index()
     return df
 
