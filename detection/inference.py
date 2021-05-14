@@ -8,8 +8,8 @@ def to_global(x):
 
     cells = torch.arange(n_cells).to(x.device)
 
-    x_cells = cells.reshape(1, 1, n_cells, 1, 1)
-    y_cells = cells.reshape(1, n_cells, 1, 1, 1)
+    x_cells = cells.reshape(1, n_cells, 1, 1, 1)
+    y_cells = cells.reshape(1, 1, n_cells, 1, 1)
 
     x[..., 1:2] = (x[..., 1:2] + x_cells) / n_cells
     x[..., 2:3] = (x[..., 2:3] + y_cells) / n_cells
@@ -96,5 +96,5 @@ def nms(pred, min_iou=0.5):
 def no_nms(pred, threshold=0.0):
     print(pred[:, 0].max())
     positive = pred[:, 0] > threshold
-    # positive = pred[:, 0].argsort()[:5]
+    positive = pred[:, 0].argsort()[:10]
     return pred[positive, 1:]
