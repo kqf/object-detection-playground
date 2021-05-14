@@ -33,7 +33,7 @@ def size():
 
 
 @pytest.fixture
-def annotations():
+def annotations(n_samples=4):
     """
                                image_id          class_name  class_id rad_id   x_min   y_min   x_max   y_max
     0  50a418190bc3fb1ef1633bf9678929b3          No finding        14    R11     NaN     NaN     NaN     NaN
@@ -73,6 +73,9 @@ def annotations():
     df['y_center'] = (y1 + y2) / 2 / df["h"]
     df['width'] = (x2 - x1) / df["w"]
     df['height'] = (y2 - y1) / df["h"]
+
+    # TODO: remove this part when debugging is over
+    df = df.sample(n=n_samples, replace=True).reset_index()
     return df
 
 
