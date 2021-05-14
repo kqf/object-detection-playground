@@ -30,7 +30,7 @@ class DetectionNet(skorch.NeuralNet):
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
     model = DetectionNet(
         YOLO,
-        batch_size=64,
+        batch_size=16,
         max_epochs=max_epochs,
         lr=0.000002,
         optimizer=torch.optim.Adam,
