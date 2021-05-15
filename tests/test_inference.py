@@ -12,8 +12,8 @@ def expected_batch(bsize, scale=13):
 
     for i, n in enumerate([scale, scale * 2, scale * 4]):
         x = torch.zeros([bsize, 85, n, n, 3])
-        x_cells = torch.arange(n).reshape(1, 1, 1, n, 1)
-        y_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
+        x_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
+        y_cells = torch.arange(n).reshape(1, 1, 1, n, 1)
 
         x[:, 0] = torch.zeros(1, n, n, 3) + 0.9
         x[:, 1] = (torch.zeros(1, n, n, 3) + 0.5 + x_cells) / n
@@ -35,8 +35,8 @@ def batch(expected_batch, scale=13):
     for i, (x, anchors) in enumerate(zip(expected_batch, DEFAULT_ANCHORS)):
         n = x.shape[2]
 
-        x_cells = torch.arange(n).reshape(1, 1, 1, n, 1)
-        y_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
+        x_cells = torch.arange(n).reshape(1, 1, n, 1, 1)
+        y_cells = torch.arange(n).reshape(1, 1, 1, n, 1)
 
         # Convert to local
         x[:, 1] = x[:, 1] * n - x_cells
