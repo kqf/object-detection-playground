@@ -75,7 +75,8 @@ def annotations(n_samples=4):
     df['height'] = (y2 - y1) / df["h"]
 
     # TODO: remove this part when debugging is over
-    df = df.sample(n=n_samples, replace=True).reset_index()
+    df = df.sample(n=n_samples, replace=True).reset_index(drop=True)
+    df["image_id"] = df.index
     return df
 
 
