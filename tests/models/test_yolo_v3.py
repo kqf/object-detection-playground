@@ -21,9 +21,10 @@ def test_module(batch, size):
 
     out_size = size // 32
 
-    assert s1.shape == (4, 85, out_size, out_size, 3)
-    assert s2.shape == (4, 85, out_size * 2, out_size * 2, 3)
-    assert s3.shape == (4, 85, out_size * 4, out_size * 4, 3)
+    # [batch_size, scales, n_cells, n_cells, labels]
+    assert s1.shape == (4, 3, out_size * 1, out_size * 1, 85)
+    assert s2.shape == (4, 3, out_size * 2, out_size * 2, 85)
+    assert s3.shape == (4, 3, out_size * 4, out_size * 4, 85)
 
 
 @pytest.mark.parametrize("size", [

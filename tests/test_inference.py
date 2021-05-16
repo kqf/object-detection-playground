@@ -48,7 +48,8 @@ def batch(expected_batch, scale=13):
         x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3) / n)
 
         # Append the global predictions
-        scales.append(x)
+        # [b, labels, cells, cells, scale] -> [b, scale, cells, cells, labels]
+        scales.append(x.transpose(1, -1))
 
     return scales
 

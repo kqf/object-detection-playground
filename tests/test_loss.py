@@ -16,8 +16,8 @@ def test_loss():
     #     the prediction index for the first class is 5 = 1 (is obj) + 4 coords
     target[..., 5] = 0
 
-    predictions = torch.zeros([2, 85, 13, 13, 3])
-    predictions = predictions.transpose(1, -1)
+    predictions = torch.zeros([2, 3, 13, 13, 85])
+    # predictions = predictions.transpose(1, -1)
     predictions[0, ..., 0] = 9
     predictions[1, ..., 0] = -999
 
@@ -32,7 +32,7 @@ def test_loss():
     # Set the proper label
     predictions[..., 5] = 9999
     # Transpose back
-    predictions = predictions.transpose(1, -1)
+    # predictions = predictions.transpose(1, -1)
 
     criterion = CombinedLoss(DEFAULT_ANCHORS)
     loss = criterion._forward(predictions, target, DEFAULT_ANCHORS[0])

@@ -29,10 +29,11 @@ class ScalePrediction(nn.Module):
         b, _, h, w = x.shape
 
         out = self.pred(x)
-        return (
+        fout = (
             out.reshape(b, self.n_preds, self.n_scales, h, w)
-            .permute(0, 1, 3, 4, 2)
+            .permute(0, 2, 3, 4, 1)
         )
+        return fout
 
 
 class YOLO(nn.Module):

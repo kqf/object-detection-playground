@@ -35,7 +35,7 @@ class CombinedLoss(torch.nn.Module):
 
     def _forward(self, pred, target, anchors):
         # # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        pred = pred.permute(0, 4, 2, 3, 1)
+        # pred = pred.permute(0, 4, 2, 3, 1)
 
         # # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
         # pred = pred.reshape(-1, pred.shape[-2], pred.shape[-1])
