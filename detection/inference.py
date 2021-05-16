@@ -22,7 +22,7 @@ def nonlin(batch, anchor_boxes):
 
     for i, (pred, anchors) in enumerate(zip(batch, anchor_boxes)):
         # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        pred = pred.permute(0, 2, 3, 4, 1)
+        pred = pred.permute(0, 2, 3, 1, 4)
 
         # Copy don't mutate the original batch
         prediction = pred[..., :6].detach().clone() * 0
