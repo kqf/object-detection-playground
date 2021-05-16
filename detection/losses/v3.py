@@ -53,7 +53,7 @@ class CombinedLoss(torch.nn.Module):
         nodet = self.objectness(
             torch.sigmoid(pred[objectness][noobj]),
             target[objectness][noobj]
-        ) ** 0.5
+        )
 
         # x,y coordinates
         box_preds = torch.cat([
