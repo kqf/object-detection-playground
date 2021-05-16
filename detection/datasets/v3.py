@@ -129,6 +129,7 @@ def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
                 targets[scale_idx][anchor_on_scale, i, j, 1:5] = cbox
                 targets[scale_idx][anchor_on_scale, i, j, 5] = int(class_label)
                 has_anchor[scale_idx] = True
+                print(i, j)
                 continue
 
             # Ignore the anchor boxes with high iou if collide with other
