@@ -17,8 +17,8 @@ class CombinedLoss(torch.nn.Module):
         self.box = 1
         self.obj = 1
 
-        pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        # pos_weight = torch.tensor([self.obj])
+        self.objectness = torch.nn.MSELoss()
         self.classification = torch.nn.CrossEntropyLoss()
         self.regression = torch.nn.MSELoss()
 
@@ -51,9 +51,9 @@ class CombinedLoss(torch.nn.Module):
 
         noobj = target[..., 0:1] == 0  # in paper this is Iobj_i
         nodet = self.objectness(
-            pred[objectness][noobj],
-            (target[objectness][noobj])
-        )
+            torch.sigmoid(pred[objectness][noobj]),
+            target[objectness][noobj]
+        ) ** 0.5
 
         # x,y coordinates
         box_preds = torch.cat([
@@ -67,22 +67,29 @@ class CombinedLoss(torch.nn.Module):
             torch.sigmoid(pred[objectness][obj]),
             ious[obj] * target[objectness][obj]
         )
-        tboxes = torch.cat([
-            target[bbox_xy],
-            torch.log((1e-16 + target[bbox_wh] / anchors)),
-        ], dim=-1)
 
-        pred_boxes = torch.cat([
-            torch.nn.functional.sigmoid(pred[bbox_xy]),
-            pred[bbox_wh]
-        ], dim=-1)
+        coord = self.regression(
+            torch.sigmoid(pred[bbox_xy][obj]),
+            target[bbox_xy][obj],
+        )
 
-        box = self.regression(pred_boxes[obj], tboxes[obj])
+        box = self.regression(
+            pred[bbox_wh][obj],
+            torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
+        )
 
         lcls = self.classification(
             pred[..., 5:][obj],
             target[..., 5][obj].long(),
         )
 
-        loss = self.det * det + self.box * box + self.lcls * lcls + nodet
+        loss = \
+            self.det * det + \
+            self.box * box + \
+            self.box * coord + \
+            self.lcls * lcls + \
+            nodet
+
+        # if loss < 0.12:
+        #     import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
         return loss
