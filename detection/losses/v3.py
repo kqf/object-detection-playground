@@ -13,9 +13,10 @@ class CombinedLoss(torch.nn.Module):
         self.anchors = anchors
 
         self.lcls = 1
-        self.det = 1
+        self.det = 10
         self.box = 1
         self.obj = 1
+        self.nodet = 10
 
         # pos_weight = torch.tensor([self.obj])
         self.objectness = torch.nn.MSELoss()
@@ -57,7 +58,7 @@ class CombinedLoss(torch.nn.Module):
 
         # x,y coordinates
         box_preds = torch.cat([
-            torch.nn.functional.sigmoid(pred[bbox_xy]),
+            torch.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
 
@@ -74,7 +75,7 @@ class CombinedLoss(torch.nn.Module):
         )
 
         box = self.regression(
-            pred[bbox_wh][obj],
+            torch.exp(pred[bbox_wh][obj] + 1e-16),
             torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
         )
 
@@ -88,8 +89,6 @@ class CombinedLoss(torch.nn.Module):
             self.box * box + \
             self.box * coord + \
             self.lcls * lcls + \
-            nodet
+            self.nodet * nodet
 
-        # if loss < 0.12:
-        #     import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
         return loss
