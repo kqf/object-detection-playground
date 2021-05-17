@@ -32,7 +32,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         YOLO,
         batch_size=16,
         max_epochs=max_epochs,
-        lr=0.000002,
+        lr=0.00001,
         optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
