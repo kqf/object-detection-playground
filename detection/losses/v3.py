@@ -13,10 +13,10 @@ class CombinedLoss(torch.nn.Module):
         self.anchors = anchors
 
         self.lcls = 1
-        self.det = 10
+        self.det = 1
         self.box = 1
         self.obj = 1
-        self.nodet = 10
+        self.nodet = 2
 
         # pos_weight = torch.tensor([self.obj])
         self.objectness = torch.nn.MSELoss()
@@ -35,19 +35,8 @@ class CombinedLoss(torch.nn.Module):
         return loss
 
     def _forward(self, pred, target, anchors):
-        # # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        # pred = pred.permute(0, 4, 2, 3, 1)
-
-        # # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
-        # pred = pred.reshape(-1, pred.shape[-2], pred.shape[-1])
-
-        # # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        # target = target.permute(0, 2, 3, 1, 4)
-
-        # # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
-        # target = target.reshape(-1, target.shape[-2], target.shape[-1])
-
-        # [scale, 2] -> [1, scale, 2]
+        # pred [batch, scale, x, y, labels]
+        # [scale, 2] -> [1, scale, 1, 1, 2]
         anchors = anchors.reshape(1, 3, 1, 1, 2)
 
         noobj = target[..., 0:1] == 0  # in paper this is Iobj_i
