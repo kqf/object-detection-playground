@@ -265,7 +265,7 @@ class YOLO(torch.nn.Module):
         self.down2 = DownSample2()
         self.down3 = DownSample3()
         self.down4 = DownSample4()
-        self.down5 = DownSample()
+        self.down5 = DownSample5()
         # neck
         self.neek = Neck(inference)
 
