@@ -5,8 +5,7 @@ from detection.models.darknet import Residual
 
 class Mish(torch.nn.Module):
     def forward(self, x):
-        x = x * (torch.tanh(torch.nn.functional.softplus(x)))
-        return x
+        return x * torch.tanh(torch.nn.functional.softplus(x))
 
 
 class Conv(torch.nn.Module):
