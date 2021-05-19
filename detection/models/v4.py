@@ -3,6 +3,11 @@ import torch
 from detection.models.darknet import Residual
 
 
+class Mish(torch.nn.Module):
+    def forward(self, x):
+        return x * torch.tanh(torch.nn.functional.softplus(x))
+
+
 class Conv(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride,
                  activation=torch.nn.ReLU(), bn=True, bias=False):
