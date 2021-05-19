@@ -33,6 +33,15 @@ class DownSample(torch.nn.Module):
     pass
 
 
+class Upsample(torch.nn.Module):
+    def forward(self, x, tsize, inference=False):
+        assert (x.data.dim() == 4)
+        # _, _, tH, tW = tsize
+
+        size = (tsize[2], tsize[3])
+        return torch.nn.functional.interpolate(x, size=size, mode='nearest')
+
+
 class Neck(torch.nn.Module):
     def __init__(self, inference):
         super().__init__()
