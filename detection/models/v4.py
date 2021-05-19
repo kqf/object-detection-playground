@@ -169,8 +169,8 @@ class DownSample5(torch.nn.Module):
         self.conv4 = Conv(512, 512, 1, 1, activation())
         self.conv5 = Conv(1024, 1024, 1, 1, activation())
 
-    def forward(self, input):
-        x1 = self.conv1(input)
+    def forward(self, x):
+        x1 = self.conv1(x)
         x2 = self.conv2(x1)
         x3 = self.conv3(x1)
 
@@ -265,7 +265,7 @@ class YOLO(torch.nn.Module):
         self.down2 = DownSample2()
         self.down3 = DownSample3()
         self.down4 = DownSample4()
-        self.down5 = DownSample()
+        self.down5 = DownSample5()
         # neck
         self.neek = Neck(inference)
 
