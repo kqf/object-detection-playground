@@ -34,9 +34,6 @@ class DownSample(torch.nn.Module):
 
 
 class Upsample(torch.nn.Module):
-    def __init__(self):
-        super(Upsample, self).__init__()
-
     def forward(self, x, tsize, inference=False):
         assert (x.data.dim() == 4)
         # _, _, tH, tW = tsize
