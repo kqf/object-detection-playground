@@ -10,7 +10,7 @@ class Mish(torch.nn.Module):
 
 class Conv(torch.nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride,
-                 activation=torch.nn.ReLU(), bn=True, bias=False):
+                 activation=torch.nn.ReLU, bn=True, bias=False):
         super().__init__()
         pad = (kernel_size - 1) // 2
 
@@ -18,7 +18,7 @@ class Conv(torch.nn.Module):
             torch.nn.Conv2d(in_channels, out_channels, kernel_size,
                             stride, pad, bias=bias),
             torch.nn.BatchNorm2d(out_channels) if bn else torch.nn.Identity(),
-            activation,
+            activation(),
         ]
         self.conv = torch.nn.Sequential(*layers)
 
