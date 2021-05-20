@@ -8,8 +8,8 @@ class Mish(torch.nn.Module):
         return x * torch.tanh(torch.nn.functional.softplus(x))
 
 
-def conv(self, in_channels, out_channels, kernel_size, stride,
-         activation=torch.nn.ReLU, bn=True, bias=False):
+def conv(in_channels, out_channels, kernel_size, stride, activation,
+         bn=True, bias=False):
     pad = (kernel_size - 1) // 2
 
     layers = [
