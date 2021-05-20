@@ -125,7 +125,7 @@ class DownSample2(torch.nn.Module):
 
 
 class DownSample3(torch.nn.Module):
-    def __init__(self, activation=torch.nn.LeakyReLU):
+    def __init__(self, activation=Mish):
         super().__init__()
         self.conv1 = Conv(128, 256, 3, 2, activation)
         self.conv2 = Conv(256, 128, 1, 1, activation)
@@ -149,7 +149,7 @@ class DownSample3(torch.nn.Module):
 
 
 class DownSample4(torch.nn.Module):
-    def __init__(self, activation=torch.nn.LeakyReLU):
+    def __init__(self, activation=Mish):
         super().__init__()
         self.conv1 = Conv(256, 512, 3, 2, activation)
         self.conv2 = Conv(512, 256, 1, 1, activation)
@@ -173,7 +173,7 @@ class DownSample4(torch.nn.Module):
 
 
 class DownSample5(torch.nn.Module):
-    def __init__(self, activation=torch.nn.LeakyReLU):
+    def __init__(self, activation=Mish):
         super().__init__()
         self.conv1 = Conv(512, 1024, 3, 2, activation)
         self.conv2 = Conv(1024, 512, 1, 1, activation)
