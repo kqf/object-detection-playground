@@ -8,29 +8,24 @@ class Mish(torch.nn.Module):
         return x * torch.tanh(torch.nn.functional.softplus(x))
 
 
-class Conv(torch.nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride,
-                 activation=torch.nn.ReLU, bn=True, bias=False):
-        super().__init__()
-        pad = (kernel_size - 1) // 2
+def conv(self, in_channels, out_channels, kernel_size, stride,
+         activation=torch.nn.ReLU, bn=True, bias=False):
+    pad = (kernel_size - 1) // 2
 
-        layers = [
-            torch.nn.Conv2d(in_channels, out_channels, kernel_size,
-                            stride, pad, bias=bias),
-            torch.nn.BatchNorm2d(out_channels) if bn else torch.nn.Identity(),
-            activation(),
-        ]
-        self.conv = torch.nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.conv(x)
+    layers = [
+        torch.nn.Conv2d(in_channels, out_channels, kernel_size,
+                        stride, pad, bias=bias),
+        torch.nn.BatchNorm2d(out_channels) if bn else torch.nn.Identity(),
+        activation(),
+    ]
+    return torch.nn.Sequential(*layers)
 
 
 def resblock(ch, nblocks=1, activation=torch.nn.ReLU):
     layers = []
     for _ in range(nblocks):
-        layers.append(Residual(Conv(ch, ch, 1, 1, activation=activation)))
-        layers.append(Residual(Conv(ch, ch, 3, 1, activation=activation)))
+        layers.append(Residual(conv(ch, ch, 1, 1, activation=activation)))
+        layers.append(Residual(conv(ch, ch, 3, 1, activation=activation)))
     return torch.nn.Sequential(*layers)
 
 
@@ -56,24 +51,24 @@ class Neck(torch.nn.Module):
 class DownSample1(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        self.conv1 = Conv(3, 32, 3, 1, activation)
+        self.conv1 = conv(3, 32, 3, 1, activation)
 
-        self.conv2 = Conv(32, 64, 3, 2, activation)
-        self.conv3 = Conv(64, 64, 1, 1, activation)
+        self.conv2 = conv(32, 64, 3, 2, activation)
+        self.conv3 = conv(64, 64, 1, 1, activation)
         # [route]
         # layers = -2
-        self.conv4 = Conv(64, 64, 1, 1, activation)
+        self.conv4 = conv(64, 64, 1, 1, activation)
 
-        self.conv5 = Conv(64, 32, 1, 1, activation)
-        self.conv6 = Conv(32, 64, 3, 1, activation)
+        self.conv5 = conv(64, 32, 1, 1, activation)
+        self.conv6 = conv(32, 64, 3, 1, activation)
         # [shortcut]
         # from=-3
         # activation = linear
 
-        self.conv7 = Conv(64, 64, 1, 1, activation)
+        self.conv7 = conv(64, 64, 1, 1, activation)
         # [route]
         # layers = -1, -7
-        self.conv8 = Conv(128, 64, 1, 1, activation)
+        self.conv8 = conv(128, 64, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -97,17 +92,17 @@ class DownSample1(torch.nn.Module):
 class DownSample2(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        self.conv1 = Conv(64, 128, 3, 2, activation)
-        self.conv2 = Conv(128, 64, 1, 1, activation)
+        self.conv1 = conv(64, 128, 3, 2, activation)
+        self.conv2 = conv(128, 64, 1, 1, activation)
         # r -2
-        self.conv3 = Conv(128, 64, 1, 1, activation)
+        self.conv3 = conv(128, 64, 1, 1, activation)
 
         self.resblock = resblock(ch=64, nblocks=2)
 
         # s -3
-        self.conv4 = Conv(64, 64, 1, 1, activation)
+        self.conv4 = conv(64, 64, 1, 1, activation)
         # r -1 -10
-        self.conv5 = Conv(128, 128, 1, 1, activation)
+        self.conv5 = conv(128, 128, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -125,13 +120,13 @@ class DownSample2(torch.nn.Module):
 class DownSample3(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        self.conv1 = Conv(128, 256, 3, 2, activation)
-        self.conv2 = Conv(256, 128, 1, 1, activation)
-        self.conv3 = Conv(256, 128, 1, 1, activation)
+        self.conv1 = conv(128, 256, 3, 2, activation)
+        self.conv2 = conv(256, 128, 1, 1, activation)
+        self.conv3 = conv(256, 128, 1, 1, activation)
 
         self.resblock = resblock(ch=128, nblocks=8)
-        self.conv4 = Conv(128, 128, 1, 1, activation)
-        self.conv5 = Conv(256, 256, 1, 1, activation)
+        self.conv4 = conv(128, 128, 1, 1, activation)
+        self.conv5 = conv(256, 256, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -149,13 +144,13 @@ class DownSample3(torch.nn.Module):
 class DownSample4(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        self.conv1 = Conv(256, 512, 3, 2, activation)
-        self.conv2 = Conv(512, 256, 1, 1, activation)
-        self.conv3 = Conv(512, 256, 1, 1, activation)
+        self.conv1 = conv(256, 512, 3, 2, activation)
+        self.conv2 = conv(512, 256, 1, 1, activation)
+        self.conv3 = conv(512, 256, 1, 1, activation)
 
         self.resblock = resblock(ch=256, nblocks=8)
-        self.conv4 = Conv(256, 256, 1, 1, activation)
-        self.conv5 = Conv(512, 512, 1, 1, activation)
+        self.conv4 = conv(256, 256, 1, 1, activation)
+        self.conv5 = conv(512, 512, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -173,13 +168,13 @@ class DownSample4(torch.nn.Module):
 class DownSample5(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        self.conv1 = Conv(512, 1024, 3, 2, activation)
-        self.conv2 = Conv(1024, 512, 1, 1, activation)
-        self.conv3 = Conv(1024, 512, 1, 1, activation)
+        self.conv1 = conv(512, 1024, 3, 2, activation)
+        self.conv2 = conv(1024, 512, 1, 1, activation)
+        self.conv3 = conv(1024, 512, 1, 1, activation)
 
         self.resblock = resblock(ch=512, nblocks=4)
-        self.conv4 = Conv(512, 512, 1, 1, activation)
-        self.conv5 = Conv(1024, 1024, 1, 1, activation)
+        self.conv4 = conv(512, 512, 1, 1, activation)
+        self.conv5 = conv(1024, 1024, 1, 1, activation)
 
     def forward(self, x):
         x1 = self.conv1(x)
@@ -199,36 +194,36 @@ class Head(torch.nn.Module):
         super().__init__()
         leaky = torch.nn.LeakyReLU
         lin = torch.nn.Identity
-        self.conv1 = Conv(128, 256, 3, 1, leaky)
-        self.conv2 = Conv(256, output_ch, 1, 1, lin, bn=False, bias=True)
+        self.conv1 = conv(128, 256, 3, 1, leaky)
+        self.conv2 = conv(256, output_ch, 1, 1, lin, bn=False, bias=True)
 
         # First scale
 
         # R -4
-        self.conv3 = Conv(128, 256, 3, 2, leaky)
+        self.conv3 = conv(128, 256, 3, 2, leaky)
 
         # R -1 -16
-        self.conv4 = Conv(512, 256, 1, 1, leaky)
-        self.conv5 = Conv(256, 512, 3, 1, leaky)
-        self.conv6 = Conv(512, 256, 1, 1, leaky)
-        self.conv7 = Conv(256, 512, 3, 1, leaky)
-        self.conv8 = Conv(512, 256, 1, 1, leaky)
-        self.conv9 = Conv(256, 512, 3, 1, leaky)
-        self.conv10 = Conv(512, output_ch, 1, 1, lin, bn=False, bias=True)
+        self.conv4 = conv(512, 256, 1, 1, leaky)
+        self.conv5 = conv(256, 512, 3, 1, leaky)
+        self.conv6 = conv(512, 256, 1, 1, leaky)
+        self.conv7 = conv(256, 512, 3, 1, leaky)
+        self.conv8 = conv(512, 256, 1, 1, leaky)
+        self.conv9 = conv(256, 512, 3, 1, leaky)
+        self.conv10 = conv(512, output_ch, 1, 1, lin, bn=False, bias=True)
 
         # Second scale
 
         # R -4
-        self.conv11 = Conv(256, 512, 3, 2, leaky)
+        self.conv11 = conv(256, 512, 3, 2, leaky)
 
         # R -1 -37
-        self.conv12 = Conv(1024, 512, 1, 1, leaky)
-        self.conv13 = Conv(512, 1024, 3, 1, leaky)
-        self.conv14 = Conv(1024, 512, 1, 1, leaky)
-        self.conv15 = Conv(512, 1024, 3, 1, leaky)
-        self.conv16 = Conv(1024, 512, 1, 1, leaky)
-        self.conv17 = Conv(512, 1024, 3, 1, leaky)
-        self.conv18 = Conv(1024, output_ch, 1, 1, lin, bn=False, bias=True)
+        self.conv12 = conv(1024, 512, 1, 1, leaky)
+        self.conv13 = conv(512, 1024, 3, 1, leaky)
+        self.conv14 = conv(1024, 512, 1, 1, leaky)
+        self.conv15 = conv(512, 1024, 3, 1, leaky)
+        self.conv16 = conv(1024, 512, 1, 1, leaky)
+        self.conv17 = conv(512, 1024, 3, 1, leaky)
+        self.conv18 = conv(1024, output_ch, 1, 1, lin, bn=False, bias=True)
         # The third scale
 
     def forward(self, scale1, scale2, scale3):
