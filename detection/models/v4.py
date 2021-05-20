@@ -56,7 +56,6 @@ class Neck(torch.nn.Module):
 class DownSample1(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        # TODO: relu -> mish
         self.conv1 = Conv(3, 32, 3, 1, activation)
 
         self.conv2 = Conv(32, 64, 3, 2, activation)
@@ -98,7 +97,6 @@ class DownSample1(torch.nn.Module):
 class DownSample2(torch.nn.Module):
     def __init__(self, activation=Mish):
         super().__init__()
-        # TODO: relu -> mish
         self.conv1 = Conv(64, 128, 3, 2, activation)
         self.conv2 = Conv(128, 64, 1, 1, activation)
         # r -2
