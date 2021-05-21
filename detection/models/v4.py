@@ -43,12 +43,12 @@ class Upsample(torch.nn.Module):
 
 
 class Neck(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, activation=torch.nn.LeakyReLU):
         super().__init__()
 
-        self.conv1 = conv(1024, 512, 1, 1, 'leaky')
-        self.conv2 = conv(512, 1024, 3, 1, 'leaky')
-        self.conv3 = conv(1024, 512, 1, 1, 'leaky')
+        self.conv1 = conv(1024, 512, 1, 1, activation)
+        self.conv2 = conv(512, 1024, 3, 1, activation)
+        self.conv3 = conv(1024, 512, 1, 1, activation)
 
         # SPP
         self.maxpool1 = torch.nn.MaxPool2d(5, stride=1, padding=5 // 2)
@@ -57,31 +57,31 @@ class Neck(torch.nn.Module):
 
         # R -1 -3 -5 -6
         # SPP
-        self.conv4 = conv(2048, 512, 1, 1, 'leaky')
-        self.conv5 = conv(512, 1024, 3, 1, 'leaky')
-        self.conv6 = conv(1024, 512, 1, 1, 'leaky')
-        self.conv7 = conv(512, 256, 1, 1, 'leaky')
+        self.conv4 = conv(2048, 512, 1, 1, activation)
+        self.conv5 = conv(512, 1024, 3, 1, activation)
+        self.conv6 = conv(1024, 512, 1, 1, activation)
+        self.conv7 = conv(512, 256, 1, 1, activation)
         # UP
         self.upsample1 = Upsample()
         # R 85
-        self.conv8 = conv(512, 256, 1, 1, 'leaky')
+        self.conv8 = conv(512, 256, 1, 1, activation)
         # R -1 -3
-        self.conv9 = conv(512, 256, 1, 1, 'leaky')
-        self.conv10 = conv(256, 512, 3, 1, 'leaky')
-        self.conv11 = conv(512, 256, 1, 1, 'leaky')
-        self.conv12 = conv(256, 512, 3, 1, 'leaky')
-        self.conv13 = conv(512, 256, 1, 1, 'leaky')
-        self.conv14 = conv(256, 128, 1, 1, 'leaky')
+        self.conv9 = conv(512, 256, 1, 1, activation)
+        self.conv10 = conv(256, 512, 3, 1, activation)
+        self.conv11 = conv(512, 256, 1, 1, activation)
+        self.conv12 = conv(256, 512, 3, 1, activation)
+        self.conv13 = conv(512, 256, 1, 1, activation)
+        self.conv14 = conv(256, 128, 1, 1, activation)
         # UP
         self.upsample2 = Upsample()
         # R 54
-        self.conv15 = conv(256, 128, 1, 1, 'leaky')
+        self.conv15 = conv(256, 128, 1, 1, activation)
         # R -1 -3
-        self.conv16 = conv(256, 128, 1, 1, 'leaky')
-        self.conv17 = conv(128, 256, 3, 1, 'leaky')
-        self.conv18 = conv(256, 128, 1, 1, 'leaky')
-        self.conv19 = conv(128, 256, 3, 1, 'leaky')
-        self.conv20 = conv(256, 128, 1, 1, 'leaky')
+        self.conv16 = conv(256, 128, 1, 1, activation)
+        self.conv17 = conv(128, 256, 3, 1, activation)
+        self.conv18 = conv(256, 128, 1, 1, activation)
+        self.conv19 = conv(128, 256, 3, 1, activation)
+        self.conv20 = conv(256, 128, 1, 1, activation)
 
     def forward(self, input, downsample4, downsample3):
         x1 = self.conv1(input)
