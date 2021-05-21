@@ -351,8 +351,9 @@ class YOLO(torch.nn.Module):
         self.down3 = DownSample3()
         self.down4 = DownSample4()
         self.down5 = DownSample5()
+
         # neck
-        self.neek = Neck()
+        self.neck = Neck()
 
         ochannels = (4 + 1 + n_classes) * 3
         self.head = Head(ochannels, n_classes)
@@ -364,6 +365,6 @@ class YOLO(torch.nn.Module):
         d4 = self.down4(d3)
         d5 = self.down5(d4)
 
-        scale1, scale2, scale3 = self.neek(d5, d4, d3)
+        scale1, scale2, scale3 = self.neck(d5, d4, d3)
         output = self.head(scale1, scale2, scale3)
         return output
