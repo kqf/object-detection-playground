@@ -2,7 +2,7 @@ import pytest
 import torch
 
 from detection.models.v4 import DownSample1, DownSample2, DownSample3
-from detection.models.v4 import DownSample4, DownSample5
+from detection.models.v4 import DownSample4, DownSample5, Neck
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def batch(size):
     32 * 2,
     32 * 10,
 ])
-def test_backbone(batch, size):
+def test_backbones(batch, size):
     down1 = DownSample1()
     d1 = down1(batch)
     assert d1.shape == (4, 64, size / 2, size / 2)
@@ -35,3 +35,11 @@ def test_backbone(batch, size):
     down5 = DownSample5()
     d5 = down5(d4)
     assert d5.shape == (4, 1024, size / 32, size / 32)
+
+    neck = Neck()
+    scale1, scale2, scale3 = neck(d5, d4, d3)
+
+    scale = size // 32
+    assert scale1.shape == (4, 128, 4 * scale, 4 * scale)
+    assert scale2.shape == (4, 256, 2 * scale, 2 * scale)
+    assert scale3.shape == (4, 512, 1 * scale, 1 * scale)
