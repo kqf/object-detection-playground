@@ -3,6 +3,7 @@ import torch
 
 from detection.models.v4 import DownSample1, DownSample2, DownSample3
 from detection.models.v4 import DownSample4, DownSample5, Neck
+from detection.models.v4 import YOLO
 
 
 @pytest.fixture
@@ -43,3 +44,21 @@ def test_backbones(batch, size):
     assert scale1.shape == (4, 128, 4 * scale, 4 * scale)
     assert scale2.shape == (4, 256, 2 * scale, 2 * scale)
     assert scale3.shape == (4, 512, 1 * scale, 1 * scale)
+
+
+@pytest.mark.skip("Add tests for head")
+@pytest.mark.parametrize("size", [
+    32,
+    32 * 2,
+    32 * 10,
+])
+def test_model(batch, size):
+    model = YOLO()
+    scale1, scale2, scale3 = model(batch)
+
+    scale = size // 32
+
+    # 255 = (80 + 4 + 1) * 3
+    assert scale1.shape == (4, 255, 4 * scale, 4 * scale)
+    assert scale2.shape == (4, 255, 2 * scale, 2 * scale)
+    assert scale3.shape == (4, 255, 1 * scale, 1 * scale)
