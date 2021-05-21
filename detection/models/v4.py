@@ -43,9 +43,8 @@ class Upsample(torch.nn.Module):
 
 
 class Neck(torch.nn.Module):
-    def __init__(self, inference=False):
+    def __init__(self):
         super().__init__()
-        self.inference = inference
 
         self.conv1 = conv(1024, 512, 1, 1, 'leaky')
         self.conv2 = conv(512, 1024, 3, 1, 'leaky')
@@ -84,7 +83,7 @@ class Neck(torch.nn.Module):
         self.conv19 = conv(128, 256, 3, 1, 'leaky')
         self.conv20 = conv(256, 128, 1, 1, 'leaky')
 
-    def forward(self, input, downsample4, downsample3, inference=False):
+    def forward(self, input, downsample4, downsample3):
         x1 = self.conv1(input)
         x2 = self.conv2(x1)
         x3 = self.conv3(x2)
@@ -99,7 +98,7 @@ class Neck(torch.nn.Module):
         x6 = self.conv6(x5)
         x7 = self.conv7(x6)
         # UP
-        up = self.upsample1(x7, downsample4.size(), self.inference)
+        up = self.upsample1(x7, downsample4.size())
         # R 85
         x8 = self.conv8(downsample4)
         # R -1 -3
@@ -113,7 +112,7 @@ class Neck(torch.nn.Module):
         x14 = self.conv14(x13)
 
         # UP
-        up = self.upsample2(x14, downsample3.size(), self.inference)
+        up = self.upsample2(x14, downsample3.size())
         # R 54
         x15 = self.conv15(downsample3)
         # R -1 -3
