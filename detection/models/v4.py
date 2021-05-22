@@ -368,15 +368,16 @@ class YOLO(torch.nn.Module):
 
         scale1, scale2, scale3 = self.neck(d5, d4, d3)
         output = self.head(scale1, scale2, scale3)
+        return self._reorder(output)
 
+    def _reorder(self, output):
         reordered = []
         for s in output:
             batch, ochannels, h, w = s.shape
             n_labels = ochannels // self.n_scales
 
-            s = s.view(batch, n_labels, self.n_scales, h, w)
+            s = s.view(batch, self.n_scales, n_labels, h, w)
             s = s.permute(0, 1, 3, 4, 2)
 
             reordered.insert(0, s)
-
-        return output
+        return reordered
