@@ -66,8 +66,8 @@ def test_model(batch, size, n_classes=80, n_scales=3):
     p1, p2, p3 = model(batch)
 
     scale = size // 32
-    ochannels = (n_classes + 4 + 1) * n_scales
+    labels = n_classes + 4 + 1
 
-    assert p1.shape == (4, ochannels, 4 * scale, 4 * scale)
-    assert p2.shape == (4, ochannels, 2 * scale, 2 * scale)
-    assert p3.shape == (4, ochannels, 1 * scale, 1 * scale)
+    assert p1.shape == (4, n_scales, 1 * scale, 1 * scale, labels)
+    assert p2.shape == (4, n_scales, 2 * scale, 2 * scale, labels)
+    assert p3.shape == (4, n_scales, 4 * scale, 4 * scale, labels)
