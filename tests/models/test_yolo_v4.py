@@ -61,13 +61,13 @@ def test_backbones(batch, size):
     32 * 2,
     32 * 10,
 ])
-def test_model(batch, size):
-    model = YOLO()
-    scale1, scale2, scale3 = model(batch)
+def test_model(batch, size, n_classes=80, n_scales=3):
+    model = YOLO(n_classes=80, n_scales=n_scales)
+    p1, p2, p3 = model(batch)
 
     scale = size // 32
+    ochannels = (n_classes + 4 + 1) * n_scales
 
-    # 255 = (80 + 4 + 1) * 3
-    assert scale1.shape == (4, 255, 4 * scale, 4 * scale)
-    assert scale2.shape == (4, 255, 2 * scale, 2 * scale)
-    assert scale3.shape == (4, 255, 1 * scale, 1 * scale)
+    assert p1.shape == (4, ochannels, 4 * scale, 4 * scale)
+    assert p2.shape == (4, ochannels, 2 * scale, 2 * scale)
+    assert p3.shape == (4, ochannels, 1 * scale, 1 * scale)
