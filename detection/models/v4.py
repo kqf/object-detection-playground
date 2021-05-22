@@ -342,8 +342,9 @@ class YOLO(torch.nn.Module):
     https://github.com/Tianxiaomo/pytorch-YOLOv4/blob/master/models.py
     """
 
-    def __init__(self, n_classes=80):
+    def __init__(self, n_classes=80, n_scales=3):
         super().__init__()
+        self.n_scales = n_scales
 
         # backbone
         self.down1 = DownSample1()
@@ -355,7 +356,7 @@ class YOLO(torch.nn.Module):
         # neck
         self.neck = Neck()
 
-        ochannels = (4 + 1 + n_classes) * 3
+        ochannels = (4 + 1 + n_classes) * self.n_scales
         self.head = Head(ochannels, n_classes)
 
     def forward(self, x):
