@@ -56,7 +56,6 @@ def test_backbones(batch, size):
     assert s3.shape == (4, 255, 1 * scale, 1 * scale)
 
 
-@pytest.mark.skip("Add tests for head")
 @pytest.mark.parametrize("size", [
     32,
     32 * 2,
