@@ -46,7 +46,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         batch_size=batch_size,
         max_epochs=max_epochs,
         lr=base_lr,
-        optimizer=torch.optim.Adam,
+        # optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
         criterion__anchors=DEFAULT_ANCHORS,
