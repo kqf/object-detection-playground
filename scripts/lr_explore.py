@@ -17,13 +17,13 @@ def build_scheduler(n_epochs, batch_size, base_lr):
         mode="triangular2", gamma=0.85
     )
 
-    # scheduler = skorch.callbacks.LRScheduler(
-    #     policy=torch.optim.lr_scheduler.OneCycleLR,
-    #     max_lr=0.04,
-    #     step_every='batch',
-    #     steps_per_epoch=16,
-    #     epochs=n_epochs
-    # )
+    scheduler = skorch.callbacks.LRScheduler(
+        policy=torch.optim.lr_scheduler.OneCycleLR,
+        max_lr=0.04,
+        step_every='batch',
+        steps_per_epoch=16,
+        epochs=n_epochs
+    )
 
     return scheduler
 
@@ -33,7 +33,7 @@ def main():
     batch_size = 16
     base_lr = 0.000001
 
-    scheduler = build_scheduler()
+    scheduler = build_scheduler(n_epochs, batch_size, base_lr)
     sim = scheduler.simulate(batch_size * n_epochs, base_lr)
     plt.plot(sim)
 
