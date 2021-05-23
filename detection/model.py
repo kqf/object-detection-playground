@@ -4,7 +4,7 @@ import skorch
 
 from functools import partial
 
-from detection.models.v3 import YOLO
+from detection.models.v4 import YOLO
 from detection.losses.v3 import CombinedLoss
 from detection.datasets.v3 import DEFAULT_ANCHORS
 from detection.inference import infer
@@ -28,11 +28,12 @@ class DetectionNet(skorch.NeuralNet):
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
+
     model = DetectionNet(
         YOLO,
         batch_size=16,
         max_epochs=max_epochs,
-        lr=0.00001,
+        lr=0.000001,
         optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
