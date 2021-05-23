@@ -28,13 +28,26 @@ class DetectionNet(skorch.NeuralNet):
 
 
 def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
+    base_lr = 0.000001
+    batch_size = 16
+    n_epochs = 90
+
+    scheduler = skorch.callbacks.LRScheduler(
+        policy=torch.optim.lr_scheduler.CyclicLR,
+        base_lr=base_lr,
+        max_lr=0.004,
+        step_size_up=batch_size * 4,
+        step_size_down=batch_size * n_epochs,
+        step_every='batch',
+        mode="triangular2", gamma=0.85
+    )
 
     model = DetectionNet(
         YOLO,
-        batch_size=16,
+        batch_size=batch_size,
         max_epochs=max_epochs,
-        lr=0.000001,
-        optimizer=torch.optim.Adam,
+        lr=base_lr,
+        # optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
         criterion__anchors=DEFAULT_ANCHORS,
@@ -45,6 +58,7 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         train_split=train_split,
         predict_nonlinearity=partial(infer, anchor_boxes=DEFAULT_ANCHORS),
         callbacks=[
+            scheduler,
             skorch.callbacks.ProgressBar(),
             # skorch.callbacks.Checkpoint(dirname=logdir),
             skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
