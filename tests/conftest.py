@@ -11,6 +11,20 @@ from pathlib import Path
 from detection.mc import generate_to_directory
 
 
+@pytest.fixture
+def n_epochs(request):
+    return request.config.getoption("--n-epochs")
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--n-epochs",
+        action="store",
+        default=2,
+        help="Number of epochs to run the tests",
+    )
+
+
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
