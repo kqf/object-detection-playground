@@ -16,6 +16,7 @@ def pytest_addoption(parser):
         "--max-epochs",
         action="store",
         default=2,
+        type=int,
         help="Number of epochs to run the tests",
     )
 
