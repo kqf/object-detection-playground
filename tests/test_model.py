@@ -12,16 +12,7 @@ from detection.plot import plot
 
 @pytest.fixture
 def max_epochs(request):
-    return request.config.getoption("--n-epochs")
-
-
-def pytest_addoption(parser):
-    parser.addoption(
-        "--n-epochs",
-        action="store",
-        default=2,
-        help="Number of epochs to run the tests",
-    )
+    return request.config.getoption("--max-epochs")
 
 
 def test_model(fake_dataset, max_epochs, fixed_seed):
