@@ -19,9 +19,9 @@ class CombinedLoss(torch.nn.Module):
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.MSELoss()
-        self.classification = torch.nn.CrossEntropyLoss()
-        self.regression = torch.nn.MSELoss()
+        self.objectness = torch.nn.MSELoss(reduction="sum")
+        self.classification = torch.nn.CrossEntropyLoss(reduction="sum")
+        self.regression = torch.nn.MSELoss(reduction="sum")
 
     def forward(self, pred, target):
         loss = torch.tensor(0).float()
