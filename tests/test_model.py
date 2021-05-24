@@ -1,4 +1,5 @@
 # import torch
+import os
 
 from detection.data import read_data
 from detection.datasets.v3 import DetectionDatasetV3
@@ -14,7 +15,15 @@ def test_model(fake_dataset, fixed_seed):
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
     model = build_model(max_epochs=2)
+
+    if os.path.exists('test-params.pkl'):
+        print("Loading the params")
+        model.initialize()
+        model.load_params(f_params='test-params.pkl')
+
     model.fit(train)
+    model.save_params(f_params='test-params.pkl')
+
     preds = model.predict(train)
     first_image_pred = preds[0][:, :4]
     first_image, targets, _ = train.example(0)
