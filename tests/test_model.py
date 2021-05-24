@@ -14,7 +14,7 @@ def test_model(fake_dataset, fixed_seed):
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    model = build_model(max_epochs=100)
+    model = build_model(max_epochs=2)
 
     if os.path.exists('test-params.pkl'):
         print("Loading the params")
