@@ -11,6 +11,16 @@ from pathlib import Path
 from detection.mc import generate_to_directory
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--max-epochs",
+        action="store",
+        default=2,
+        type=int,
+        help="Number of epochs to run the tests",
+    )
+
+
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
