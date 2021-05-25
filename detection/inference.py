@@ -1,5 +1,5 @@
 import torch
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from detection.metrics import bbox_iou
 
 
@@ -18,7 +18,7 @@ def to_global(x):
     return x
 
 
-def nonlin(batch, anchor_boxes, top_n):
+def nonlin(batch, anchor_boxes):
     predictions = []
 
     for i, (pred, anchors) in enumerate(zip(batch, anchor_boxes)):
@@ -95,13 +95,16 @@ def nms(pred, min_iou=0.5):
 
 
 def no_nms(pred, threshold=0.0, top_n=None):
-    print(pred[:, 0].max())
 
-    plt.hist(pred[:, 0], 100)
-    plt.xlabel("objectness")
-    plt.savefig("last-objectness.png")
+    # plt.hist(pred[:, 0])
+    # plt.xlabel("objectness")
+    # plt.show()
+    # plt.savefig("last-objectness.png")
+
+    print(pred[:, 0].max())
 
     positive = pred[:, 0] > threshold
     if top_n is not None:
         positive = pred[:, 0].argsort()[:top_n]
+
     return pred[positive, 1:]
