@@ -68,7 +68,7 @@ def expected(expected_batch):
 
 @pytest.mark.parametrize("bsize", [16])
 def test_inference(expected, batch, bsize):
-    predictions = infer(batch, DEFAULT_ANCHORS)
+    predictions = infer(batch, DEFAULT_ANCHORS, top_n=None)
     assert len(predictions) == bsize
     assert all([x.shape[-1] == 5 for x in predictions])
 
