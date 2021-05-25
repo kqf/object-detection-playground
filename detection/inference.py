@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 from detection.metrics import bbox_iou
 
 
@@ -95,6 +96,11 @@ def nms(pred, min_iou=0.5):
 
 def no_nms(pred, threshold=0.0):
     print(pred[:, 0].max())
+
+    plt.hist(pred[:, 0], 100)
+    plt.xlabel("objectness")
+    plt.savefig("last-objectness.png")
+
     positive = pred[:, 0] > threshold
-    # positive = pred[:, 0].argsort()[:10]
+    # positive = pred[:, 0].argsort()[:20]
     return pred[positive, 1:]
