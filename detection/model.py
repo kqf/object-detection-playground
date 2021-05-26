@@ -27,7 +27,7 @@ class DetectionNet(skorch.NeuralNet):
         return y_probas
 
 
-def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
+def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
     base_lr = 0.000001
     batch_size = 16
 
@@ -55,7 +55,11 @@ def build_model(max_epochs=2, logdir=".tmp/", train_split=None):
         iterator_valid__shuffle=False,
         iterator_valid__num_workers=6,
         train_split=train_split,
-        predict_nonlinearity=partial(infer, anchor_boxes=DEFAULT_ANCHORS),
+        predict_nonlinearity=partial(
+            infer,
+            anchor_boxes=DEFAULT_ANCHORS,
+            top_n=top_n,
+        ),
         callbacks=[
             scheduler,
             skorch.callbacks.ProgressBar(),

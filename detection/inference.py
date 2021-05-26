@@ -1,5 +1,5 @@
 import torch
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from detection.metrics import bbox_iou
 
 
@@ -42,12 +42,12 @@ def nonlin(batch, anchor_boxes):
     return predictions
 
 
-def infer(batch, anchor_boxes):
+def infer(batch, anchor_boxes, top_n):
     predictions = nonlin(batch, anchor_boxes)
     merged = merge_scales(predictions)
 
     # Run over all samples in the dataset
-    supressed = [no_nms(sample) for sample in merged]
+    supressed = [no_nms(sample, top_n=top_n) for sample in merged]
     return supressed
 
 
@@ -94,13 +94,17 @@ def nms(pred, min_iou=0.5):
     return ~result
 
 
-def no_nms(pred, threshold=0.0):
+def no_nms(pred, threshold=0.0, top_n=None):
+
+    # plt.hist(pred[:, 0])
+    # plt.xlabel("objectness")
+    # plt.show()
+    # plt.savefig("last-objectness.png")
+
     print(pred[:, 0].max())
 
-    plt.hist(pred[:, 0], 100)
-    plt.xlabel("objectness")
-    plt.savefig("last-objectness.png")
-
     positive = pred[:, 0] > threshold
-    # positive = pred[:, 0].argsort()[:20]
+    if top_n is not None:
+        positive = pred[:, 0].argsort()[:top_n]
+
     return pred[positive, 1:]
