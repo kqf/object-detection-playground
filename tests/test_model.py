@@ -1,5 +1,3 @@
-# import torch
-import os
 import pytest
 
 from detection.data import read_data
