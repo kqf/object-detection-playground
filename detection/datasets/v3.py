@@ -33,7 +33,9 @@ class DetectionDatasetV3(Dataset):
         self.image_dir = image_dir
         self.transforms = transforms
 
-        self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
+        anchors = anchors or DEFAULT_ANCHORS
+        self.num_anchors_per_scale = len(anchors)
+        self.anchors = anchors or torch.cat(anchors)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
 
@@ -74,6 +76,7 @@ class DetectionDatasetV3(Dataset):
             self.anchors,
             self.scales,
             self.iou_threshold,
+            num_anchors_per_scale=self.num_anchors_per_scale,
             im_size=width,
         )
 
@@ -96,11 +99,11 @@ def iou(a, b):
     return intersection / union
 
 
-def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
+def build_targets(bboxes, labels, anchors, num_anchors_per_scale,
+                  raw_scales, iou_threshold, im_size):
     # scale = upscaling factor s times darknet output (image_size // 32)
     scales = [im_size // 32 * s for s in raw_scales]
 
-    num_anchors_per_scale = len(anchors[0])
     # Three anchors per scale
     targets = [torch.zeros((num_anchors_per_scale, s, s, 6))
                for i, s in enumerate(scales)]
