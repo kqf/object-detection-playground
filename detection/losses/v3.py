@@ -36,7 +36,7 @@ class CombinedLoss(torch.nn.Module):
     def _forward(self, pred, target, anchors):
         # pred [batch, scale, x, y, labels]
         # [scale, 2] -> [1, scale, 1, 1, 2]
-        anchors = anchors.reshape(1, 3, 1, 1, 2)
+        anchors = anchors.reshape(1, -1, 1, 1, 2)
 
         noobj = target[..., 0:1] == 0  # in paper this is Iobj_i
         nodet = self.objectness(
