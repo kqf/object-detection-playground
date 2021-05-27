@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 
 
 DEFAULT_ANCHORS = [
+    # torch.tensor([(0.28, 0.22)]),
     torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
     torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
     torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
@@ -32,7 +33,9 @@ class DetectionDatasetV3(Dataset):
         self.image_dir = image_dir
         self.transforms = transforms
 
-        self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
+        anchors = anchors or DEFAULT_ANCHORS
+        self.num_anchors_per_scale = len(anchors)
+        self.anchors = anchors or torch.cat(anchors)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
 
@@ -73,6 +76,7 @@ class DetectionDatasetV3(Dataset):
             self.anchors,
             self.scales,
             self.iou_threshold,
+            num_anchors_per_scale=self.num_anchors_per_scale,
             im_size=width,
         )
 
@@ -95,13 +99,14 @@ def iou(a, b):
     return intersection / union
 
 
-def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
+def build_targets(bboxes, labels, anchors, num_anchors_per_scale,
+                  raw_scales, iou_threshold, im_size):
     # scale = upscaling factor s times darknet output (image_size // 32)
     scales = [im_size // 32 * s for s in raw_scales]
 
     # Three anchors per scale
-    targets = [torch.zeros((3, s, s, 6)) for i, s in enumerate(scales)]
-    num_anchors_per_scale = 3
+    targets = [torch.zeros((num_anchors_per_scale, s, s, 6))
+               for i, s in enumerate(scales)]
 
     for box, class_label in zip(bboxes, labels):
         if np.isnan(box).any():
