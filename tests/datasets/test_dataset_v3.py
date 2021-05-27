@@ -1,3 +1,4 @@
+import torch
 import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
@@ -9,9 +10,14 @@ from detection.plot import plot
     transform(train=False),
     transform(train=True),
 ])
-def test_dataset(fake_dataset, transforms):
+@pytest.mark.parametrize("anchors", [
+    None,
+    [torch.tensor([(0.28, 0.22)])],
+])
+def test_dataset(fake_dataset, anchors, transforms):
     df = pd.read_csv(fake_dataset / "train.csv")
-    dataset = DetectionDatasetV3(df, fake_dataset, transforms=transforms)
+    dataset = DetectionDatasetV3(
+        df, fake_dataset, anchors=anchors, transforms=transforms)
 
     for image, (s1, s2, s3) in dataset:
         assert len(image.shape) == 3, "There are only 3 dimensions"
