@@ -99,8 +99,8 @@ def iou(a, b):
     return intersection / union
 
 
-def build_targets(bboxes, labels, anchors, num_anchors_per_scale,
-                  raw_scales, iou_threshold, im_size):
+def build_targets(bboxes, labels, anchors,
+                  raw_scales, iou_threshold, num_anchors_per_scale, im_size):
     # scale = upscaling factor s times darknet output (image_size // 32)
     scales = [im_size // 32 * s for s in raw_scales]
 
