@@ -23,9 +23,9 @@ def test_dataset(fake_dataset, anchors, transforms):
         assert len(image.shape) == 3, "There are only 3 dimensions"
         assert image.shape[0] == 3, f"There are only 3 channels {image.shape}"
 
-        assert s1.shape == (3, 13, 13, 6)
-        assert s2.shape == (3, 26, 26, 6)
-        assert s3.shape == (3, 52, 52, 6)
+        assert s1.shape == (dataset.num_anchors_per_scale, 13, 13, 6)
+        assert s2.shape == (dataset.num_anchors_per_scale, 26, 26, 6)
+        assert s3.shape == (dataset.num_anchors_per_scale, 52, 52, 6)
 
 
 def test_augmentations(fake_dataset, block=False):
