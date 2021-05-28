@@ -5,12 +5,17 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
+# Localization, there is a single anchor
 DEFAULT_ANCHORS = [
-    # torch.tensor([(0.28, 0.22)]),
-    torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
-    torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
-    torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
+    torch.tensor([(0.28, 0.22)]),
 ]
+
+# Ignore the default anchors
+# DEFAULT_ANCHORS = [
+#     torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+#     torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
+#     torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
+# ]
 
 DEFAULT_SCALES = [1, 2, 4]
 
