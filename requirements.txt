@@ -12,3 +12,4 @@ pytest-cov
 tensorboardX
 gcsfs
 seaborn
+mean_average_precision
