@@ -6,16 +6,17 @@ from torch.utils.data import Dataset
 
 
 # Localization, there is a single anchor
-# DEFAULT_ANCHORS = [
-#     torch.tensor([(0.28, 0.22)]),
-# ]
+DEFAULT_ANCHORS = [
+    torch.tensor([(0.28, 0.22)]),
+    # torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+]
 
 # Ignore the default anchors
-DEFAULT_ANCHORS = [
-    torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
-    torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
-    torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
-]
+# DEFAULT_ANCHORS = [
+#     torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+#     torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
+#     torch.tensor([(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)]),
+# ]
 
 DEFAULT_SCALES = [1, 2, 4]
 
@@ -48,6 +49,8 @@ class DetectionDatasetV3(Dataset):
             raise ValueError("Anchors must be of the same length")
 
         self.num_anchors_per_scale = len(anchors[0])
+
+        print("Tests:", (self.num_anchors_per_scale))
         self.anchors = torch.cat(anchors)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
