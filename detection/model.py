@@ -43,6 +43,7 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
 
     model = DetectionNet(
         YOLO,
+        module__n_scales=len(DEFAULT_ANCHORS[0]),
         batch_size=batch_size,
         max_epochs=max_epochs,
         lr=base_lr,
