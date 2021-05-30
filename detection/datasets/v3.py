@@ -44,6 +44,9 @@ class DetectionDatasetV3(Dataset):
         # NB: the anchors is the list of tensors:
         # anchors[scale1, scale2, scale3]
 
+        if len(set([len(a) for a in anchors])) != 1:
+            raise ValueError("Anchors must be of the same length")
+
         self.num_anchors_per_scale = len(anchors[0])
         self.anchors = torch.cat(anchors)
         self.iou_threshold = iou_threshold
