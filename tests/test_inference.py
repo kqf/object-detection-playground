@@ -43,9 +43,10 @@ def batch(expected_batch, scale=13):
         x[:, 2] = x[:, 2] * n - y_cells
         x[:, 3:5] *= n
 
+        tanchors = anchors.T.reshape(1, 2, 1, 1, 3) / n
         # Apply inverse "nonlinearity" for predictions
         x[:, 0:3] = torch.logit(x[:, 0:3])
-        x[:, 3:5] = torch.log(x[:, 3:5] / anchors.T.reshape(1, 2, 1, 1, 3) / n)
+        x[:, 3:5] = torch.log(x[:, 3:5] / tanchors)
 
         # Append the global predictions
         # [b, labels, cells, cells, scale] -> [b, scale, cells, cells, labels]
