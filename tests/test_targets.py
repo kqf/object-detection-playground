@@ -18,7 +18,8 @@ def test_targets(fake_dataset, fixed_seed):
             # Convert to the global refenrence frame
             assert torch.all(scale[..., 1:3] >= 0)
             assert torch.all(scale[..., 1:3] <= 1)
-            assert scale[scale[..., 0] == 1].shape[0] == 1
+            target_coordinates = scale[scale[..., 0] == 1]
+            assert target_coordinates.shape[0] == 1
 
             pred = to_global(scale.permute(1, 2, 0, 3))
 
