@@ -1,15 +1,17 @@
+
 import click
+
 from click.testing import CliRunner
 from detection.io import ClickRemotePath
 
 
-@click.command()
-@click.option('--datapath', type=ClickRemotePath(exists=True), required=True)
-def entrypoint(datapath):
-    pass
-
-
 def test_handles_remote_path():
+    @click.command()
+    @click.option('--datapath', type=ClickRemotePath(exists=False),
+                  required=True)
+    def entrypoint(datapath):
+        pass
+
     runner = CliRunner()
-    result = runner.invoke(entrypoint, ['--test', str("Nothing")])
-    print(result)
+    result = runner.invoke(entrypoint, ['--datapath', "nothing"])
+    assert result.exit_code == 0
