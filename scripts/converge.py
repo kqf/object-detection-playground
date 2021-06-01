@@ -14,7 +14,7 @@ def main():
         optimizer.step()
         print(f"Epoch {i}, loss {loss.item()}")
 
-    print(y, y_hat)
+    print(y, torch.exp(y_hat) * y)
 
 
 if __name__ == '__main__':
