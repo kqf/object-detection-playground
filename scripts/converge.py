@@ -9,12 +9,12 @@ def main():
     optimizer = torch.optim.Adam([y_hat], lr=lr)
     for i in range(n_ephoch):
         optimizer.zero_grad()
-        loss = ((y - y_hat) ** 2).mean()
+        loss = ((y - torch.exp(y_hat) * y) ** 2).mean()
         loss.backward()
         optimizer.step()
         print(f"Epoch {i}, loss {loss.item()}")
 
-    print(y, y_hat)
+    print(y, torch.exp(y_hat) * y)
 
 
 if __name__ == '__main__':
