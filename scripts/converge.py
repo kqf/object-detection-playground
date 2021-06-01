@@ -2,21 +2,19 @@ import torch
 
 
 def main():
-    X = torch.as_tensor([1, 2]).float()
-    y = torch.as_tensor([3, 4]).float()
-    w = torch.randn(1, requires_grad=True)
-    b = torch.randn(1, requires_grad=True)
+    y = torch.as_tensor([0.2, 0.9]).float()
+    y_hat = torch.randn(2, requires_grad=True)
     n_ephoch = 100
-    lr = 0.001
+    lr = 0.1
+    optimizer = torch.optim.Adam([y_hat], lr=lr)
     for i in range(n_ephoch):
-        loss = ((y - w @ X + b) ** 2).mean()
+        optimizer.zero_grad()
+        loss = ((y - y_hat) ** 2).mean()
         loss.backward()
-        w.data -= lr * w.grad
-        b.data -= lr * b.grad
-        w.grad.zero_()
-        b.grad.zero_()
+        optimizer.step()
+        print(f"Epoch {i}, loss {loss.item()}")
 
-    print(w, b)
+    print(y, y_hat)
 
 
 if __name__ == '__main__':
