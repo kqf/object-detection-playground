@@ -38,11 +38,11 @@ class CombinedLoss(torch.nn.Module):
         # [scale, 2] -> [1, scale, 1, 1, 2]
         anchors = anchors.reshape(1, -1, 1, 1, 2)
 
-        noobj = target[..., 0:1] == 0  # in paper this is Iobj_i
-        nodet = self.objectness(
-            torch.sigmoid(pred[objectness][noobj]),
-            target[objectness][noobj]
-        )
+        # noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
+        # nodet = self.objectness(
+        #     torch.sigmoid(pred[objectness][noobj]),
+        #     target[objectness][noobj]
+        # )
 
         # x,y coordinates
         box_preds = torch.cat([
@@ -52,9 +52,10 @@ class CombinedLoss(torch.nn.Module):
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
+        # print(ious)
         det = self.regression(
-            torch.sigmoid(pred[objectness][obj]),
-            ious[obj] * target[objectness][obj]
+            torch.sigmoid(pred[objectness]),
+            ious * target[objectness]
         )
 
         coord = self.regression(
@@ -62,9 +63,13 @@ class CombinedLoss(torch.nn.Module):
             target[bbox_xy][obj],
         )
 
-        box = self.regression(
-            pred[bbox_wh][obj] + 1e-16,
-            torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
+        box1 = self.regression(
+            torch.sigmoid(pred[..., 3:4][obj]),
+            torch.log(1e-16 + target[..., 3:4] / anchors)[obj],
+        )
+        box2 = self.regression(
+            torch.sigmoid(pred[..., 4:5][obj]),
+            torch.log(1e-16 + target[..., 4:5] / anchors)[obj],
         )
 
         lcls = self.classification(
@@ -72,11 +77,21 @@ class CombinedLoss(torch.nn.Module):
             target[..., 5][obj].long(),
         )
 
-        loss = \
-            self.det * det + \
-            self.box * box + \
-            self.box * coord + \
-            self.lcls * lcls + \
-            self.nodet * nodet
+        # loss = \
+        #     self.det * det + \
+        #     self.box * box + \
+        #     self.box * coord + \
+        #     self.lcls * lcls + \
+        #     self.nodet * nodet
+
+        loss = self.box * box1 + self.box * box2
+
+        # print(
+        #     "detection ", det.item(),
+        #     "box ", box.item(),
+        #     "coord ", coord.item(),
+        #     "cls ", lcls.item(),
+        #     "nodet ", nodet.item(),
+        # )
 
         return loss
