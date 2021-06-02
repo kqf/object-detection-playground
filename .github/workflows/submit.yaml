@@ -1,17 +1,15 @@
-name: Submit Training
+name: Manual submit
 on: 
   workflow_dispatch:
     inputs:
-      dataset:
-        description: Path to Dataset
-        default: gs://some-bucket/some-folder
+      version:
+        description: Path to dataset
+        default: gs://some-bucket/some-dataset.tar.gz
         required: true
 jobs:
-  show-dataset:
-    name: Show the dataset
+  bump-dataset:
+    name: Bump Package Version
     runs-on: ubuntu-latest
     steps:
       - name: Example variable usage
-        run: |
-          echo "${{ github.event.inputs.dataset }}
-          ls -ltr
+        run: git tag ${{ github.event.inputs.version }}
