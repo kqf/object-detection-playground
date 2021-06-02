@@ -11,5 +11,8 @@ jobs:
     name: Show the dataset
     runs-on: ubuntu-latest
     steps:
-      - name: Example variable usage
-        run: echo "${{ github.event.inputs.dataset }}
+    - uses: actions/checkout@v2
+    - name: Example variable usage
+      run: |
+        echo "${{ github.event.inputs.dataset }}
+        ls -ltr
