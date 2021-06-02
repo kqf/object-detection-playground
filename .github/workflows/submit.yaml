@@ -2,7 +2,7 @@ name: manual submit
 on: 
   workflow_dispatch:
     inputs:
-      version:
+      dataset:
         description: Path to dataset
         default: gs://some-bucket/some-dataset.tar.gz
         required: true
@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Example variable usage
-      run: echo "The latest version is ${{ github.event.inputs.version }}"
+      run: echo "The latest dataset is ${{ github.event.inputs.dataset }}"
     - name: Submit the main script
       id: submit-script
       run: echo '::set-output name=FOLDER_CONTENT::$(ls -ltra)'
