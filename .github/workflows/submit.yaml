@@ -1,4 +1,4 @@
-name: Manual submit
+name: manual submit
 on: 
   workflow_dispatch:
     inputs:
@@ -15,6 +15,6 @@ jobs:
       run: echo "The latest version is ${{ github.event.inputs.version }}"
     - name: Submit the main script
       id: submit-script
-      run: echo '::set-output name=SELECTED_COLOR::green'
+      run: echo '::set-output name=FOLDER_CONTENT::$(ls -ltra)'
     - name: Get color
-      run: echo "The selected color is ${{ steps.submit-script.outputs.SELECTED_COLOR }}"
+      run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
