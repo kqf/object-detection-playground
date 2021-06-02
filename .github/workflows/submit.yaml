@@ -1,0 +1,15 @@
+name: Manual Inputs
+on: 
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: Path to Dataset
+        default: gs://some-bucket/some-folder
+        required: true
+jobs:
+  show-dataset:
+    name: Show the dataset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Example variable usage
+        run: echo "${{ github.event.inputs.dataset }}
