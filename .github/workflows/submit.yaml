@@ -8,8 +8,8 @@ on:
         required: true
 jobs:
   bump-dataset:
-    name: Bump Package Version
     runs-on: ubuntu-latest
     steps:
-      - name: Example variable usage
-        run: echo "The latest version is ${{ github.event.inputs.version }}"
+    - uses: actions/checkout@v2
+    - name: Example variable usage
+      run: echo "The latest version is ${{ github.event.inputs.version }}"
