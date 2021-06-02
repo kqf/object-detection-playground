@@ -1,0 +1,15 @@
+name: Manual submit
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Path to dataset
+        default: gs://some-bucket/some-dataset.tar.gz
+        required: true
+jobs:
+  bump-dataset:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Example variable usage
+      run: echo "The latest version is ${{ github.event.inputs.version }}"
