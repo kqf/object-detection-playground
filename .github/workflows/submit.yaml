@@ -1,4 +1,4 @@
-name: Manual Inputs
+name: Submit Training
 on: 
   workflow_dispatch:
     inputs:
