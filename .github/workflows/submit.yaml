@@ -20,7 +20,7 @@ jobs:
       run: |
         ls -ltr 2>&1 | tee test.log
         result_code=${PIPESTATUS[0]}
-        echo '::set-output name=FOLDER_CONTENT::$(cat test.log)'
+        echo "::set-output name=FOLDER_CONTENT::$(cat test.log)"
         exit ${result_code}
 
     - name: Get color
