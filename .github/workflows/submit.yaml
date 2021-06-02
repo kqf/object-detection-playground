@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Example variable usage
       run: echo "The latest version is ${{ github.event.inputs.version }}"
-    - name: Set selected color
-      id: random-color-generator
+    - name: Submit the main script
+      id: submit-script
       run: echo '::set-output name=SELECTED_COLOR::green'
     - name: Get color
-      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+      run: echo "The selected color is ${{ steps.submit-script.outputs.SELECTED_COLOR }}"
