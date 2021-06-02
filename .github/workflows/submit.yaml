@@ -11,10 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Example variable usage
       run: echo "The latest dataset is ${{ github.event.inputs.dataset }}"
+
     - name: Submit the main script
       id: submit-script
-      run: echo '::set-output name=FOLDER_CONTENT::$(ls -ltra)'
+      run: |
+        ls -ltr 2>&1 | tee test.log
+        result_code=${PIPESTATUS[0]}
+        echo '::set-output name=FOLDER_CONTENT::$(cat test.log)'
+        exit ${result_code}
+
     - name: Get color
       run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
