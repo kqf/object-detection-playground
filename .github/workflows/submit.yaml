@@ -20,3 +20,14 @@ jobs:
 
     - name: Get the message
       run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
+
+    - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `You have triggered the build! 🚀`
+            })
