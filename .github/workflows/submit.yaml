@@ -1,4 +1,4 @@
-name: manual submit on comment
+name: manual submit (refined)
 on:
   issue_comment:
     types: [created]
@@ -7,7 +7,26 @@ jobs:
   bump-dataset:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+
     - name: Execute for pull request comments only
-      if: github.event.issue.pull_request
+      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
+        ls -ltr 2>&1 | tee test.log
+        result_code=${PIPESTATUS[0]}
+        echo "::set-output name=FOLDER_CONTENT::$(cat test.log | grep runner)"
+        exit ${result_code}
+    - name: Get the message
+      run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
+
+    - uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `You have triggered the build! 🚀`
+          })
