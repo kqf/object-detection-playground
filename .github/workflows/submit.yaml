@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Execute for pull request comments only
       if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
