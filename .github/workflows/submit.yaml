@@ -1,4 +1,4 @@
-name: manual submit
+name: manual submit (refined)
 on:
   issue_comment:
     types: [created]
