@@ -1,16 +1,16 @@
-name: manual submit
-on: 
-  workflow_dispatch:
-    inputs:
-      dataset:
-        description: Path to dataset
-        default: gs://some-bucket/some-dataset.tar.gz
-        required: true
-jobs:
+name: manual submit on comment
+on:
+  issue_comment:
+    types: [created]
+
   bump-dataset:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Execute for pull request comments only
+      if: github.event.issue.pull_request
+      run: |
+        echo "This is a pull request comment: ${{ github.event.comment.body }}"
 
     - name: Example variable usage
       run: echo "The latest dataset is ${{ github.event.inputs.dataset }}"
