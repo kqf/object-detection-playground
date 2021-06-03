@@ -1,8 +1,8 @@
-name: Manual submit
+name: manual submit
 on: 
   workflow_dispatch:
     inputs:
-      version:
+      dataset:
         description: Path to dataset
         default: gs://some-bucket/some-dataset.tar.gz
         required: true
@@ -11,10 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Example variable usage
-      run: echo "The latest version is ${{ github.event.inputs.version }}"
+      run: echo "The latest dataset is ${{ github.event.inputs.dataset }}"
+
     - name: Submit the main script
       id: submit-script
-      run: echo '::set-output name=SELECTED_COLOR::green'
-    - name: Get color
-      run: echo "The selected color is ${{ steps.submit-script.outputs.SELECTED_COLOR }}"
+      run: |
+        ls -ltr 2>&1 | tee test.log
+        result_code=${PIPESTATUS[0]}
+        echo "::set-output name=FOLDER_CONTENT::$(cat test.log | grep runner)"
+        exit ${result_code}
+
+    - name: Get the message 
+      run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
