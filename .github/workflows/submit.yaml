@@ -12,9 +12,6 @@ jobs:
       if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
-    - name: Submit the main script
-      id: submit-script
-      run: |
         ls -ltr 2>&1 | tee test.log
         result_code=${PIPESTATUS[0]}
         echo "::set-output name=FOLDER_CONTENT::$(cat test.log | grep runner)"
