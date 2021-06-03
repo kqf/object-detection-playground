@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Execute for pull request comments only
-      if: github.event.issue.pull_request
+      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
     - name: Submit the main script
