@@ -32,3 +32,4 @@ jobs:
             body: 'You have triggered the build! 🚀\n' +
                   '```bash\n${{ steps.submit-script.outputs.FOLDER_CONTENT }}\n\n```' + 
                   '[build](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+          })
