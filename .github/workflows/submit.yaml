@@ -16,7 +16,7 @@ jobs:
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
         ls -ltr 2>&1 | tee test.log
         result_code=${PIPESTATUS[0]}
-        echo "::set-output name=FOLDER_CONTENT::$(whoami)"
+        echo "::set-output name=FOLDER_CONTENT::$(cat test.log | grep runner)"
         exit ${result_code}
     - name: Get the message
       run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
