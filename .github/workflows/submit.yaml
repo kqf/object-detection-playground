@@ -29,5 +29,6 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'You have triggered the build! 🚀 \n ${{ steps.submit-script.outputs.FOLDER_CONTENT }}\n' + 
-                  '[/start](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}?check_suite_focus=true)'
+            body: 'You have triggered the build! 🚀\n'
+                  '```bash\n${{ steps.submit-script.outputs.FOLDER_CONTENT }}\n\n```' + 
+                  '[build](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}?check_suite_focus=true)'
