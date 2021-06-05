@@ -53,10 +53,27 @@ jobs:
     if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/gandalf')
     runs-on: ubuntu-latest
     steps:
+
+    - name: Parse message
+      id: parse-script
+      run: |
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        echo "${BUILD_ID}"
+        echo "::set-output name=MODIFIED_MESSAGE::$(sed "s|/gandalf|[/gandalf](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
+
+    - name: Update comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ github.event.comment.id }}
+        body: ${{ steps.parse-script.outputs.MODIFIED_MESSAGE }}
+        reactions: rocket
+        token: ${{ secrets.GITHUB_TOKEN }}
+        edit-mode: replace
+
     - name: Send the notification
       uses: actions/github-script@v3
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           github.issues.createComment({
             issue_number: context.issue.number,
