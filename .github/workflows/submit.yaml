@@ -1,17 +1,17 @@
-name: manual submit
+name: submit a job
 on:
   issue_comment:
     types: [created]
 
 jobs:
   bump-dataset:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
 
     - name: Execute for pull request comments only
       id: submit-script
-      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
         ls -ltr 2>&1 | tee test.log
