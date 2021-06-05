@@ -1,27 +1,42 @@
-name: manual submit
+name: submit
 on:
   issue_comment:
     types: [created]
 
 jobs:
   bump-dataset:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: "Get the source code"
+      uses: actions/checkout@v2
 
     - name: Execute for pull request comments only
       id: submit-script
-      if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
         ls -ltr 2>&1 | tee test.log
         result_code=${PIPESTATUS[0]}
-        echo "::set-output name=FOLDER_CONTENT::$(cat test.log | grep runner)"
+        echo "::set-output name=FOLDER_CONTENT::$(whoami)"
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        echo "${BUILD_ID}"
+        echo "::set-output name=MODIFIED_MESSAGE::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
+        echo "${{ secrets.REQUEST_CHANGES }}"
         exit ${result_code}
     - name: Get the message
       run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
 
-    - uses: actions/github-script@v3
+    - name: Update comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ github.event.comment.id }}
+        body: ${{ steps.submit-script.outputs.MODIFIED_MESSAGE }}
+        reactions: rocket
+        token: ${{secrets.GITHUB_TOKEN}}
+        edit-mode: replace
+
+    - name: Fire the coment
+      uses: actions/github-script@v3
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
@@ -29,7 +44,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'You have triggered the build! 🚀\n' +
-                  '```bash\n${{ steps.submit-script.outputs.FOLDER_CONTENT }}\n\n```' + 
-                  '[build](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+            body: 'You have triggered the build! 🚀 \n' +
+                  '```bash\n${{ steps.submit-script.outputs.FOLDER_CONTENT }}\n```\n' + 
+                  '[/start](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})'
           })
