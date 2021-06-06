@@ -19,24 +19,20 @@ jobs:
     - name: "Get the source code"
       uses: actions/checkout@v2
 
-    - name: Execute for pull request comments only
+    - name: Execute the training script
       id: submit-script
       run: |
         echo "This is a pull request comment: ${{ github.event.comment.body }}"
         ls -ltr 2>&1 | tee test.log
         result_code=${PIPESTATUS[0]}
         echo "::set-output name=FOLDER_CONTENT::$(whoami)"
-        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-        echo "${BUILD_ID}"
-        echo "::set-output name=MODIFIED_MESSAGE::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
-        echo "${{ secrets.REQUEST_CHANGES }}"
         exit ${result_code}
 
     - name: Update comment
       uses: peter-evans/create-or-update-comment@v1
       with:
         comment-id: ${{ github.event.comment.id }}
-        body: ${{ steps.submit-script.outputs.MODIFIED_MESSAGE }}
+        body: ${{ steps.parse-script.outputs.MODIFIED_MESSAGE }}
         reactions: rocket
         token: ${{secrets.GITHUB_TOKEN}}
         edit-mode: replace
