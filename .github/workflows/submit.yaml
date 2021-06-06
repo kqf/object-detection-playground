@@ -4,10 +4,18 @@ on:
     types: [created]
 
 jobs:
-  bump-dataset:
+  submit:
     if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
     runs-on: ubuntu-latest
     steps:
+
+    - name: Parse message
+      id: parse-script
+      run: |
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        echo "${BUILD_ID}"
+        echo "::set-output name=MODIFIED_MESSAGE::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
+
     - name: "Get the source code"
       uses: actions/checkout@v2
 
