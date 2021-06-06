@@ -34,13 +34,11 @@ jobs:
         comment-id: ${{ github.event.comment.id }}
         body: ${{ steps.parse-script.outputs.MODIFIED_MESSAGE }}
         reactions: rocket
-        token: ${{secrets.GITHUB_TOKEN}}
         edit-mode: replace
 
     - name: Fire the coment
       uses: actions/github-script@v3
       with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           github.issues.createComment({
             issue_number: context.issue.number,
@@ -69,13 +67,11 @@ jobs:
         comment-id: ${{ github.event.comment.id }}
         body: ${{ steps.parse-script.outputs.MODIFIED_MESSAGE }}
         reactions: rocket
-        token: ${{ secrets.GITHUB_TOKEN }}
         edit-mode: replace
 
     - name: Send the notification
       uses: actions/github-script@v3
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           github.issues.createComment({
             issue_number: context.issue.number,
@@ -86,5 +82,4 @@ jobs:
     - name: Approve
       uses: juliangruber/approve-pull-request-action@v1
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         number: 1
