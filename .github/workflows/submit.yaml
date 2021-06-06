@@ -23,8 +23,6 @@ jobs:
         echo "::set-output name=MODIFIED_MESSAGE::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
         echo "${{ secrets.REQUEST_CHANGES }}"
         exit ${result_code}
-    - name: Get the message
-      run: echo "The content of the folder is ${{ steps.submit-script.outputs.FOLDER_CONTENT }}"
 
     - name: Update comment
       uses: peter-evans/create-or-update-comment@v1
