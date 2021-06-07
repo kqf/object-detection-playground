@@ -22,10 +22,7 @@ jobs:
     - name: Execute the training script
       id: submit-script
       run: |
-        result_code=${PIPESTATUS[0]}
-        echo "::set-output name=my_payload::$(ls -l | grep req)"
-        exit ${result_code}
-
+        curl www.google.com > /dev/null
     - name: Update comment
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -33,15 +30,3 @@ jobs:
         body: ${{ steps.parse-script.outputs.modified_message }}
         reactions: rocket
         edit-mode: replace
-
-    - name: Fire the coment
-      uses: actions/github-script@v3
-      with:
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: 'You have triggered the build! 🚀 \n' +
-                  '```bash\n${{ steps.submit-script.outputs.my_payload }}\n```\n'
-          })
