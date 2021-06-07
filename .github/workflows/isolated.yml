@@ -7,6 +7,7 @@ jobs:
   submit:
     if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/build')
     runs-on: ubuntu-latest
+    container: gcr.io/cloud-builders/gsutil
     steps:
 
     - name: Parse message
@@ -22,7 +23,15 @@ jobs:
     - name: Execute the training script
       id: submit-script
       run: |
+        python "Check curl"
         curl www.google.com > /dev/null
+
+        echo "Now python"
+        python --version
+
+        echo "And python3"
+        python3 --version
+
     - name: Update comment
       uses: peter-evans/create-or-update-comment@v1
       with:
