@@ -9,7 +9,7 @@ jobs:
   submit:
     if: ${{ github.event.review.state == 'commented' }}  && startsWith(github.event.review.body, '/start')
     runs-on: ubuntu-latest
-    # container: gcr.io/cloud-builders/gsutil
+    container: gcr.io/cloud-builders/gsutil
 
     steps:
 
@@ -22,6 +22,7 @@ jobs:
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
         echo "${BUILD_ID}"
         echo "::set-output name=modified_message::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.review.body }}")"
+
     - name: Update comment with the link to this build
       uses: peter-evans/create-or-update-comment@v1
       with:
@@ -53,24 +54,8 @@ jobs:
         echo "This is the review body ${{ github.event.review.body }}"
         echo "This is the review id ${{ github.event.review.id }}"
         cat README.md
-    - name: "Check the git branch"
+
+    - name: "Check basic git commands"
       run: |
         git branch --show-current
-        echo "This is the $(git branch --show-current)"
-    - name: "Check all branches"
-      run: git branch
-
-    - name: "Check the git branch"
-      run: git rev-parse --short HEAD
-
-    - name: "Check the naming"
-      run: echo "${{ steps.extract_branch.outputs.branch }}"
-
-    - name: "Create a new fake branch"
-      run: git checkout -b ${{ github.event.pull_request.head.ref }}
-      
-    - name: "Check the git branch"
-      run: git rev-parse --short HEAD
-
-    - name: "Dump the event log"
-      run: echo "${{ toJSON(github.event) }}" > /dev/null
+        git rev-parse --short HEAD
