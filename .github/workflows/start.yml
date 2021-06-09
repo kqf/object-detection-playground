@@ -21,7 +21,7 @@ jobs:
         echo "The check is ${{ startsWith(github.event.review.body, '/start') }} "
         BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
         echo "${BUILD_ID}"
-        echo "::set-output name=modified_message::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.review.body }}")"
+        echo "::set-output name=modified_message::$(sed "s|/start|[/start](${BUILD_URL})|" <<< '${{ github.event.review.body }}')"
 
     - name: Update comment with the link to this build
       uses: peter-evans/create-or-update-comment@v1
