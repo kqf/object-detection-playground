@@ -7,7 +7,7 @@ on:
 
 jobs:
   submit:
-    if: ${{ github.event.review.state == 'commented'&& startsWith(github.event.review.body, '/start') }}
+    if: github.event.review.state == 'commented'&& startsWith(github.event.review.body, '/start')
     runs-on: ubuntu-latest
     container: gcr.io/cloud-builders/gsutil
 
