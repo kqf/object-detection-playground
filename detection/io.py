@@ -46,10 +46,10 @@ class ClickAnyPath(click.Path):
 
         try:
             filenames = ls(parent(value, self._gs_prefix))
-            content = f"\n".join(filenames)
+            content = "\n".join(filenames)
             parent_content = f"The parent folder contains:{content}"
         except FileNotFoundError:
-            parent_content = f"Parent folder does not exit either"
+            parent_content = "Parent folder does not exit either"
 
         self.fail(
             f"The entity \n{value}\n does not exit. {parent_content}",
@@ -57,13 +57,3 @@ class ClickAnyPath(click.Path):
             ctx
         )
         return value
-
-
-@click.command()
-@click.option('--datapath', type=ClickAnyPath(exists=True), required=True)
-def entrypoint(datapath):
-    print("Datapath:", datapath)
-
-
-if __name__ == '__main__':
-    entrypoint()
