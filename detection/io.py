@@ -46,7 +46,7 @@ class ClickAnyPath(click.Path):
 
         try:
             filenames = ls(parent(value, self._gs_prefix))
-            content = f"\n".join(filenames)
+            content = "\n".join(filenames)
             parent_content = f"The parent folder contains:{content}"
         except FileNotFoundError:
             parent_content = f"Parent folder does not exit either"
