@@ -57,13 +57,3 @@ class ClickAnyPath(click.Path):
             ctx
         )
         return value
-
-
-@click.command()
-@click.option('--datapath', type=ClickAnyPath(exists=True), required=True)
-def entrypoint(datapath):
-    print("Datapath:", datapath)
-
-
-if __name__ == '__main__':
-    entrypoint()
