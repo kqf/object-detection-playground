@@ -13,12 +13,13 @@ from detection.io import ClickAnyPath
     ("gs://simple/path.txt", False, [], 2,),  # Error arent exist
 ])
 @pytest.mark.parametrize("option", [True, False])
+@pytest.mark.parametrize("does_exist", [True, False])
 @patch("detection.io.gcsfs.GCSFileSystem.exists")
 @patch("detection.io.gcsfs.GCSFileSystem.ls", autospec=True)
-def test_handles_remote_path(patch_ls, patch_exists,
+def test_handles_remote_path(patch_ls, patch_exists, does_exist,
                              file, exists, ls, exit_code, option):
     patch_ls.return_value = ls
-    patch_exists.return_value = exists
+    patch_exists.return_value = does_exist or exists
 
     @click.command()
     @click.option('--datapath', type=ClickAnyPath(exists=option),
