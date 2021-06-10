@@ -49,7 +49,7 @@ class ClickAnyPath(click.Path):
             content = "\n".join(filenames)
             parent_content = f"The parent folder contains:{content}"
         except FileNotFoundError:
-            parent_content = f"Parent folder does not exit either"
+            parent_content = "Parent folder does not exit either"
 
         self.fail(
             f"The entity \n{value}\n does not exit. {parent_content}",
