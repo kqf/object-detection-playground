@@ -2,7 +2,8 @@ import torch
 
 
 def main():
-    y = torch.as_tensor([0.2, 0.9]).float()
+    n_grids = 13
+    y = torch.as_tensor([0.28, 0.22]).float() * n_grids
     logits = torch.randn(2, requires_grad=True)
     n_ephoch = 1000
     lr = 0.1
@@ -17,7 +18,7 @@ def main():
         optimizer.step()
         print(f"Epoch {i}, loss {loss.item()}")
 
-    print(y, torch.exp(logits) * y)
+    print(y, torch.exp(logits) * y / n_grids)
 
 
 if __name__ == '__main__':
