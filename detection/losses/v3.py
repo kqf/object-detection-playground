@@ -70,12 +70,12 @@ class CombinedLoss(torch.nn.Module):
         """
 
         box1 = self.regression(
-            torch.sigmoid(pred[..., 3:4][obj]),
-            torch.log(1e-16 + target[..., 3:4] / anchors)[obj],
+            pred[..., 3:4][obj],
+            torch.log(1e-16 + target[..., 3:4] / anchors[..., 0])[obj],
         )
         box2 = self.regression(
-            torch.sigmoid(pred[..., 4:5][obj]),
-            torch.log(1e-16 + target[..., 4:5] / anchors)[obj],
+            pred[..., 4:5][obj],
+            torch.log(1e-16 + target[..., 4:5] / anchors[..., 1])[obj],
         )
 
         """
@@ -93,6 +93,8 @@ class CombinedLoss(torch.nn.Module):
         #     self.nodet * nodet
 
         loss = self.box * box1 + self.box * box2
+        # if loss.item() < 0.0009:
+        #     import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
 
         # print(
         #     "detection ", det.item(),
