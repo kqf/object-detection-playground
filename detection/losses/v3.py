@@ -62,16 +62,14 @@ class CombinedLoss(torch.nn.Module):
         )
         """
 
-        """
         coord = self.regression(
             torch.sigmoid(pred[bbox_xy][obj]),
             target[bbox_xy][obj],
         )
-        """
 
         box = self.regression(
-            pred[..., 3:5][obj],
-            torch.log(1e-16 + target[..., 3:5] / anchors)[obj],
+            pred[bbox_wh][obj],
+            torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
         )
 
         """
@@ -88,7 +86,7 @@ class CombinedLoss(torch.nn.Module):
         #     self.lcls * lcls + \
         #     self.nodet * nodet
 
-        loss = self.box * box
+        loss = self.box * box + self.box * coord
 
         # print(
         #     "detection ", det.item(),
