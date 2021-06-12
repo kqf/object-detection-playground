@@ -14,7 +14,7 @@ class CombinedLoss(torch.nn.Module):
 
         self.lcls = 1
         self.det = 1
-        self.box = 1
+        self.box = 10
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
