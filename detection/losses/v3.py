@@ -1,5 +1,5 @@
 import torch
-# from detection.metrics import bbox_iou
+from detection.metrics import bbox_iou
 
 objectness = ..., slice(0, 1)
 bbox_xy = ..., slice(1, 3)
@@ -45,22 +45,18 @@ class CombinedLoss(torch.nn.Module):
         # )
 
         # x,y coordinates
-        """
         box_preds = torch.cat([
             torch.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
-        """
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
-        """
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         # print(ious)
         det = self.regression(
             torch.sigmoid(pred[objectness]),
             ious * target[objectness]
         )
-        """
 
         coord = self.regression(
             torch.sigmoid(pred[bbox_xy][obj]),
@@ -86,7 +82,7 @@ class CombinedLoss(torch.nn.Module):
         #     self.lcls * lcls + \
         #     self.nodet * nodet
 
-        loss = self.box * box + self.box * coord
+        loss = self.box * box + self.box * coord + self.det * det
 
         # print(
         #     "detection ", det.item(),
