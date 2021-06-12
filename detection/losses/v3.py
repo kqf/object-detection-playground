@@ -14,7 +14,7 @@ class CombinedLoss(torch.nn.Module):
 
         self.lcls = 1
         self.det = 1
-        self.box = 10
+        self.box = 1
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
@@ -52,10 +52,9 @@ class CombinedLoss(torch.nn.Module):
 
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
-        # print(ious)
         det = self.regression(
             torch.sigmoid(pred[objectness]),
-            ious * target[objectness]
+            target[objectness] * ious,
         )
 
         coord = self.regression(
@@ -82,7 +81,9 @@ class CombinedLoss(torch.nn.Module):
         #     self.lcls * lcls + \
         #     self.nodet * nodet
 
-        loss = self.box * box + self.box * coord + self.det * det
+        # print(box.item(), coord.item(), det.item())
+        loss = self.box * box + self.box * coord
+        loss = self.det * det
 
         # print(
         #     "detection ", det.item(),
