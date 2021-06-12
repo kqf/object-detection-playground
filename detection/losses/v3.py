@@ -68,8 +68,8 @@ class CombinedLoss(torch.nn.Module):
         )
 
         box = self.regression(
-            pred[bbox_xy][obj],
-            torch.log(1e-16 + target[bbox_xy] / anchors)[obj],
+            pred[bbox_wh][obj],
+            torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
         )
 
         """
