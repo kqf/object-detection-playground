@@ -76,6 +76,16 @@ def compare(image, bbox, normalize=False, convert_bbox=False):
     plt.show()
 
 
+def check_boxes(boxes, convert_bbox=True, wsize=640, hsize=640):
+    plt.imshow(np.ones((wsize, hsize)))
+    ax = plt.gca()
+    for box in boxes:
+        if convert_bbox:
+            box = absolute_bbox(box, wsize, hsize)
+        ax.add_patch(rectangle(*box))
+    plt.show()
+
+
 def glance(dataset, batch_size, pfunc=plot):
     for batch in batches(dataset, batch_size):
         pfunc(*batch)
