@@ -10,7 +10,7 @@ from detection.plot import check_boxes
 @pytest.mark.parametrize("pred, gt, answer", [
     # (tt([0.5, 0.5, 1.0, 1.0]), tt([0.5, 0.5, 1.0, 1.0]), 1.0),
     # TODO: Check me
-    (tt([1, 0.5, 0.5, 0.5]), tt([0.5, 0.5, 0.5, 0.5]), 0.5),
+    (tt([0.75, 0.5, 0.5, 0.5]), tt([0.5, 0.5, 0.5, 0.5]), 0.5),
 ])
 def test_iou(gt, pred, answer):
     print(bbox_iou(pred, gt).item(), answer)
