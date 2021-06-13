@@ -79,10 +79,10 @@ def compare(image, bbox, normalize=False, convert_bbox=False):
 def check_boxes(boxes, convert_bbox=True, wsize=640, hsize=640):
     plt.imshow(np.zeros((wsize, hsize)), vmin=0, vmax=1, cmap="binary")
     ax = plt.gca()
-    for box in boxes:
+    for c, box in enumerate(boxes):
         if convert_bbox:
             box = absolute_bbox(box, wsize, hsize)
-        ax.add_patch(rectangle(*box))
+        ax.add_patch(rectangle(*box, c + 3, fill=True, alpha=0.1))
     plt.show()
 
 
@@ -91,7 +91,8 @@ def glance(dataset, batch_size, pfunc=plot):
         pfunc(*batch)
 
 
-def rectangle(x1, y1, x2, y2, c=0, lw=1, ls='-'):
+def rectangle(x1, y1, x2, y2, c=0, lw=1, ls='-', fill=False, alpha=0.5):
     w, h = x2 - x1, y2 - y1
     color = plt.cm.RdYlBu(1. / int(c + 1))
-    return plt.Rectangle((x1, y1), w, h, color=color, fill=False, lw=lw, ls=ls)
+    return plt.Rectangle((x1, y1), w, h, color=color, alpha=alpha,
+                         fill=fill, lw=lw, ls=ls)
