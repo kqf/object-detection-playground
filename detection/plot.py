@@ -77,7 +77,7 @@ def compare(image, bbox, normalize=False, convert_bbox=False):
 
 
 def check_boxes(boxes, convert_bbox=True, wsize=640, hsize=640):
-    plt.imshow(np.ones((wsize, hsize)))
+    plt.imshow(np.zeros((wsize, hsize)), vmin=0, vmax=1, cmap="binary")
     ax = plt.gca()
     for box in boxes:
         if convert_bbox:
