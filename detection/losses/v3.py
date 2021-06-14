@@ -18,7 +18,7 @@ class CombinedLoss(torch.nn.Module):
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.BCEWithLogitsLoss()
+        self.noobjloss = torch.nn.BCEWithLogitsLoss()
         self.classification = torch.nn.CrossEntropyLoss()
         self.regression = torch.nn.MSELoss()
 
@@ -39,7 +39,7 @@ class CombinedLoss(torch.nn.Module):
         anchors = anchors.reshape(1, -1, 1, 1, 2)
 
         noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
-        nodet = self.objectness(
+        nodet = self.noobjloss(
             pred[objectness][noobj],
             target[objectness][noobj]
         )
