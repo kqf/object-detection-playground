@@ -31,7 +31,7 @@ def nonlin(batch, anchor_boxes):
         # pred [batch_size, n_anchors, s, s, 5 + nclasses]
         scale = pred.shape[2]
 
-        prediction[..., 0] = pred[..., 0]
+        prediction[..., 0] = torch.sigmoid(pred[..., 0])
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
         prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors * scale
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)

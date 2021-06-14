@@ -18,7 +18,7 @@ class CombinedLoss(torch.nn.Module):
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.MSELoss()
+        self.objectness = torch.nn.BCEWithLogitsLoss()
         self.classification = torch.nn.CrossEntropyLoss()
         self.regression = torch.nn.MSELoss()
 
@@ -53,7 +53,7 @@ class CombinedLoss(torch.nn.Module):
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
-            pred[objectness][obj],
+            torch.sigmoid(pred[objectness][obj]),
             target[objectness][obj] * ious[obj],
         )
 
