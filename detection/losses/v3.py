@@ -18,7 +18,7 @@ class CombinedLoss(torch.nn.Module):
         self.nodet = 1
 
         # pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.BCELoss()
+        self.noobjloss = torch.nn.BCEWithLogitsLoss()
         self.classification = torch.nn.CrossEntropyLoss()
         self.regression = torch.nn.MSELoss()
 
@@ -38,11 +38,11 @@ class CombinedLoss(torch.nn.Module):
         # [scale, 2] -> [1, scale, 1, 1, 2]
         anchors = anchors.reshape(1, -1, 1, 1, 2)
 
-        # noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
-        # nodet = self.objectness(
-        #     torch.sigmoid(pred[objectness][noobj]),
-        #     target[objectness][noobj]
-        # )
+        noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
+        nodet = self.noobjloss(
+            pred[objectness][noobj],
+            target[objectness][noobj]
+        )
 
         # x,y coordinates
         box_preds = torch.cat([
@@ -53,7 +53,7 @@ class CombinedLoss(torch.nn.Module):
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
-            torch.sigmoid(pred[objectness])[obj],
+            torch.sigmoid(pred[objectness][obj]),
             target[objectness][obj] * ious[obj],
         )
 
@@ -74,15 +74,14 @@ class CombinedLoss(torch.nn.Module):
         )
         """
 
-        # loss = \
-        #     self.det * det + \
-        #     self.box * box + \
-        #     self.box * coord + \
-        #     self.lcls * lcls + \
-        #     self.nodet * nodet
+        loss = \
+            self.det * det + \
+            self.box * box + \
+            self.box * coord + \
+            self.nodet * nodet
+        # self.lcls * lcls + \
 
         # print(box.item(), coord.item(), det.item())
-        loss = self.box * box + self.box * coord + self.det * det
 
         # print(
         #     "detection ", det.item(),
