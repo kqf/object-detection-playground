@@ -67,17 +67,19 @@ class CombinedLoss(torch.nn.Module):
             torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
         )
 
+        """
         lcls = self.classification(
-            torch.sigmoid(pred[..., 5:][obj]),
+            pred[..., 5:][obj],
             target[..., 5][obj].long(),
         )
+        """
 
         loss = \
             self.det * det + \
             self.box * box + \
             self.box * coord + \
-            self.nodet * nodet + \
-            self.lcls * lcls
+            self.nodet * nodet
+        # self.lcls * lcls + \
 
         # print(box.item(), coord.item(), det.item())
 
