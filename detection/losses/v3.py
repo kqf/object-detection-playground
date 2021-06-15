@@ -68,7 +68,7 @@ class CombinedLoss(torch.nn.Module):
         )
 
         lcls = self.classification(
-            pred[..., 5:][obj],
+            torch.sigmoid(pred[..., 5:][obj]),
             target[..., 5][obj].long(),
         )
 
