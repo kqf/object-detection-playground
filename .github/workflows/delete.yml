@@ -1,0 +1,11 @@
+name: Clean the registry
+
+on: delete
+
+jobs:
+  branch-cleanup:
+    runs-on: ubuntu-latest
+
+    - name: Print a message
+      shell: bash
+      run: echo "Deleted the branch"
