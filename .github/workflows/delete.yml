@@ -8,4 +8,7 @@ jobs:
 
     - name: Print a message
       shell: bash
-      run: echo "Deleted the branch"
+      run: |
+        echo "Deleted the branch ${{ github.event.pull_request.head.ref }}"
+        echo "Deleted the branch ${GITHUB_REF##*/}"
+        echo ${GITHUB_REF##*/}
