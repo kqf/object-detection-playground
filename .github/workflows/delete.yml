@@ -8,11 +8,4 @@ jobs:
     steps:
     - name: Print a message
       shell: bash
-      run: |
-        echo "Deleted the branch ${{ github.event.pull_request.head.ref }}"
-        echo "Deleted the branch ${GITHUB_REF##*/}"
-        echo ${GITHUB_REF##*/}
-
-    - name: Dump the event
-      shell: bash
-      run: echo " ${{ toJSON(github.event) }} "
+      run: echo "Deleted the branch ${{ github.event.ref }}"
