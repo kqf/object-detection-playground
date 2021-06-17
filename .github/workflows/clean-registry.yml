@@ -1,4 +1,4 @@
-name: Clean the registry after closing the PR
+name: Clean the registry
 on:
   pull_request:
     types: [closed]
