@@ -1,13 +1,14 @@
-name: Clean the registry
+name: clean the registry
 on:
   pull_request:
     types: [closed]
 
 jobs:
-  submit:
+  clean-images:
     runs-on: ubuntu-latest
     container: gcr.io/cloud-builders/gsutil
 
+    steps:
     - name: Setup gsutil
       run: |
         echo "Setup the client"
