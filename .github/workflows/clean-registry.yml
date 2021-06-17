@@ -1,0 +1,29 @@
+name: Clean the registry
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    container: gcr.io/cloud-builders/gsutil
+
+    - name: Setup gsutil
+      run: |
+        echo "Setup the client"
+
+    - name: Clean the registry
+      shell: bash
+      run: |
+        echo "Deleting the branch ${{ github.event.pull_request.head.ref }}"
+        gcloud container images list-tags \
+          --format='get(digest)' \
+          --filter="tags:${{ github.event.pull_request.head.ref }}" \
+          ${{ secrets.IMAGE_URI }} | xargs -I{} \
+          gcloud container images delete \
+          -q --force-delete-tags ${{ secrets.IMAGE_URI }}@{}
+
+    - name: Release credentials
+      if: always()
+      run: |
+        echo "Tear down the credientials for the client"
