@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container: gcr.io/cloud-builders/gsutil
 
+    steps:
     - name: Setup gsutil
       run: |
         echo "Setup the client"
