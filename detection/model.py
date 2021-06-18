@@ -29,7 +29,11 @@ class DetectionNet(skorch.NeuralNet):
 
 def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
     # Optimal for box width
-    base_lr = 0.0000001
+    # base_lr = 0.0000001
+
+    # Bad results
+    base_lr = 0.001
+
     batch_size = 16
 
     # scheduler = skorch.callbacks.LRScheduler(
