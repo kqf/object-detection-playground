@@ -32,7 +32,10 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
     # base_lr = 0.0000001
 
     # Bad results
-    base_lr = 0.001
+    # base_lr = 0.001
+
+    # A slight improvement
+    base_lr = 0.0001
 
     batch_size = 16
 
