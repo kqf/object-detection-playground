@@ -49,7 +49,7 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
         step_size_up=batch_size * 10,
         step_size_down=batch_size * 40,
         step_every='batch',
-        mode="triangular",
+        mode="exp_range",
     )
 
     model = DetectionNet(
