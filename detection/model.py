@@ -42,15 +42,15 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
 
     batch_size = 16
 
-    scheduler = skorch.callbacks.LRScheduler(
-        policy=torch.optim.lr_scheduler.CyclicLR,
-        base_lr=base_lr,
-        max_lr=0.004,
-        step_size_up=batch_size * 10,
-        step_size_down=batch_size * 40,
-        step_every='batch',
-        mode="exp_range",
-    )
+    # scheduler = skorch.callbacks.LRScheduler(
+    #     policy=torch.optim.lr_scheduler.CyclicLR,
+    #     base_lr=base_lr,
+    #     max_lr=0.004,
+    #     step_size_up=batch_size * 10,
+    #     step_size_down=batch_size * 40,
+    #     step_every='batch',
+    #     mode="exp_range",
+    # )
 
     model = DetectionNet(
         YOLO,
@@ -58,7 +58,7 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
         batch_size=batch_size,
         max_epochs=max_epochs,
         lr=base_lr,
-        # optimizer=torch.optim.Adam,
+        optimizer=torch.optim.Adam,
         # optimizer__momentum=0.9,
         criterion=CombinedLoss,
         criterion__anchors=DEFAULT_ANCHORS,
@@ -73,7 +73,7 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
             top_n=top_n,
         ),
         callbacks=[
-            scheduler,
+            # scheduler,
             skorch.callbacks.ProgressBar(),
             skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
             # skorch.callbacks.Initializer("*", init),
