@@ -18,7 +18,7 @@ def test_model(fake_dataset, max_epochs, fixed_seed):
     print(df.head())
     train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
 
-    model = build_model(max_epochs=max_epochs, top_n=10)
+    model = build_model(max_epochs=max_epochs, top_n=5)
     model.fit(train)
     model.save_params(f_params='test-params.pkl')
 
