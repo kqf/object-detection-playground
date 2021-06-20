@@ -21,7 +21,7 @@ class DetectionNet(skorch.NeuralNet):
     def predict_proba(self, X):
         nonlin = self._get_predict_nonlinearity()
         y_probas = []
-        for yp in self.forward_iter(X, training=False):
+        for yp in self.forward_iter(X, training=True):
             for scale in nonlin(yp):
                 y_probas.append(skorch.utils.to_numpy(scale))
         return y_probas
