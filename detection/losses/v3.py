@@ -53,7 +53,7 @@ class CombinedLoss(torch.nn.Module):
         obj = target[..., 0] == 1  # in paper this is Iobj_i
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
-            torch.relu(pred[objectness][obj]),
+            pred[objectness][obj],
             target[objectness][obj] * ious[obj],
         )
 
