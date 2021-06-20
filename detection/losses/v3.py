@@ -40,7 +40,7 @@ class CombinedLoss(torch.nn.Module):
 
         noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
         nodet = self.noobjloss(
-            torch.relu(pred[objectness][noobj]) ** 0.5,
+            torch.relu(pred[objectness][noobj]),
             target[objectness][noobj]
         )
 
