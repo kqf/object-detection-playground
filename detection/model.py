@@ -29,7 +29,7 @@ class DetectionNet(skorch.NeuralNet):
 
 def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
     # Optimal for box width
-    base_lr = 0.00000002
+    base_lr = 0.00000008
 
     # Bad results
     # base_lr = 0.001
