@@ -13,7 +13,7 @@ from detection.inference import infer
 def init(w):
     if w.dim() < 2:
         return w
-    return torch.nn.init.xavier_uniform_(w)
+    return torch.nn.init.xavier_normal_(w)
 
 
 class DetectionNet(skorch.NeuralNet):
@@ -29,7 +29,7 @@ class DetectionNet(skorch.NeuralNet):
 
 def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
     # Optimal for box width
-    base_lr = 0.00000001
+    base_lr = 0.00000009
 
     # Bad results
     # base_lr = 0.001
@@ -76,7 +76,7 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
             # scheduler,
             skorch.callbacks.ProgressBar(),
             skorch.callbacks.TrainEndCheckpoint(dirname=logdir),
-            # skorch.callbacks.Initializer("*", init),
+            skorch.callbacks.Initializer("*", init),
         ],
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     )
