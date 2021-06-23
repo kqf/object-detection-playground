@@ -81,7 +81,7 @@ class CombinedLoss(torch.nn.Module):
             self.nodet * nodet
         # self.lcls * lcls + \
 
-        # print(box.item(), coord.item(), det.item())
+        print(pred[..., 0][pred[..., 0] > 0.97])
 
         # print(
         #     "detection ", det.item(),
