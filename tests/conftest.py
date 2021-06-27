@@ -19,6 +19,13 @@ def pytest_addoption(parser):
         type=int,
         help="Number of epochs to run the tests",
     )
+    parser.addoption(
+        "--num-images-per-batch",
+        action="store",
+        default=4,
+        type=int,
+        help="Number of epochs to run the tests",
+    )
 
 
 def pytest_configure(config):
