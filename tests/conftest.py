@@ -49,6 +49,7 @@ def size():
     return 256
 
 
+@pytest.fixture
 def n_samples(request):
     return request.config.getoption("--num-images-per-batchs")
 
