@@ -9,8 +9,8 @@ def to_global(x):
 
     cells = torch.arange(n_cells).to(x.device)
 
-    x_cells = cells.reshape(1, n_cells, 1, 1, 1)
-    y_cells = cells.reshape(1, 1, n_cells, 1, 1)
+    x_cells = cells.reshape(1, 1, n_cells, 1, 1)
+    y_cells = cells.reshape(1, 1, 1, n_cells, 1)
 
     x[..., 1:2] = (x[..., 1:2] + x_cells) / n_cells
     x[..., 2:3] = (x[..., 2:3] + y_cells) / n_cells
@@ -23,7 +23,6 @@ def nonlin(batch, anchor_boxes):
 
     for i, (pred, anchors) in enumerate(zip(batch, anchor_boxes)):
         # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        pred = pred.permute(0, 2, 3, 1, 4)
 
         # Copy don't mutate the original batch
         prediction = pred[..., :6].detach().clone() * 0

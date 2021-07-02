@@ -24,7 +24,7 @@ def test_targets(fake_dataset, fixed_seed):
             # It can be either one or zero depending on the number of scales
             assert answers.shape[0] == 1 or answers.shape[0] == 0
 
-            pred = to_global(scale.permute(1, 2, 0, 3))
+            pred = to_global(scale)
 
             # "Apply" the NMS
             final_output = pred[pred[..., 0] == 1]
