@@ -49,8 +49,10 @@ class CombinedLoss(torch.nn.Module):
             torch.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
-
         obj = target[..., 0] == 1  # in paper this is Iobj_i
+
+        print("Predicting width:")
+        print(torch.exp(pred[bbox_wh])[obj] * anchors)
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
             pred[objectness][obj],
