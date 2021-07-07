@@ -50,7 +50,6 @@ class DetectionDatasetV3(Dataset):
 
         self.num_anchors_per_scale = len(anchors[0])
 
-        print("Tests:", (self.num_anchors_per_scale))
         self.anchors = torch.cat(anchors)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
