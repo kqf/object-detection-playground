@@ -31,9 +31,12 @@ def nonlin(batch, anchor_boxes):
         scale = pred.shape[2]
 
         prediction[..., 0] = pred[..., 0]
-        print(pred[..., 0][pred[..., 0] > 0.97])
+        positives = pred[..., 0] > 0.97
+        print(pred[..., 0][positives])
+        print("Positive width height")
+        print(torch.exp(pred[..., 3:5][positives]) * anchors)
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
-        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors * scale
+        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * scale
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
         final = to_global(prediction)
@@ -105,6 +108,6 @@ def no_nms(pred, threshold=0.0, top_n=None):
 
     positive = pred[:, 0] > threshold
     if top_n is not None:
-        positive = pred[:, 0].argsort()[:top_n]
+        positive = (-pred[:, 0]).argsort()[:top_n]
 
     return pred[positive, 1:]
