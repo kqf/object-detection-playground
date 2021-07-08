@@ -353,8 +353,6 @@ class YOLO(torch.nn.Module):
         self.head = Head(ochannels, n_classes)
 
     def forward(self, x):
-        print('stats', x.min().item(), x.max().item(), x.mean().item())
-        print('module', self.training)
         d1 = self.down1(x)
         d2 = self.down2(d1)
         d3 = self.down3(d2)
@@ -373,7 +371,6 @@ class YOLO(torch.nn.Module):
 
             s = s.view(batch, self.n_scales, n_labels, h, w)
             s = s.permute(0, 1, 3, 4, 2)
-            print(s[..., 0].min().item(), s[..., 0].max().item())
 
             reordered.insert(0, s)
         return reordered

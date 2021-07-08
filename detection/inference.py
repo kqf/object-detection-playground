@@ -28,10 +28,6 @@ def nonlin(batch, anchor_boxes):
 
         # pred [batch_size, n_anchors, s, s, 5 + nclasses]
         prediction[..., 0] = pred[..., 0]
-        positives = pred[..., 0] > 0.97
-        print(pred[..., 0][positives])
-        print("Positive width height")
-        print(torch.exp(pred[..., 3:5][positives]) * anchors)
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
         prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
