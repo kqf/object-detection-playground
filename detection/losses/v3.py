@@ -51,8 +51,6 @@ class CombinedLoss(torch.nn.Module):
         ], dim=-1)
         obj = target[..., 0] == 1  # in paper this is Iobj_i
 
-        print("Predicting width:")
-        print(torch.exp(pred[bbox_wh])[obj] * anchors)
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
         det = self.regression(
             pred[objectness][obj],
@@ -82,8 +80,6 @@ class CombinedLoss(torch.nn.Module):
             self.box * coord + \
             self.nodet * nodet
         # self.lcls * lcls + \
-
-        print(pred[..., 0][pred[..., 0] > 0.97])
 
         # print(
         #     "detection ", det.item(),
