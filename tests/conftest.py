@@ -82,6 +82,7 @@ def annotations(n_samples, fixed_seed):
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
 
     shift = 1 + df.index / len(df)
+    shift = 1
     df.loc[:, 'x_min'] = 200.0 * shift
     df.loc[:, 'x_max'] = 200.0 * shift + 2000 * 0.28
     df.loc[:, 'y_min'] = 400.0 * shift
