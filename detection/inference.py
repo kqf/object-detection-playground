@@ -5,7 +5,7 @@ from detection.metrics import bbox_iou
 
 def to_global(x):
     # x[batch, scale, x_cells, y_cells, 6]
-    n_cells = x.shape[1]
+    n_cells = x.shape[2]
 
     cells = torch.arange(n_cells).to(x.device)
 
