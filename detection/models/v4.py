@@ -353,8 +353,6 @@ class YOLO(torch.nn.Module):
         self.head = Head(ochannels, n_classes)
 
     def forward(self, x):
-        print('stats', x.min().item(), x.max().item(), x.mean().item())
-        print('module', self.training)
         d1 = self.down1(x)
         d2 = self.down2(d1)
         d3 = self.down3(d2)
