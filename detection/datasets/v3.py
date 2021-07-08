@@ -145,7 +145,7 @@ def build_targets(bboxes, labels, anchors,
             if not has_anchor[scale_idx]:
                 targets[scale_idx][anchor_on_scale, i, j, 0] = 1
                 x_cell, y_cell = s * x - i, s * y - j  # both between [0, 1]
-                cbox = torch.tensor([x_cell, y_cell, width * s, height * s])
+                cbox = torch.tensor([x_cell, y_cell, width, height])
                 targets[scale_idx][anchor_on_scale, i, j, 1:5] = cbox
                 targets[scale_idx][anchor_on_scale, i, j, 5] = int(class_label)
                 has_anchor[scale_idx] = True
