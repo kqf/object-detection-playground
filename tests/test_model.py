@@ -25,6 +25,8 @@ def test_model(fake_dataset, max_epochs, fixed_seed):
     preds = model.predict(train)
     first_image_pred = preds[0][:, :4]
     first_image, targets, _ = train.example(0)
+    print("Target coordinates:")
+    print(targets)
 
     # first_image = torch.ones((3, 460, 460))
     # for first_image in train:
@@ -37,6 +39,9 @@ def test_model(fake_dataset, max_epochs, fixed_seed):
     #     first_image_pred[:, 1] = 0.4
     #     first_image_pred[:, 2] = 0.2
     #     first_image_pred[:, 3] = 0.2
+
+    print("preds")
+    print(first_image_pred)
 
     plot((first_image, first_image_pred, targets),
          convert_bbox=True, ofile='dummy-test.png')

@@ -5,7 +5,7 @@ from detection.metrics import bbox_iou
 
 def to_global(x):
     # x[batch, scale, x_cells, y_cells, 6]
-    n_cells = x.shape[1]
+    n_cells = x.shape[2]
 
     cells = torch.arange(n_cells).to(x.device)
 
@@ -14,7 +14,6 @@ def to_global(x):
 
     x[..., 1:2] = (x[..., 1:2] + x_cells) / n_cells
     x[..., 2:3] = (x[..., 2:3] + y_cells) / n_cells
-    x[..., 3:5] = x[..., 3:5] / n_cells
     return x
 
 
@@ -28,15 +27,13 @@ def nonlin(batch, anchor_boxes):
         prediction = pred[..., :6].detach().clone() * 0
 
         # pred [batch_size, n_anchors, s, s, 5 + nclasses]
-        scale = pred.shape[2]
-
         prediction[..., 0] = pred[..., 0]
         positives = pred[..., 0] > 0.97
         print(pred[..., 0][positives])
         print("Positive width height")
         print(torch.exp(pred[..., 3:5][positives]) * anchors)
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
-        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * scale
+        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
         final = to_global(prediction)

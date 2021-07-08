@@ -55,7 +55,7 @@ def n_samples(request):
 
 
 @pytest.fixture
-def annotations(n_samples):
+def annotations(n_samples, fixed_seed):
     """
                                image_id          class_name  class_id rad_id   x_min   y_min   x_max   y_max
     0  50a418190bc3fb1ef1633bf9678929b3          No finding        14    R11     NaN     NaN     NaN     NaN
@@ -82,6 +82,7 @@ def annotations(n_samples):
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
 
     shift = 1 + df.index / len(df)
+    shift = 1
     df.loc[:, 'x_min'] = 200.0 * shift
     df.loc[:, 'x_max'] = 200.0 * shift + 2000 * 0.28
     df.loc[:, 'y_min'] = 400.0 * shift
