@@ -103,4 +103,5 @@ def no_nms(pred, threshold=0.0, top_n=None):
     if top_n is not None:
         positive = (-pred[:, 0]).argsort()[:top_n]
 
+    print("The top thresholds are:", pred[positive, 0])
     return pred[positive, 1:]
