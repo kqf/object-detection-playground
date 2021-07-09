@@ -90,7 +90,7 @@ def nms(pred, min_iou=0.5):
     return ~result
 
 
-def no_nms(pred, threshold=0.0, top_n=None):
+def no_nms(pred, threshold=0.5, top_n=None):
 
     # plt.hist(pred[:, 0])
     # plt.xlabel("objectness")
@@ -99,8 +99,11 @@ def no_nms(pred, threshold=0.0, top_n=None):
 
     print(pred[:, 0].max())
 
-    positive = pred[:, 0] > threshold
+    # Filter the noisy outputs
+    pred = pred[pred[:, 0] > threshold]
+
     if top_n is not None:
         positive = (-pred[:, 0]).argsort()[:top_n]
 
+    # print("The top thresholds are:", pred[positive, 0])
     return pred[positive, 1:]
