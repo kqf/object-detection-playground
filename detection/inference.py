@@ -29,7 +29,10 @@ def nonlin(batch, anchor_boxes):
         # pred [batch_size, n_anchors, s, s, 5 + nclasses]
         prediction[..., 0] = pred[..., 0]
         prediction[..., 1:3] = torch.sigmoid(pred[..., 1:3])
-        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * anchors
+
+        aa = anchors[None, :, None, None, :]
+        prediction[..., 3:5] = torch.exp(pred[..., 3:5]) * aa
+
         prediction[..., 5] = torch.argmax(pred[..., 5:], dim=-1)
 
         final = to_global(prediction)

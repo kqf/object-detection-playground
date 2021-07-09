@@ -7,8 +7,8 @@ from torch.utils.data import Dataset
 
 # Localization, there is a single anchor
 DEFAULT_ANCHORS = [
-    torch.tensor([(0.28, 0.22)]),
-    # torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+    # torch.tensor([(0.28, 0.22)]),
+    torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
 ]
 
 # Ignore the default anchors
