@@ -90,7 +90,7 @@ def test_inference(expected, batch, bsize):
 
 @pytest.mark.skip
 @pytest.mark.parametrize("bsize", [4])
-def test_nms(expected_batch, bsize=10):
+def test_merged_scales(expected_batch, bsize=10):
     merged = merge_scales([x.permute(0, 2, 3, 4, 1)
                            for x in expected_batch])
     img = torch.ones(3, 460, 460)
