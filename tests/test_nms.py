@@ -19,5 +19,5 @@ def candidates(n_candidates=13 + 26 + 52):
 
 def test_nms(candidates):
     img = torch.ones(3, 460, 460)
-    sup = nms(candidates).any(-1)
+    sup = nms(candidates)
     plot((img, candidates[:, 1:], sup), convert_bbox=True)
