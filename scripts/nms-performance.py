@@ -3,7 +3,6 @@ import timeit
 import numpy as np
 
 from detection.inference import nms
-from detection.inference import non_max_suppression as nms_old
 
 
 def preds(n_candidates=13 * 3 + 26 * 3 + 52 * 3):
@@ -25,7 +24,6 @@ def main():
     candidates = preds()
     n_calls = 100
     print(timeit.timeit(lambda: nms(candidates), number=n_calls) / n_calls)
-    print(timeit.timeit(lambda: nms_old(candidates), number=n_calls) / n_calls)
 
 
 if __name__ == '__main__':
