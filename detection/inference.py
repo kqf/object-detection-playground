@@ -83,31 +83,31 @@ def non_max_suppression(bboxes, iou_threshold, threshold):
     return bboxes_after_nms
 
 
-def nms(pred, min_iou=0.5):
-    same_object = pred[:, None, -1] == pred[None, :, -1]
-    objectness_per_class = same_object * pred[None, :, 0]
+def nms(bboxes, min_iou=0.5):
+    same_object = bboxes[:, None, -1] == bboxes[None, :, -1]
+    objectness_per_class = same_object * bboxes[None, :, 0]
     maximum = objectness_per_class.max(-1, keepdim=True).values
     not_maximum = objectness_per_class < maximum
-    ious = bbox_iou(pred[:, None, 1:5], pred[None, :, 1:5])
+    ious = bbox_iou(bboxes[:, None, 1:5], bboxes[None, :, 1:5])
     noise = same_object * not_maximum * (ious > min_iou).squeeze(-1)
     suppressed = (~noise).all(0)
-    return pred[suppressed, 1:]
+    return bboxes[suppressed, 1:]
 
 
-def no_nms(pred, threshold=0.5, top_n=None):
+def no_nms(bboxes, threshold=0.5, top_n=None):
 
-    # plt.hist(pred[:, 0])
+    # plt.hist(bboxes[:, 0])
     # plt.xlabel("objectness")
     # plt.show()
     # plt.savefig("last-objectness.png")
 
-    print(pred[:, 0].max())
+    print(bboxes[:, 0].max())
 
     # Filter the noisy outputs
-    pred = pred[pred[:, 0] > threshold]
+    bboxes = bboxes[bboxes[:, 0] > threshold]
 
     if top_n is not None:
-        positive = (-pred[:, 0]).argsort()[:top_n]
+        positive = (-bboxes[:, 0]).argsort()[:top_n]
 
-    # print("The top thresholds are:", pred[positive, 0])
-    return pred[positive, 1:]
+    # print("The top thresholds are:", bboxes[positive, 0])
+    return bboxes[positive, 1:]
