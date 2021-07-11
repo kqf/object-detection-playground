@@ -89,8 +89,8 @@ def nms(pred, min_iou=0.5):
     maximum = objectness_per_class.max(-1, keepdim=True).values
     not_maximum = objectness_per_class < maximum
     ious = bbox_iou(pred[:, None, 1:5], pred[None, :, 1:5])
-    result = same_object * not_maximum * (ious > min_iou).squeeze(-1)
-    return (~result).all(-1)
+    noise = same_object * not_maximum * (ious > min_iou).squeeze(-1)
+    return (~noise).all(0)
 
 
 def no_nms(pred, threshold=0.5, top_n=None):
