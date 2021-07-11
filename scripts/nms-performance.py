@@ -1,12 +1,12 @@
 import torch
-import pytest
+import timeit
 import numpy as np
 
 from detection.inference import nms
+from detection.inference import non_max_suppression as nms_old
 
 
-@pytest.fixture
-def candidates(n_candidates=13 * 3 + 26 * 3 + 52 * 3):
+def preds(n_candidates=13 * 3 + 26 * 3 + 52 * 3):
     x = np.zeros((n_candidates, 6))
     x[:, 0] = np.linspace(0.4, 0.6, n_candidates)
     x[n_candidates // 2, 0] = 1
@@ -21,9 +21,12 @@ def candidates(n_candidates=13 * 3 + 26 * 3 + 52 * 3):
     return torch.tensor(x)
 
 
-def test_nms(candidates):
-    sup = nms(candidates)
-    top = candidates.shape[0] // 2
+def main():
+    candidates = preds()
+    n_calls = 100
+    print(timeit.timeit(lambda: nms(candidates), number=n_calls) / n_calls)
+    print(timeit.timeit(lambda: nms_old(candidates), number=n_calls) / n_calls)
 
-    assert torch.equal(sup[0], candidates[top, 1:])
-    assert torch.equal(sup[-1], candidates[-1, 1:])
+
+if __name__ == '__main__':
+    main()
