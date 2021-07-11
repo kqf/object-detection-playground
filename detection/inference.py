@@ -84,11 +84,18 @@ def non_max_suppression(bboxes, iou_threshold, threshold):
 
 
 def nms(bboxes, min_iou=0.5):
+    # Ensure everything is calculated per class
     same_object = bboxes[:, None, -1] == bboxes[None, :, -1]
+
+    # Find non-maximum elements
     objectness_per_class = same_object * bboxes[None, :, 0]
     maximum = objectness_per_class.max(-1, keepdim=True).values
     not_maximum = objectness_per_class < maximum
+
+    # IoUs
     ious = bbox_iou(bboxes[:, None, 1:5], bboxes[None, :, 1:5])
+
+    # Putting it all together
     noise = same_object * not_maximum * (ious > min_iou).squeeze(-1)
     suppressed = (~noise).all(0)
     return bboxes[suppressed, 1:]
