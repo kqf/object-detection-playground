@@ -5,7 +5,7 @@ from detection.inference import nms
 
 
 @pytest.fixture
-def candidates(n_candidates=13 + 26 + 52):
+def candidates(n_candidates=13 * 3 + 26 * 3 + 52 * 3):
     x = np.zeros((n_candidates, 6))
     x[:, 0] = np.linspace(0.4, 0.6, n_candidates)
     x[n_candidates // 2, 0] = 1
