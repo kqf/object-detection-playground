@@ -18,6 +18,8 @@ def candidates(n_candidates=13 + 26 + 52):
 
 
 def test_nms(candidates):
-    img = torch.ones(3, 460, 460)
     sup = nms(candidates)
-    print(candidates[sup, 1:])
+    top = candidates.shape[0] // 2
+
+    assert torch.equal(sup[0], candidates[top, 1:])
+    assert torch.equal(sup[-1], candidates[-1, 1:])
