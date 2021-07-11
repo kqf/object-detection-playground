@@ -56,7 +56,7 @@ def infer(batch, anchor_boxes, top_n):
     merged = merge_scales(predictions)
 
     # Run over all samples in the dataset
-    supressed = [no_nms(sample, top_n=top_n) for sample in merged]
+    supressed = [nms(sample, top_n=top_n) for sample in merged]
     return supressed
 
 
