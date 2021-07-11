@@ -1,6 +1,8 @@
 import torch
 import pytest
+import timeit
 import numpy as np
+
 from detection.inference import nms
 
 
@@ -26,3 +28,7 @@ def test_nms(candidates):
 
     assert torch.equal(sup[0], candidates[top, 1:])
     assert torch.equal(sup[-1], candidates[-1, 1:])
+
+
+def test_performance(candidates):
+    print(timeit.timeit(lambda: nms(candidates)))
