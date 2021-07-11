@@ -60,7 +60,7 @@ def merge_scales(predictions):
     return [torch.cat(x) for x in zip(*flat)]
 
 
-def nms(bboxes, threshold=0.5, min_iou=0.5):
+def nms(bboxes, threshold=0.5, min_iou=0.5, top_n=None):
     # Filter out the boxes with low objectness score
     x = bboxes[bboxes[:, 0] > threshold]
 
@@ -81,7 +81,7 @@ def nms(bboxes, threshold=0.5, min_iou=0.5):
     return x[suppressed, 1:]
 
 
-def no_nms(bboxes, threshold=0.5, top_n=None):
+def no_nms(bboxes, threshold=0.5, min_iou=0.5, top_n=None):
 
     # plt.hist(bboxes[:, 0])
     # plt.xlabel("objectness")
