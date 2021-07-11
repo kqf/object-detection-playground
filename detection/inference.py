@@ -41,15 +41,6 @@ def nonlin(batch, anchor_boxes):
     return predictions
 
 
-def infer(batch, anchor_boxes, top_n):
-    predictions = nonlin(batch, anchor_boxes)
-    merged = merge_scales(predictions)
-
-    # Run over all samples in the dataset
-    supressed = [no_nms(sample, top_n=top_n) for sample in merged]
-    return supressed
-
-
 def merge_scales(predictions):
     # Flatten along the batch dimension
     flat = []
@@ -58,6 +49,15 @@ def merge_scales(predictions):
 
     # The results along the batch dimension
     return [torch.cat(x) for x in zip(*flat)]
+
+
+def infer(batch, anchor_boxes, top_n):
+    predictions = nonlin(batch, anchor_boxes)
+    merged = merge_scales(predictions)
+
+    # Run over all samples in the dataset
+    supressed = [no_nms(sample, top_n=top_n) for sample in merged]
+    return supressed
 
 
 def nms(bboxes, threshold=0.5, min_iou=0.5, top_n=None):
