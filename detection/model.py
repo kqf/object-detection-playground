@@ -4,7 +4,7 @@ import skorch
 
 from functools import partial
 
-from detection.models.v4 import YOLO
+from detection.models.v3 import YOLO
 from detection.losses.v3 import CombinedLoss
 from detection.datasets.v3 import DEFAULT_ANCHORS
 from detection.inference import infer
