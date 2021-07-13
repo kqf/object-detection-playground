@@ -71,6 +71,8 @@ def build_model(max_epochs=2, logdir=".tmp/", top_n=None, train_split=None):
             infer,
             anchor_boxes=DEFAULT_ANCHORS,
             top_n=top_n,
+            min_iou=0.5,
+            threshold=0.5,
         ),
         callbacks=[
             scheduler,
