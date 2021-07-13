@@ -37,7 +37,7 @@ class ScalePrediction(nn.Module):
 
 
 class YOLO(nn.Module):
-    def __init__(self, in_channels=3, num_classes=80):
+    def __init__(self, in_channels=3, num_classes=80, n_scales=3):
         super().__init__()
         self.backbone = Darknet(in_channels=in_channels)
         self.num_classes = num_classes
