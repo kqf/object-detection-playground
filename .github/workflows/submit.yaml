@@ -1,0 +1,84 @@
+name: submit from master
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  submit:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/start')
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Parse message
+      id: parse-script
+      run: |
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        echo "${BUILD_ID}"
+        echo "::set-output name=modified_message::$(sed "s|/start|[/start](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
+
+    - name: "Get the source code"
+      uses: actions/checkout@v2
+
+    - name: Execute the training script
+      id: submit-script
+      run: |
+        echo "This is a pull request comment: ${{ github.event.comment.body }}"
+        ls -ltr 2>&1 | tee test.log
+        result_code=${PIPESTATUS[0]}
+        echo "::set-output name=my_payload::$(ls -l | grep req)"
+        exit ${result_code}
+
+    - name: Update comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ github.event.comment.id }}
+        body: ${{ steps.parse-script.outputs.modified_message }}
+        reactions: rocket
+        edit-mode: replace
+
+    - name: Fire the coment
+      uses: actions/github-script@v3
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'You have triggered the build! 🚀 \n' +
+                  '```bash\n${{ steps.submit-script.outputs.my_payload }}\n```\n'
+          })
+
+  gandalf:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/gandalf')
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Parse message
+      id: parse-script
+      run: |
+        BUILD_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        echo "${BUILD_ID}"
+        echo "::set-output name=modified_message::$(sed "s|/gandalf|[/gandalf](${BUILD_URL})|" <<< "${{ github.event.comment.body }}")"
+
+    - name: Update comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ github.event.comment.id }}
+        body: ${{ steps.parse-script.outputs.modified_message }}
+        reactions: rocket
+        edit-mode: replace
+
+    - name: Send the notification
+      uses: actions/github-script@v3
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '<p align="center">\n<img src="https://media.giphy.com/media/Qs75BqLW44RrP0x6qL/giphy.gif" />\n</p>'
+          })
+    - name: Approve
+      uses: juliangruber/approve-pull-request-action@v1
+      with:
+        number: 1

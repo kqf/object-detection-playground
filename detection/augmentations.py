@@ -26,7 +26,10 @@ class DebugAugmentations(DualTransform):
         return img
 
     def apply_to_bbox(self, bbox, **params):
-        import ipdb; ipdb.set_trace(); import IPython; IPython.embed() # noqa
+        import ipdb
+        ipdb.set_trace()
+        import IPython
+        IPython.embed()  # noqa
         return bbox
 
     def apply_to_keypoint(self, keypoint, scale=0, **params):
@@ -45,8 +48,8 @@ def transform(train=True, mean=None, std=None, size=32 * 13):
 
     transforms = [
         # alb.PadIfNeeded(
-        #     min_height=int(size * scale),
-        #     min_width=int(size * scale),
+        #     min_height=int(size),
+        #     min_width=int(size),
         #     border_mode=cv2.BORDER_CONSTANT,
         # ),
         # DebugAugmentations(),
@@ -58,7 +61,7 @@ def transform(train=True, mean=None, std=None, size=32 * 13):
     train_transforms = []
     if train:
         train_transforms = [
-            alb.Flip(0.5)
+            # alb.Flip(0.5)
         ]
 
     return alb.Compose(train_transforms + transforms, bbox_params=bbox_params)

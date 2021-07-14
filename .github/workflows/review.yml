@@ -1,0 +1,20 @@
+name: request changes
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  request-changes-notification:
+    if: ${{ github.event.review.state == 'changes_requested' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@v3
+      with:
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '<p align="center">\n<img src="https://media.giphy.com/media/njYrp176NQsHS/giphy.gif" />\n</p>'
+          })

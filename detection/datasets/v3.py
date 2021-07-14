@@ -5,6 +5,13 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
+# Localization, there is a single anchor
+# DEFAULT_ANCHORS = [
+#     # torch.tensor([(0.28, 0.22)]),
+#     torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
+# ]
+
+# Ignore the default anchors
 DEFAULT_ANCHORS = [
     torch.tensor([(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)]),
     torch.tensor([(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)]),
@@ -24,7 +31,6 @@ class DetectionDatasetV3(Dataset):
         scales=None,
         iou_threshold=0.5,
         transforms=None,
-        no_anchors=False,
     ):
         super().__init__()
 
@@ -32,13 +38,23 @@ class DetectionDatasetV3(Dataset):
         self.df = dataframe
         self.image_dir = image_dir
         self.transforms = transforms
-        self.no_anchors = no_anchors
 
-        self.anchors = anchors or torch.cat(DEFAULT_ANCHORS)
+        if anchors is None:
+            anchors = DEFAULT_ANCHORS
+
+        # NB: the anchors is the list of tensors:
+        # anchors[scale1, scale2, scale3]
+
+        if len(set([len(a) for a in anchors])) != 1:
+            raise ValueError("Anchors must be of the same length")
+
+        self.num_anchors_per_scale = len(anchors[0])
+
+        self.anchors = torch.cat(anchors)
         self.iou_threshold = iou_threshold
         self.scales = scales or DEFAULT_SCALES
 
-    def __getitem__(self, index):
+    def example(self, index):
         image_id = self.image_ids[index]
         records = self.df[(self.df['image_id'] == image_id)]
         records = records.reset_index(drop=True)
@@ -52,12 +68,6 @@ class DetectionDatasetV3(Dataset):
 
         if records.loc[0, "class_id"] == 0:
             records = records.loc[[0], :]
-
-        x1, y1, x2, y2 = records[['x_min', 'y_min', 'x_max', 'y_max']].values.T
-        records['x_center'] = (x1 + x2) / 2 / image.shape[0]
-        records['y_center'] = (y1 + y2) / 2 / image.shape[1]
-        records['width'] = (x2 - x1) / image.shape[0]
-        records['height'] = (y2 - y1) / image.shape[1]
 
         boxes = records[['x_center', 'y_center', 'width', 'height']].values
 
@@ -75,22 +85,24 @@ class DetectionDatasetV3(Dataset):
             boxes = transformed['bboxes']
             labels = transformed['labels']
 
-        if self.no_anchors:
-            return image, boxes
-
         _, width, height = image.shape
         targets = build_targets(
             boxes, labels,
             self.anchors,
             self.scales,
             self.iou_threshold,
+            num_anchors_per_scale=self.num_anchors_per_scale,
             im_size=width,
         )
 
-        return image, targets
+        return image, boxes, targets
 
     def __len__(self):
         return self.image_ids.shape[0]
+
+    def __getitem__(self, index):
+        image, boxes, targets = self.example(index)
+        return image, targets
 
 
 def iou(a, b):
@@ -102,13 +114,14 @@ def iou(a, b):
     return intersection / union
 
 
-def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
+def build_targets(bboxes, labels, anchors,
+                  raw_scales, iou_threshold, num_anchors_per_scale, im_size):
     # scale = upscaling factor s times darknet output (image_size // 32)
     scales = [im_size // 32 * s for s in raw_scales]
 
     # Three anchors per scale
-    targets = [torch.zeros((3, s, s, 6)) for i, s in enumerate(scales)]
-    num_anchors_per_scale = 3
+    targets = [torch.zeros((num_anchors_per_scale, s, s, 6))
+               for i, s in enumerate(scales)]
 
     for box, class_label in zip(bboxes, labels):
         if np.isnan(box).any():
@@ -123,7 +136,7 @@ def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
             scale_idx = int(anchor_idx // num_anchors_per_scale)
             anchor_on_scale = int(anchor_idx % num_anchors_per_scale)
             s = scales[scale_idx]
-            i, j = int(s * y), int(s * x)  # which cell
+            i, j = int(s * x), int(s * y)  # which cell
             anchor_taken = targets[scale_idx][anchor_on_scale, i, j, 0]
 
             if anchor_taken:
@@ -131,8 +144,8 @@ def build_targets(bboxes, labels, anchors, raw_scales, iou_threshold, im_size):
 
             if not has_anchor[scale_idx]:
                 targets[scale_idx][anchor_on_scale, i, j, 0] = 1
-                x_cell, y_cell = s * x - j, s * y - i  # both between [0,1]
-                cbox = torch.tensor([x_cell, y_cell, width * s, height * s])
+                x_cell, y_cell = s * x - i, s * y - j  # both between [0, 1]
+                cbox = torch.tensor([x_cell, y_cell, width, height])
                 targets[scale_idx][anchor_on_scale, i, j, 1:5] = cbox
                 targets[scale_idx][anchor_on_scale, i, j, 5] = int(class_label)
                 has_anchor[scale_idx] = True

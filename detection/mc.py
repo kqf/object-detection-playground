@@ -31,12 +31,13 @@ def blob2image(blob, channels=3, epsilon=0.1):
     h, w = blob.shape
 
     extended = blob[..., None]
+    return extended + 255
 
     # Add a small term to add noise to the empty regions
-    noise = np.random.poisson(extended + epsilon, size=(h, w, channels))
+    # noise = np.random.poisson(extended + epsilon, size=(h, w, channels))
 
     # Convet to image scale
-    return (extended + noise * 255).astype(np.uint8)
+    # return (extended + noise * 255).astype(np.uint8)
 
 
 def annotations(n_points=32, h=2000, w=2000):
@@ -61,10 +62,11 @@ def annotations(n_points=32, h=2000, w=2000):
 
 def generate_to_directory(annotations, dirname):
     path = Path(dirname)
+
     # TODO: Add support for multiple blobs per image
     for row in annotations.to_dict(orient="records"):
-        image_id = row["image_id"]
         img = blob2image(make_blob(**row))
+        image_id = row["image_id"]
         ifile = f"{image_id}.png"
         cv2.imwrite(str(path / ifile), img)
     annotations.to_csv(path / "train.csv", index=False)

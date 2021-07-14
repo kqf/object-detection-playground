@@ -15,12 +15,12 @@ class CombinedLoss(torch.nn.Module):
         self.lcls = 1
         self.det = 1
         self.box = 1
-        self.obj = 1
+        self.nodet = 1
 
-        pos_weight = torch.tensor([self.obj])
-        self.objectness = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        # pos_weight = torch.tensor([self.obj])
+        self.noobjloss = torch.nn.MSELoss()
         self.classification = torch.nn.CrossEntropyLoss()
-        self.bbox = torch.nn.MSELoss()
+        self.regression = torch.nn.MSELoss()
 
     def forward(self, pred, target):
         loss = torch.tensor(0).float()
@@ -34,44 +34,57 @@ class CombinedLoss(torch.nn.Module):
         return loss
 
     def _forward(self, pred, target, anchors):
-        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        pred = pred.permute(0, 2, 3, 4, 1)
+        # pred [batch, scale, x, y, labels]
+        # [scale, 2] -> [1, scale, 1, 1, 2]
+        anchors = anchors.reshape(1, -1, 1, 1, 2)
 
-        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
-        pred = pred.reshape(-1, pred.shape[-2], pred.shape[-1])
-
-        # [batch, scale, x, y, labels] -> [batch, x, y, scale, labels]
-        target = target.permute(0, 2, 3, 1, 4)
-
-        # [batch, x, y, scale, labels] -> [batch * x * y, scale, labels]
-        target = target.reshape(-1, target.shape[-2], target.shape[-1])
-
-        # [scale, 2] -> [1, scale, 2]
-        anchors = anchors.reshape(1, 3, 2)
+        noobj = target[..., 0:1] != 1  # in paper this is Iobj_i
+        nodet = self.noobjloss(
+            torch.relu(pred[objectness][noobj]),
+            target[objectness][noobj]
+        )
 
         # x,y coordinates
-        pred[bbox_xy] = torch.nn.functional.sigmoid(pred[bbox_xy])
         box_preds = torch.cat([
-            pred[bbox_xy],
+            torch.sigmoid(pred[bbox_xy]),
             torch.exp(pred[bbox_wh]) * anchors
         ], dim=-1)
+        obj = target[..., 0] == 1  # in paper this is Iobj_i
 
         ious = bbox_iou(box_preds, target[bbox_all]).detach()
-        det = self.objectness(
-            pred[objectness],
-            ious * target[objectness]
+        det = self.regression(
+            pred[objectness][obj],
+            target[objectness][obj] * ious[obj],
         )
-        tboxes = torch.cat([
-            target[bbox_xy],
-            torch.log((1e-16 + target[bbox_wh] / anchors)),
-        ], dim=-1)
 
-        obj = target[..., 0] == 1  # in paper this is Iobj_i
-        box = self.bbox(pred[bbox_all][obj], tboxes[obj])
+        coord = self.regression(
+            torch.sigmoid(pred[bbox_xy][obj]),
+            target[bbox_xy][obj],
+        )
+
+        box = self.regression(
+            pred[bbox_wh][obj],
+            torch.log(1e-16 + target[bbox_wh] / anchors)[obj],
+        )
 
         lcls = self.classification(
             pred[..., 5:][obj],
             target[..., 5][obj].long(),
         )
 
-        return self.det * det + self.box * box + self.lcls * lcls
+        loss = \
+            self.det * det + \
+            self.box * box + \
+            self.box * coord + \
+            self.nodet * nodet + \
+            self.lcls * lcls
+
+        # print(
+        #     "detection ", det.item(),
+        #     "box ", box.item(),
+        #     "coord ", coord.item(),
+        #     "cls ", lcls.item(),
+        #     "nodet ", nodet.item(),
+        # )
+
+        return loss

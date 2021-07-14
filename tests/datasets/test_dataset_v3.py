@@ -1,3 +1,4 @@
+import torch
 import pytest
 import pandas as pd
 from detection.datasets.v3 import DetectionDatasetV3
@@ -9,17 +10,22 @@ from detection.plot import plot
     transform(train=False),
     transform(train=True),
 ])
-def test_dataset(fake_dataset, transforms):
+@pytest.mark.parametrize("anchors", [
+    None,
+    [torch.tensor([(0.28, 0.22)])],
+])
+def test_dataset(fake_dataset, anchors, transforms):
     df = pd.read_csv(fake_dataset / "train.csv")
-    dataset = DetectionDatasetV3(df, fake_dataset, transforms=transforms)
+    dataset = DetectionDatasetV3(
+        df, fake_dataset, anchors=anchors, transforms=transforms)
 
     for image, (s1, s2, s3) in dataset:
         assert len(image.shape) == 3, "There are only 3 dimensions"
         assert image.shape[0] == 3, f"There are only 3 channels {image.shape}"
 
-        assert s1.shape == (3, 13, 13, 6)
-        assert s2.shape == (3, 26, 26, 6)
-        assert s3.shape == (3, 52, 52, 6)
+        assert s1.shape == (dataset.num_anchors_per_scale, 13, 13, 6)
+        assert s2.shape == (dataset.num_anchors_per_scale, 26, 26, 6)
+        assert s3.shape == (dataset.num_anchors_per_scale, 52, 52, 6)
 
 
 def test_augmentations(fake_dataset, block=False):
@@ -27,8 +33,8 @@ def test_augmentations(fake_dataset, block=False):
     dataset = DetectionDatasetV3(
         df, fake_dataset,
         transforms=transform(train=True),
-        no_anchors=True,
     )
 
-    for image, anchors in dataset:
-        plot([image, anchors], block=block, convert_bbox=True)
+    for i in range(len(dataset)):
+        image, bboxes, _ = dataset.example(i)
+        plot([image, [], bboxes], block=block, convert_bbox=True)

@@ -1,3 +1,6 @@
+import torch
+import random
+
 import pytest
 import tempfile
 import numpy as np
@@ -8,6 +11,23 @@ from pathlib import Path
 from detection.mc import generate_to_directory
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--max-epochs",
+        action="store",
+        default=2,
+        type=int,
+        help="Number of epochs to run the tests",
+    )
+    parser.addoption(
+        "--num-images-per-batch",
+        action="store",
+        default=4,
+        type=int,
+        help="Number of epochs to run the tests",
+    )
+
+
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
@@ -16,12 +36,26 @@ def pytest_configure(config):
 
 
 @pytest.fixture
+def fixed_seed(seed=137):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+
+
+@pytest.fixture
 def size():
     return 256
 
 
 @pytest.fixture
-def annotations():
+def n_samples(request):
+    return request.config.getoption("--num-images-per-batch")
+
+
+@pytest.fixture
+def annotations(n_samples, fixed_seed):
     """
                                image_id          class_name  class_id rad_id   x_min   y_min   x_max   y_max
     0  50a418190bc3fb1ef1633bf9678929b3          No finding        14    R11     NaN     NaN     NaN     NaN
@@ -46,6 +80,27 @@ def annotations():
     df.loc[df["class_id"] == 14, 'x_max'] = 1653.0
     df.loc[df["class_id"] == 14, 'y_min'] = 1375.0
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
+
+    shift = 1 + df.index / len(df)
+    shift = 1
+    df.loc[:, 'x_min'] = 200.0 * shift
+    df.loc[:, 'x_max'] = 200.0 * shift + 2000 * 0.28
+    df.loc[:, 'y_min'] = 400.0 * shift
+    df.loc[:, 'y_max'] = 400.0 * shift + 2000 * 0.22
+    df.loc[:, "class_id"] = 1
+
+    df["h"] = 2000
+    df["w"] = 2000
+
+    x1, y1, x2, y2 = df[['x_min', 'y_min', 'x_max', 'y_max']].values.T
+    df['x_center'] = (x1 + x2) / 2 / df["w"]
+    df['y_center'] = (y1 + y2) / 2 / df["h"]
+    df['width'] = (x2 - x1) / df["w"]
+    df['height'] = (y2 - y1) / df["h"]
+
+    # TODO: remove this part when debugging is over
+    df = df.sample(n=n_samples, replace=True).reset_index(drop=True)
+    df["image_id"] = df.index
     return df
 
 

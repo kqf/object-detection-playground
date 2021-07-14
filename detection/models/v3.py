@@ -29,14 +29,15 @@ class ScalePrediction(nn.Module):
         b, _, h, w = x.shape
 
         out = self.pred(x)
-        return (
+        fout = (
             out.reshape(b, self.n_preds, self.n_scales, h, w)
-            .permute(0, 1, 3, 4, 2)
+            .permute(0, 2, 3, 4, 1)
         )
+        return fout
 
 
 class YOLO(nn.Module):
-    def __init__(self, in_channels=3, num_classes=80):
+    def __init__(self, in_channels=3, num_classes=80, n_scales=3):
         super().__init__()
         self.backbone = Darknet(in_channels=in_channels)
         self.num_classes = num_classes
