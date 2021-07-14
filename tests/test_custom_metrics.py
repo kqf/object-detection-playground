@@ -2,7 +2,7 @@ import pytest
 
 import torch
 from torch import tensor as tt
-from detection.metrics import bbox_iou
+from detection.metrics import bbox_iou, mAP
 # from detection.plot import check_boxes
 
 
@@ -25,9 +25,10 @@ def preds(n_samples):
     x[:, 1] = torch.linspace(0.4, 0.5, n_samples)
     x[:, 2] = 0.2
     x[:, 3] = 0.2
-    x[:, 4] = 1.0
+    x[:, 4] = torch.linspace(0.0, 1, n_samples)
     return x
 
 
 def test_map(preds):
-    print(preds)
+    x = mAP(preds, preds)
+    assert torch.allclose(x, torch.tensor(1.))
