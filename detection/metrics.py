@@ -28,7 +28,7 @@ def positive_rate(detection, ground_truths, amount_bboxes, iou_threshold):
     # Only take out the ground_truths that have the same
     # training idx as detection
     ground_truth_img = [
-        bbox for bbox in ground_truths if bbox[0] == detection[0]
+        bbox for bbox in ground_truths if bbox[-1] == detection[-1]
     ]
 
     best_iou = 0
@@ -45,9 +45,9 @@ def positive_rate(detection, ground_truths, amount_bboxes, iou_threshold):
 
     if best_iou > iou_threshold:
         # only detect ground truth detection once
-        if amount_bboxes[detection[0]] == 0:
+        if amount_bboxes[detection[-1]] == 0:
             # true positive and add this bounding box to seen
-            amount_bboxes[detection[0]] = 1
+            amount_bboxes[detection[-1]] = 1
             return 1, 0
 
         return 0, 1
