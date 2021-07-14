@@ -24,6 +24,37 @@ def bbox_iou(preds, labels):
     return intersection / (a_area + b_area - intersection + 1e-6)
 
 
+def positive_rate(detection, ground_truths, amount_bboxes, iou_threshold):
+    # Only take out the ground_truths that have the same
+    # training idx as detection
+    ground_truth_img = [
+        bbox for bbox in ground_truths if bbox[0] == detection[0]
+    ]
+
+    best_iou = 0
+    for idx, gt in enumerate(ground_truth_img):
+        iou = bbox_iou(
+            torch.tensor(detection[:-1]),
+            torch.tensor(gt[:-1]),
+        ).item()
+
+        if iou > best_iou:
+            best_iou = iou
+            # TODO: why we don't use it
+            # best_gt_idx = idx
+
+    if best_iou > iou_threshold:
+        # only detect ground truth detection once
+        if amount_bboxes[detection[0]] == 0:
+            # true positive and add this bounding box to seen
+            amount_bboxes[detection[0]] = 1
+            return 1, 0
+
+        return 0, 1
+
+    # if IOU is lower then the detection is a false positive
+    return 0, 1
+
 
 def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C901 E501
     # list storing all AP for respective classes
@@ -70,34 +101,8 @@ def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C
         for detection_idx, detection in enumerate(detections):
             # Only take out the ground_truths that have the same
             # training idx as detection
-            ground_truth_img = [
-                bbox for bbox in ground_truths if bbox[0] == detection[0]
-            ]
-
-            best_iou = 0
-            for idx, gt in enumerate(ground_truth_img):
-                iou = bbox_iou(
-                    torch.tensor(detection[:-1]),
-                    torch.tensor(gt[:-1]),
-                ).item()
-
-                if iou > best_iou:
-                    best_iou = iou
-                    # TODO: why we don't use it
-                    # best_gt_idx = idx
-
-            if best_iou > iou_threshold:
-                # only detect ground truth detection once
-                if amount_bboxes[detection[0]] == 0:
-                    # true positive and add this bounding box to seen
-                    tp[detection_idx] = 1
-                    amount_bboxes[detection[0]] = 1
-                else:
-                    fp[detection_idx] = 1
-
-            # if IOU is lower then the detection is a false positive
-            else:
-                fp[detection_idx] = 1
+            tp[detection_idx], fp[detection_idx] = positive_rate(
+                detection, ground_truths, amount_bboxes, iou_threshold)
 
         tp_cumsum = torch.cumsum(tp, dim=0)
         fp_cumsum = torch.cumsum(fp, dim=0)
