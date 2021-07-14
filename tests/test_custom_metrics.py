@@ -16,3 +16,18 @@ def test_iou(gt, pred, answer):
     print(bbox_iou(pred, gt).item(), answer)
     # check_boxes([pred, gt])
     torch.testing.assert_allclose(bbox_iou(pred, gt).item(), answer)
+
+
+@pytest.fixture
+def preds(n_samples):
+    x = torch.zeros(n_samples, 5)
+    x[:, 0] = torch.linspace(0.4, 0.5, n_samples)
+    x[:, 1] = torch.linspace(0.4, 0.5, n_samples)
+    x[:, 2] = 0.2
+    x[:, 3] = 0.2
+    x[:, 4] = 1.0
+    return x
+
+
+def test_map(preds):
+    print(preds)
