@@ -36,11 +36,11 @@ def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C
         # and only add the ones that belong to the
         # current class c
         for detection in pred:
-            if detection[1] == c:
+            if detection[-1] == c:
                 detections.append(detection)
 
         for true_box in true_boxes:
-            if true_box[1] == c:
+            if true_box[-1] == c:
                 ground_truths.append(true_box)
 
         # find the amount of bboxes for each training example
@@ -76,20 +76,21 @@ def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C
             best_iou = 0
             for idx, gt in enumerate(ground_truth_img):
                 iou = bbox_iou(
-                    torch.tensor(detection[3:]),
-                    torch.tensor(gt[3:]),
-                )
+                    torch.tensor(detection[:-1]),
+                    torch.tensor(gt[:-1]),
+                ).item()
 
                 if iou > best_iou:
                     best_iou = iou
-                    best_gt_idx = idx
+                    # TODO: why we don't use it
+                    # best_gt_idx = idx
 
             if best_iou > iou_threshold:
                 # only detect ground truth detection once
-                if amount_bboxes[detection[0]][best_gt_idx] == 0:
+                if amount_bboxes[detection[0]] == 0:
                     # true positive and add this bounding box to seen
                     tp[detection_idx] = 1
-                    amount_bboxes[detection[0]][best_gt_idx] = 1
+                    amount_bboxes[detection[0]] = 1
                 else:
                     fp[detection_idx] = 1
 
