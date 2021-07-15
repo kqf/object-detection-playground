@@ -57,7 +57,7 @@ def positive_rate(detection, ground_truths, amount_bboxes, iou_threshold):
 
 
 def positive_rate_(x, y, iou_threshold):
-    overlaps = bbox_iou(x[None], y[:, None]).squeeze()
+    overlaps = bbox_iou(x[None], y[:, None]).squeeze(-1)
     same_class = x[None, :, -1] == y[:, None, -1]
     return (overlaps * same_class).sum(0) > 0
 
@@ -107,8 +107,10 @@ def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C
         for detection_idx, detection in enumerate(detections):
             # Only take out the ground_truths that have the same
             # training idx as detection
-            pr = positive_rate(detection, ground_truths, iou_threshold)
-            tp[detection_idx], fp[detection_idx] = pr.sum(), (1. - pr).sum()
+            pr = positive_rate_(detection.unsqueeze(0),
+                                torch.cat(ground_truths).unsqueeze(0),
+                                iou_threshold)
+            tp[detection_idx], fp[detection_idx] = pr.sum(), (~pr).sum()
 
         tp_cumsum = torch.cumsum(tp, dim=0)
         fp_cumsum = torch.cumsum(fp, dim=0)
