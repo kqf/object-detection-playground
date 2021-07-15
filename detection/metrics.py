@@ -24,45 +24,13 @@ def bbox_iou(preds, labels):
     return intersection / (a_area + b_area - intersection + 1e-6)
 
 
-def positive_rate(detection, ground_truths, amount_bboxes, iou_threshold):
-    # Only take out the ground_truths that have the same
-    # training idx as detection
-    ground_truth_img = [
-        bbox for bbox in ground_truths if bbox[-1] == detection[-1]
-    ]
-
-    best_iou = 0
-    for idx, gt in enumerate(ground_truth_img):
-        iou = bbox_iou(
-            torch.tensor(detection[:-1]),
-            torch.tensor(gt[:-1]),
-        ).item()
-
-        if iou > best_iou:
-            best_iou = iou
-            # TODO: why we don't use it
-            # best_gt_idx = idx
-
-    if best_iou > iou_threshold:
-        # only detect ground truth detection once
-        if amount_bboxes[detection[-1]] == 0:
-            # true positive and add this bounding box to seen
-            amount_bboxes[detection[-1]] = 1
-            return 1, 0
-
-        return 0, 1
-
-    # if IOU is lower then the detection is a false positive
-    return 0, 1
-
-
 def positive_rate_(x, y, iou_threshold):
     overlaps = bbox_iou(x[None], y[:, None]).squeeze(-1)
     same_class = x[None, :, -1] == y[:, None, -1]
     return (overlaps * same_class).sum(0) > 0
 
 
-def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C901 E501
+def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):
     # list storing all AP for respective classes
     average_precisions = []
 
