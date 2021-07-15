@@ -30,7 +30,7 @@ def positive_rate_(x, y, iou_threshold):
     return (overlaps * same_class).sum(0) > 0
 
 
-def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):  # noqa: C901 E501
+def mAP(pred, true_boxes, iou_threshold=0.5, n_classes=20, eps=1e-6):
     # list storing all AP for respective classes
     average_precisions = []
 
