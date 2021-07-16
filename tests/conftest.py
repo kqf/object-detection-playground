@@ -55,7 +55,7 @@ def n_samples(request):
 
 
 @pytest.fixture
-def annotations(n_samples, fixed_seed):
+def annotations(n_samples, fixed_seed, width=2000):
     """
                                image_id          class_name  class_id rad_id   x_min   y_min   x_max   y_max
     0  50a418190bc3fb1ef1633bf9678929b3          No finding        14    R11     NaN     NaN     NaN     NaN
@@ -82,15 +82,15 @@ def annotations(n_samples, fixed_seed):
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
 
     shift = 1 + df.index / len(df)
-    shift = 1
+    # shift = 1
     df.loc[:, 'x_min'] = 200.0 * shift
-    df.loc[:, 'x_max'] = 200.0 * shift + 2000 * 0.28
+    df.loc[:, 'x_max'] = 200.0 * shift + width * 0.28
     df.loc[:, 'y_min'] = 400.0 * shift
-    df.loc[:, 'y_max'] = 400.0 * shift + 2000 * 0.22
+    df.loc[:, 'y_max'] = 400.0 * shift + width * 0.22
     df.loc[:, "class_id"] = 1
 
-    df["h"] = 2000
-    df["w"] = 2000
+    df["h"] = width
+    df["w"] = width
 
     x1, y1, x2, y2 = df[['x_min', 'y_min', 'x_max', 'y_max']].values.T
     df['x_center'] = (x1 + x2) / 2 / df["w"]
