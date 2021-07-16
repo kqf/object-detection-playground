@@ -17,12 +17,12 @@ jobs:
       shell: bash
       run: |
         echo "Deleting the branch ${{ github.event.pull_request.head.ref }}"
-        gcloud container images list-tags \
-          --format='get(digest)' \
-          --filter="tags:${{ github.event.pull_request.head.ref }}" \
-          ${{ secrets.IMAGE_URI }} | xargs -I{} \
-          gcloud container images delete \
-          -q --force-delete-tags ${{ secrets.IMAGE_URI }}@{}
+        # gcloud container images list-tags \
+        #   --format='get(digest)' \
+        #   --filter="tags:${{ github.event.pull_request.head.ref }}" \
+        #   ${{ secrets.IMAGE_URI }} | xargs -I{} \
+        #   gcloud container images delete \
+        #   -q --force-delete-tags ${{ secrets.IMAGE_URI }}@{}
 
     - name: Release credentials
       if: always()
