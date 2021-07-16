@@ -81,16 +81,18 @@ def annotations(n_samples, fixed_seed):
     df.loc[df["class_id"] == 14, 'y_min'] = 1375.0
     df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
 
+    total_width = 2000
+
     shift = 1 + df.index / len(df)
     shift = 1
     df.loc[:, 'x_min'] = 200.0 * shift
-    df.loc[:, 'x_max'] = 200.0 * shift + 2000 * 0.28
+    df.loc[:, 'x_max'] = 200.0 * shift + total_width * 0.28
     df.loc[:, 'y_min'] = 400.0 * shift
-    df.loc[:, 'y_max'] = 400.0 * shift + 2000 * 0.22
+    df.loc[:, 'y_max'] = 400.0 * shift + total_width * 0.22
     df.loc[:, "class_id"] = 1
 
-    df["h"] = 2000
-    df["w"] = 2000
+    df["h"] = total_width
+    df["w"] = total_width
 
     x1, y1, x2, y2 = df[['x_min', 'y_min', 'x_max', 'y_max']].values.T
     df['x_center'] = (x1 + x2) / 2 / df["w"]
