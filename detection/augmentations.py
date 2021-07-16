@@ -26,11 +26,8 @@ class DebugAugmentations(DualTransform):
         return img
 
     def apply_to_bbox(self, bbox, **params):
-        import ipdb
-        ipdb.set_trace()
-        import IPython
-        IPython.embed()  # noqa
-        return bbox
+        # ipdb goes here
+        pass
 
     def apply_to_keypoint(self, keypoint, scale=0, **params):
         return keypoint
