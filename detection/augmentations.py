@@ -26,11 +26,8 @@ class DebugAugmentations(DualTransform):
         return img
 
     def apply_to_bbox(self, bbox, **params):
-        import ipdb
-        ipdb.set_trace()
-        import IPython
-        IPython.embed()  # noqa
-        return bbox
+        # ipdb goes here
+        pass
 
     def apply_to_keypoint(self, keypoint, scale=0, **params):
         return keypoint
@@ -61,7 +58,7 @@ def transform(train=True, mean=None, std=None, size=32 * 13):
     train_transforms = []
     if train:
         train_transforms = [
-            # alb.Flip(0.5)
+            alb.Flip(0.5)
         ]
 
     return alb.Compose(train_transforms + transforms, bbox_params=bbox_params)
