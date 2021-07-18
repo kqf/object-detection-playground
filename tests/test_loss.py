@@ -18,7 +18,7 @@ def test_loss():
 
     predictions = torch.zeros([2, 3, 13, 13, 85])
     # predictions = predictions.transpose(1, -1)
-    predictions[0, ..., 0] = 9
+    predictions[0, ..., 0] = 1
     predictions[1, ..., 0] = -999
 
     # predictions go through the sigmoid function
