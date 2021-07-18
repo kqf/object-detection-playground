@@ -1,7 +1,7 @@
 import pytest
 import torch
 from detection.datasets.v3 import DEFAULT_ANCHORS
-from detection.losses.v3 import CombinedLoss
+from detection.loss import CombinedLoss
 
 
 @pytest.mark.skip("Loss is being tested")
