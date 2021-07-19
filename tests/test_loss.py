@@ -1,5 +1,5 @@
 import torch
-from detection.datasets.v3 import DEFAULT_ANCHORS
+from detection.dataset import DEFAULT_ANCHORS
 from detection.loss import CombinedLoss
 
 
