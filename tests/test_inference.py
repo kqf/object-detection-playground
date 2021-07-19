@@ -3,7 +3,7 @@ import pytest
 
 from detection.inference import infer, nms, merge_scales
 from detection.plot import plot
-from detection.datasets.v3 import DEFAULT_ANCHORS
+from detection.dataset import DEFAULT_ANCHORS
 
 
 @pytest.fixture

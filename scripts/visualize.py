@@ -2,7 +2,7 @@ import click
 import pandas as pd
 import pathlib
 
-from detection.datasets.v3 import DetectionDatasetV3
+from detection.dataset import DetectionDatasetV3
 from detection.augmentations import transform
 from detection.plot import plot
 
