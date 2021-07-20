@@ -1,7 +1,7 @@
 import torch
 import pytest
 import pandas as pd
-from detection.dataset import DetectionDatasetV3
+from detection.dataset import DetectionDataset
 from detection.augmentations import transform
 from detection.plot import plot
 
@@ -16,7 +16,7 @@ from detection.plot import plot
 ])
 def test_dataset(fake_dataset, anchors, transforms):
     df = pd.read_csv(fake_dataset / "train.csv")
-    dataset = DetectionDatasetV3(
+    dataset = DetectionDataset(
         df, fake_dataset, anchors=anchors, transforms=transforms)
 
     for image, (s1, s2, s3) in dataset:
@@ -30,7 +30,7 @@ def test_dataset(fake_dataset, anchors, transforms):
 
 def test_augmentations(fake_dataset, block=False):
     df = pd.read_csv(fake_dataset / "train.csv")
-    dataset = DetectionDatasetV3(
+    dataset = DetectionDataset(
         df, fake_dataset,
         transforms=transform(train=True),
     )

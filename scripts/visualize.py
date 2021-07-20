@@ -2,7 +2,7 @@ import click
 import pandas as pd
 import pathlib
 
-from detection.dataset import DetectionDatasetV3
+from detection.dataset import DetectionDataset
 from detection.augmentations import transform
 from detection.plot import plot
 
@@ -13,7 +13,7 @@ def main(datapath):
     path = pathlib.Path(datapath)
     df = pd.read_csv(path / "train.csv")
 
-    dataset = DetectionDatasetV3(
+    dataset = DetectionDataset(
         df,
         path,
         transforms=transform(train=True), no_anchors=True
