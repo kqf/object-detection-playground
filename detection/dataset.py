@@ -21,7 +21,7 @@ DEFAULT_ANCHORS = [
 DEFAULT_SCALES = [1, 2, 4]
 
 
-class DetectionDatasetV3(Dataset):
+class DetectionDataset(Dataset):
 
     def __init__(
         self,

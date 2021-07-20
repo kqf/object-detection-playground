@@ -1,7 +1,7 @@
 import pytest
 
 from detection.data import read_data
-from detection.dataset import DetectionDatasetV3
+from detection.dataset import DetectionDataset
 from detection.augmentations import transform
 from detection.model import build_model
 
@@ -16,7 +16,7 @@ def max_epochs(request):
 def test_model(fake_dataset, max_epochs, fixed_seed):
     df = read_data(fake_dataset / "train.csv")
     print(df.head())
-    train = DetectionDatasetV3(df, fake_dataset, transforms=transform())
+    train = DetectionDataset(df, fake_dataset, transforms=transform())
 
     model = build_model(max_epochs=max_epochs, top_n=5)
     model.fit(train)
