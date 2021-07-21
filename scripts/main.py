@@ -3,7 +3,7 @@ import click
 from pathlib import Path
 from click import Path as cpath
 
-from detection.data import read_data
+from detection.dataset import read_data
 from detection.augmentations import transform
 from detection.datasets import DetectionDatasetV3
 from detection.model import build_model
