@@ -1,7 +1,6 @@
 import torch
 
-from detection.data import read_data
-from detection.dataset import DetectionDataset
+from detection.dataset import DetectionDataset, read_data
 from detection.augmentations import transform
 from detection.inference import to_global
 # from detection.plot import plot

@@ -1,7 +1,6 @@
 import pytest
 
-from detection.data import read_data
-from detection.dataset import DetectionDataset
+from detection.dataset import DetectionDataset, read_data
 from detection.augmentations import transform
 from detection.model import build_model
 
