@@ -60,13 +60,11 @@ def annotations(n_points=32, h=2000, w=2000):
     return df
 
 
-def generate_to_directory(annotations, dirname):
+def generate_to_directory(annotations, dirname, image_col="image_id"):
     path = Path(dirname)
-
-    # TODO: Add support for multiple blobs per image
-    for row in annotations.to_dict(orient="records"):
-        img = blob2image(make_blob(**row))
-        image_id = row["image_id"]
+    for image_id, blobs in annotations.groupby(image_col):
+        for row in annotations.to_dict(orient="records"):
+            img = blob2image(make_blob(**row))
         ifile = f"{image_id}.png"
         cv2.imwrite(str(path / ifile), img)
     annotations.to_csv(path / "train.csv", index=False)
