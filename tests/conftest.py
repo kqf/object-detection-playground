@@ -70,12 +70,15 @@ def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
     df["class_id"] = df.index % num_classes
 
     shift = 1 + df.index / len(df)
-    shift = 1
     df.loc[:, 'x_min'] = 200.0 * shift
     df.loc[:, 'x_max'] = 200.0 * shift + width * 0.28
     df.loc[:, 'y_min'] = 400.0 * shift
     df.loc[:, 'y_max'] = 400.0 * shift + width * 0.22
-    df.loc[:, "class_id"] = 1
+
+    df.loc[:, 'x_min'] = 200.0 * shift
+    df.loc[:, 'x_max'] = 200.0 * shift + width * 0.28
+    df.loc[:, 'y_min'] = 400.0 * shift
+    df.loc[:, 'y_max'] = 400.0 * shift + width * 0.22
 
     df["h"] = width
     df["w"] = width
