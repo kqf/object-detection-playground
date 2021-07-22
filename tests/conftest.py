@@ -55,7 +55,7 @@ def n_samples(request):
 
 
 @pytest.fixture
-def annotations(n_samples, fixed_seed, width=2000):
+def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
     """
                                image_id          class_name  class_id rad_id   x_min   y_min   x_max   y_max
     0  50a418190bc3fb1ef1633bf9678929b3          No finding        14    R11     NaN     NaN     NaN     NaN
@@ -65,21 +65,9 @@ def annotations(n_samples, fixed_seed, width=2000):
     4  063319de25ce7edb9b1c6b8881290140          No finding        14    R10     NaN     NaN     NaN     NaN
     """  # noqa
 
-    data = {
-        "image_id": [1, 2, 3, 4, 5],
-        "class_name": ["No", "No", "Cardiomegaly", "Aortic", "No"],
-        "class_id": [14, 14, 3, 0, 14],
-        "x_min": [np.nan, np.nan, 691.0, 1264.0, np.nan],
-        "y_min": [np.nan, np.nan, 1375.0, 743.0, np.nan],
-        "x_max": [np.nan, np.nan, 1653.0, 1611.0, np.nan],
-        "y_max": [np.nan, np.nan, 1831.0, 1019.0, np.nan],
-    }
-
-    df = pd.DataFrame(data)
-    df.loc[df["class_id"] == 14, 'x_min'] = 691.0
-    df.loc[df["class_id"] == 14, 'x_max'] = 1653.0
-    df.loc[df["class_id"] == 14, 'y_min'] = 1375.0
-    df.loc[df["class_id"] == 14, 'y_max'] = 1831.0
+    # NB: 2 here stands for the second blob on an image
+    df = pd.DataFrame(index=range(n_samples * 2))
+    df["class_id"] = df.index % num_classes
 
     shift = 1 + df.index / len(df)
     shift = 1
