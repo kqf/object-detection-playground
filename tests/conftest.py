@@ -69,16 +69,19 @@ def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
     df = pd.DataFrame(index=range(n_samples * 2))
     df["class_id"] = df.index % num_classes
 
+    n_images = len(df)
     shift = 1 + df.index / len(df)
-    df.loc[:, 'x_min'] = 200.0 * shift
-    df.loc[:, 'x_max'] = 200.0 * shift + width * 0.28
-    df.loc[:, 'y_min'] = 400.0 * shift
-    df.loc[:, 'y_max'] = 400.0 * shift + width * 0.22
+    df["image_id"] = df.index % n_samples
+    df.loc[:n_images // 2 - 1, 'x_min'] = 200.0 * shift
+    df.loc[:n_images // 2 - 1, 'x_max'] = 200.0 * shift + width * 0.28
+    df.loc[:n_images // 2 - 1, 'y_min'] = 400.0 * shift
+    df.loc[:n_images // 2 - 1, 'y_max'] = 400.0 * shift + width * 0.22
 
-    df.loc[:, 'x_min'] = 200.0 * shift
-    df.loc[:, 'x_max'] = 200.0 * shift + width * 0.28
-    df.loc[:, 'y_min'] = 400.0 * shift
-    df.loc[:, 'y_max'] = 400.0 * shift + width * 0.22
+    df.loc[n_images // 2:, 'x_min'] = 200.0 * shift
+    df.loc[n_images // 2:, 'x_max'] = 200.0 * shift + width * 0.28
+    df.loc[n_images // 2:, 'y_min'] = 400.0 * shift
+    df.loc[n_images // 2:, 'y_max'] = 400.0 * shift + width * 0.22
+    df.loc[n_images // 2:, 'y_max'] = 400.0 * shift + width * 0.22
 
     df["h"] = width
     df["w"] = width
