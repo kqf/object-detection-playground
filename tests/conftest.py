@@ -71,6 +71,7 @@ def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
 
     n_images = len(df)
     shift = 1 + df.index / len(df)
+    shift = 1
     df["image_id"] = df.index % n_samples
     df.loc[:n_images // 2 - 1, 'x_min'] = 200.0 * shift
     df.loc[:n_images // 2 - 1, 'x_max'] = 200.0 * shift + width * 0.28
@@ -91,10 +92,6 @@ def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
     df['y_center'] = (y1 + y2) / 2 / df["h"]
     df['width'] = (x2 - x1) / df["w"]
     df['height'] = (y2 - y1) / df["h"]
-
-    # TODO: remove this part when debugging is over
-    df = df.sample(n=n_samples, replace=True).reset_index(drop=True)
-    df["image_id"] = df.index
     return df
 
 
