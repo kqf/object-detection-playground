@@ -77,10 +77,10 @@ def annotations(n_samples, fixed_seed, width=2000, num_classes=3):
     df.loc[:n_images // 2 - 1, 'y_min'] = 400.0 * shift
     df.loc[:n_images // 2 - 1, 'y_max'] = 400.0 * shift + width * 0.22
 
-    df.loc[n_images // 2:, 'x_min'] = 400.0 * shift
-    df.loc[n_images // 2:, 'x_max'] = 400.0 * shift + width * 0.28
-    df.loc[n_images // 2:, 'y_min'] = 80.0 * shift
-    df.loc[n_images // 2:, 'y_max'] = 80.0 * shift + width * 0.22
+    df.loc[n_images // 2:, 'x_min'] = 450.0 * shift
+    df.loc[n_images // 2:, 'x_max'] = 450.0 * shift + width * 0.28
+    df.loc[n_images // 2:, 'y_min'] = 800.0 * shift
+    df.loc[n_images // 2:, 'y_max'] = 800.0 * shift + width * 0.22
 
     df["h"] = width
     df["w"] = width
