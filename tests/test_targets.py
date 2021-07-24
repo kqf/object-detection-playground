@@ -20,8 +20,7 @@ def test_targets(fake_dataset, fixed_seed):
 
             answers = scale[scale[..., 0] == 1]
 
-            # It can be either one or zero depending on the number of scales
-            assert answers.shape[0] == 1 or answers.shape[0] == 0
+            assert answers.shape[0] == 2
 
             pred = to_global(scale)
 
